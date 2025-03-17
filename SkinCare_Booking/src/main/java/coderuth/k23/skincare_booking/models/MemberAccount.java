@@ -89,5 +89,4 @@ public class MemberAccount {
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 
     public LocalDateTime getUpdateAt() { return updatedAt; }
-    public void setUpdateAt(LocalDateTime updateAt) { this.updatedAt = updatedAt; }
-}
+    public void setUpdateAt(LocalDateTime updateAt) { this.updatedAt = updatedAt; }}
