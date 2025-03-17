@@ -41,5 +41,9 @@ public class UserPageController {
     public String userElementPage() {
         return "user/rooms";
     }
+    @GetMapping("/blog")
+    public String userBlogPage() {
+        return "user/blog";
+    }
 }
 
