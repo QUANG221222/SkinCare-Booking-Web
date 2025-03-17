@@ -12,7 +12,7 @@ import java.util.List;
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         @Column(name = "id", nullable = false, unique = true)
-        private String id;
+        private Long id;
 
         @Column(name = "email", nullable = false, unique = true)
         private String email;
@@ -29,8 +29,8 @@ import java.util.List;
         @Column(name = "role")
         private String role = "Staff";
 
-        @OneToMany(mappedBy = "staff", cascade = CascadeType.ALL, orphanRemoval = true)
-        private List<MemberAccount> member = new ArrayList<>();
+     //   @OneToMany(mappedBy = "staff", cascade = CascadeType.ALL, orphanRemoval = true)
+        //  private List<MemberAccount> member = new ArrayList<>();
 
 //    @OneToMany(mappedBy = "staff", cascade = CascadeType.ALL, orphanRemoval = true)
 //    private List<Therapist> therapist = new ArrayList<>();
@@ -64,8 +64,8 @@ import java.util.List;
         }
 
         // Getters and Setters
-        public String getId() { return id; }
-        public void setId(String id) { this.id = id; }
+        public Long getId() { return id; }
+        public void setId(Long id) { this.id = id; }
 
         public String getEmail() { return email; }
         public void setEmail(String email) { this.email = email; }
@@ -82,8 +82,8 @@ import java.util.List;
         public String getRole() { return role; }
         public void setRole(String role) { this.role = role; }
 
-        public List<MemberAccount> getMember() { return member; }
-        public void setMember(List<MemberAccount> member) { this.member = member; }
+//        public List<MemberAccount> getMember() { return member; }
+//        public void setMember(List<MemberAccount> member) { this.member = member; }
 
 //    public List<Therapist> getTherapist() { return therapist; }
 //    public void setTherapist(List<Therapist> therapist) { this.therapist = therapist; }
