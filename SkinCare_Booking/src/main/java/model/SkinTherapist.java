@@ -1,36 +1,23 @@
 package model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
 import java.time.LocalDateTime;
-import java.util.List;
 
-@Getter
-@Setter
-@NoArgsConstructor
 @Entity
 @Table(name = "skin_therapist")
-public class SkinTherapist {
+class Skin_Therapist {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "_id", length = 36, nullable = false, updatable = false)
+    @Column(name = "_id", length = 36, nullable = false)
     private String id;
 
     @Column(nullable = false, unique = true, length = 255)
     private String email;
 
-    @JsonIgnore
     @Column(nullable = false, length = 255)
     private String password;
 
-    @Column(nullable = false, length = 15)
+    @Column(nullable = false, length = 255)
     private String phoneNumber;
 
     @Column(nullable = false, unique = true, length = 255)
@@ -42,25 +29,108 @@ public class SkinTherapist {
     @Column(length = 50, nullable = false)
     private String role = "Therapist";
 
-    @ManyToOne
-    @JoinColumn(name = "manager_id")
-    private Manager manager;
+    @Lob
+    @Column(columnDefinition = "JSON")
+    private String servicesBooking;
 
-    @ManyToMany
-    @JoinTable(
-            name = "therapist_services",
-            joinColumns = @JoinColumn(name = "therapist_id"),
-            inverseJoinColumns = @JoinColumn(name = "service_id")
-    )
-    private List<Services> services;
+    @Column(nullable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
 
-    @CreationTimestamp
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
     private LocalDateTime updatedAt;
 
     @Column(nullable = false)
     private boolean working = false;
+
+    // GETTER / SETTER
+
+    public Skin_Therapist() {
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getTherapistName() {
+        return therapistName;
+    }
+
+    public void setTherapistName(String therapistName) {
+        this.therapistName = therapistName;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public String getServicesBooking() {
+        return servicesBooking;
+    }
+
+    public void setServicesBooking(String servicesBooking) {
+        this.servicesBooking = servicesBooking;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public boolean isWorking() {
+        return working;
+    }
+
+    public void setWorking(boolean working) {
+        this.working = working;
+    }
 }

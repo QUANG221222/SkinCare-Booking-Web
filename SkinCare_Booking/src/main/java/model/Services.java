@@ -40,9 +40,12 @@ public class Services {
     private LocalDateTime createdAt;
 
     @ManyToMany(mappedBy = "services")
-    private List<SkinTherapist> therapists;
+    public List<SkinTherapist> therapists;
 
     @ManyToOne
     @JoinColumn(name = "manager_id")
     private Manager manager;
+
+    private class SkinTherapist {
+    }
 }

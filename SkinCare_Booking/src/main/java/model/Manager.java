@@ -42,7 +42,7 @@ public class Manager {
 
     // Quan hệ One-to-Many với SkinTherapist
     @OneToMany(mappedBy = "manager", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SkinTherapist> therapists;
+    protected List<SkinTherapist> therapists;
 
     @ElementCollection
     @CollectionTable(name = "manager_staff", joinColumns = @JoinColumn(name = "manager_id"))
@@ -70,5 +70,8 @@ public class Manager {
         this.password = password;
         this.managerName = managerName;
         this.displayName = displayName;
+    }
+
+    private class SkinTherapist {
     }
 }
