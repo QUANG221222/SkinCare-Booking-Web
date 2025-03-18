@@ -9,7 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -21,8 +21,8 @@ public class SkinTherapist {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "_id", length = 36, nullable = false, updatable = false)
-    private String id;
+    @Column(name = "_id", nullable = false, updatable = false)
+    private UUID id; //
 
     @Column(nullable = false, unique = true, length = 255)
     private String email;
@@ -46,7 +46,7 @@ public class SkinTherapist {
     @ElementCollection
     @CollectionTable(name = "therapist_services_booking", joinColumns = @JoinColumn(name = "therapist_id"))
     @Column(name = "service_booking")
-    private List<String> servicesBooking;
+    private Set<String> servicesBooking;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
@@ -57,4 +57,22 @@ public class SkinTherapist {
 
     @Column(nullable = false)
     private boolean working = false;
+
+
+    public void setPhoneNumber(String phoneNumber) {
+        if (!phoneNumber.matches("\\+?[0-9]{7,15}")) {
+            throw new IllegalArgumentException("Invalid phone number format");
+        }
+        this.phoneNumber = phoneNumber;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }

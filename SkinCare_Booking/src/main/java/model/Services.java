@@ -7,7 +7,8 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
+import java.time.Duration;
 import java.util.UUID;
 
 @Getter
@@ -15,26 +16,34 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 @Table(name = "services")
-public class Services {
+class Service {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(length = 36, nullable = false, updatable = false)
-    private String servicesId;
+    private UUID serviceId;
 
     @Column(nullable = false, length = 255)
-    private String nameServices;
+    private String serviceName;
 
     @Column(columnDefinition = "TEXT", nullable = false)
-    private String descriptionServices;
+    private String description;
 
     @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal priceServices;
+    private BigDecimal price;
 
     @Column(nullable = false)
-    private LocalTime duration;
+    private Duration duration;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
-    private LocalTime createdAt;
+    private LocalDateTime createdAt;
+
+    public Service(String serviceName, String description, BigDecimal price, Duration duration) {
+        this.serviceId = UUID.randomUUID();
+        this.serviceName = serviceName;
+        this.description = description;
+        this.price = price;
+        this.duration = duration;
+    }
 }

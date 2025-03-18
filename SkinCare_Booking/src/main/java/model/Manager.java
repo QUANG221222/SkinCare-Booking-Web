@@ -2,25 +2,25 @@ package model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "manager")
 public class Manager {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @UuidGenerator
     @Column(name = "_id", length = 36, nullable = false, updatable = false)
     private String id;
 
@@ -43,26 +43,31 @@ public class Manager {
     @ElementCollection
     @CollectionTable(name = "manager_staff", joinColumns = @JoinColumn(name = "manager_id"))
     @Column(name = "staff_id")
+    @Singular
     private List<String> staffIds;
 
     @ElementCollection
     @CollectionTable(name = "manager_therapist", joinColumns = @JoinColumn(name = "manager_id"))
     @Column(name = "therapist_id")
+    @Singular
     private List<String> therapistIds;
 
     @ElementCollection
     @CollectionTable(name = "manager_member_account", joinColumns = @JoinColumn(name = "manager_id"))
     @Column(name = "member_account")
+    @Singular
     private List<String> memberAccounts;
 
     @ElementCollection
     @CollectionTable(name = "manager_services", joinColumns = @JoinColumn(name = "manager_id"))
     @Column(name = "service")
+    @Singular
     private List<String> services;
 
     @ElementCollection
     @CollectionTable(name = "manager_services_booking", joinColumns = @JoinColumn(name = "manager_id"))
     @Column(name = "service_booking")
+    @Singular("serviceBooking")
     private List<String> servicesBooking;
 
     @CreationTimestamp
@@ -71,13 +76,4 @@ public class Manager {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
-
-    // Constructor có tham số
-    public Manager(String email, String password, String managerName, String displayName) {
-        this.id = UUID.randomUUID().toString();
-        this.email = email;
-        this.password = password;
-        this.managerName = managerName;
-        this.displayName = displayName;
-    }
 }
