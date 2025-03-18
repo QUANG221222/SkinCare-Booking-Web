@@ -55,16 +55,7 @@ Hệ thống hỗ trợ 5 vai trò chính:
    ```bash
    docker-compose up -d
    ```
-4. Truy cập ứng dụng tại `http://localhost:8080`
-
-## 🔌 API Endpoints
-
-| ⚡ Phương thức | 🌍 Endpoint      | 📄 Chức năng                      |
-| -------------- | ---------------- | --------------------------------- | ---------------- |
-| GET            | `/services`      | Lấy danh sách dịch vụ chăm sóc da | (In Progress...) |
-| POST           | `/bookings`      | Tạo đặt lịch mới                  | (In Progress...) |
-| GET            | `/bookings/{id}` | Lấy thông tin chi tiết đặt lịch   | (In Progress...) |
-| DELETE         | `/bookings/{id}` | Hủy đặt lịch                      | (In Progress...) |
+4. Truy cập ứng dụng tại `http://localhost:8080/`
 
 ## 🤝 Đóng góp
 
