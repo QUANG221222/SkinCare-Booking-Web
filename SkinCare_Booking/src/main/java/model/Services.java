@@ -46,14 +46,3 @@ public class Services {
     @JoinColumn(name = "manager_id")
     private Manager manager;
 }
-    @CreationTimestamp
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @ManyToMany(mappedBy = "services")
-    private List<SkinTherapist> therapists;
-
-    @ManyToOne
-    @JoinColumn(name = "manager_id")
-    private Manager manager;
- }
