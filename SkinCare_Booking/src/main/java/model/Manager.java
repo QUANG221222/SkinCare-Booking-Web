@@ -54,7 +54,6 @@ public class Manager {
     @Column(name = "member_account")
     private List<String> memberAccounts;
 
-    // Quan hệ One-to-Many với Services nếu Manager quản lý các dịch vụ
     @OneToMany(mappedBy = "manager", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Services> services;
 

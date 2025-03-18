@@ -39,7 +39,6 @@ public class Services {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    // Quan hệ Many-to-Many với SkinTherapist (mặt đối ngược)
     @ManyToMany(mappedBy = "services")
     private List<SkinTherapist> therapists;
 

@@ -65,4 +65,4 @@ public class SkinTherapist {
 
     @Column(nullable = false)
     private boolean working = false;
-}
+ }
