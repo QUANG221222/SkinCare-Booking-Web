@@ -42,12 +42,10 @@ public class SkinTherapist {
     @Column(length = 50, nullable = false)
     private String role = "Therapist";
 
-    // Liên kết với Manager (Many therapists có 1 Manager)
     @ManyToOne
     @JoinColumn(name = "manager_id")
     private Manager manager;
 
-    // Quan hệ Many-to-Many với Services
     @ManyToMany
     @JoinTable(
             name = "therapist_services",
@@ -65,4 +63,4 @@ public class SkinTherapist {
 
     @Column(nullable = false)
     private boolean working = false;
- }
+}

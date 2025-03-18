@@ -45,4 +45,4 @@ public class Services {
     @ManyToOne
     @JoinColumn(name = "manager_id")
     private Manager manager;
-}
+ }
