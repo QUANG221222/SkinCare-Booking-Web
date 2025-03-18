@@ -10,14 +10,13 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "manager")
-public class Manager {
+@Table(name = "skin_therapist")
+public class SkinTherapist {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -31,30 +30,28 @@ public class Manager {
     @Column(nullable = false, length = 255)
     private String password;
 
+    @Column(nullable = false, length = 15)
+    private String phoneNumber;
+
     @Column(nullable = false, unique = true, length = 255)
-    private String managerName;
+    private String therapistName;
 
     @Column(length = 255)
     private String displayName;
 
     @Column(length = 50, nullable = false)
-    private String role = "Manager";
+    private String role = "Therapist";
 
-    // Quan hệ One-to-Many với SkinTherapist
-    @OneToMany(mappedBy = "manager", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SkinTherapist> therapists;
+    @ManyToOne
+    @JoinColumn(name = "manager_id")
+    private Manager manager;
 
-    @ElementCollection
-    @CollectionTable(name = "manager_staff", joinColumns = @JoinColumn(name = "manager_id"))
-    @Column(name = "staff_id")
-    private List<String> staffIds;
-
-    @ElementCollection
-    @CollectionTable(name = "manager_member_account", joinColumns = @JoinColumn(name = "manager_id"))
-    @Column(name = "member_account")
-    private List<String> memberAccounts;
-
-    @OneToMany(mappedBy = "manager", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany
+    @JoinTable(
+            name = "therapist_services",
+            joinColumns = @JoinColumn(name = "therapist_id"),
+            inverseJoinColumns = @JoinColumn(name = "service_id")
+    )
     private List<Services> services;
 
     @CreationTimestamp
@@ -64,11 +61,6 @@ public class Manager {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    public Manager(String email, String password, String managerName, String displayName) {
-        this.id = UUID.randomUUID().toString();
-        this.email = email;
-        this.password = password;
-        this.managerName = managerName;
-        this.displayName = displayName;
-    }
+    @Column(nullable = false)
+    private boolean working = false;
 }

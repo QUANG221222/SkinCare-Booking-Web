@@ -1,69 +1,48 @@
 package model;
 
 import jakarta.persistence.*;
-import java.time.LocalTime;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
+
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "services")
 public class Services {
 
     @Id
-    @Column(length = 36, nullable = false)
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(length = 36, nullable = false, updatable = false)
     private String servicesId;
 
     @Column(nullable = false, length = 255)
     private String nameServices;
 
-    @Lob
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String descriptionServices;
 
-    private int priceServices;
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal priceServices;
 
+    @Column(nullable = false)
     private LocalTime duration;
 
-    // Getters and Setters
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
-    public String getServicesId() {
-        return servicesId;
-    }
+    @ManyToMany(mappedBy = "services")
+    private List<SkinTherapist> therapists;
 
-    public void setServicesId(String servicesId) {
-        this.servicesId = servicesId;
-    }
-
-    public String getNameServices() {
-        return nameServices;
-    }
-
-    public void setNameServices(String nameServices) {
-        this.nameServices = nameServices;
-    }
-
-    public String getDescriptionServices() {
-        return descriptionServices;
-    }
-
-    public void setDescriptionServices(String descriptionServices) {
-        this.descriptionServices = descriptionServices;
-    }
-
-    public int getPriceServices() {
-        return priceServices;
-    }
-
-    public void setPriceServices(int priceServices) {
-        this.priceServices = priceServices;
-    }
-
-    public LocalTime getDuration() {
-        return duration;
-    }
-
-    public void setDuration(LocalTime duration) {
-        this.duration = duration;
-    }
-
-    // Constructor (No-args)
-    public Services() {
-    }
+    @ManyToOne
+    @JoinColumn(name = "manager_id")
+    private Manager manager;
 }
