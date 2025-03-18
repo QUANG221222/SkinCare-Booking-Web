@@ -7,8 +7,9 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.UUID;
+import java.util.List;
 
 @Getter
 @Setter
@@ -36,5 +37,13 @@ public class Services {
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
-    private LocalTime createdAt;
+    private LocalDateTime createdAt;
+
+    // Quan hệ Many-to-Many với SkinTherapist (mặt đối ngược)
+    @ManyToMany(mappedBy = "services")
+    private List<SkinTherapist> therapists;
+
+    @ManyToOne
+    @JoinColumn(name = "manager_id")
+    private Manager manager;
 }

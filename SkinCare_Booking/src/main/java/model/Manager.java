@@ -40,30 +40,23 @@ public class Manager {
     @Column(length = 50, nullable = false)
     private String role = "Manager";
 
+    // Quan hệ One-to-Many với SkinTherapist
+    @OneToMany(mappedBy = "manager", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SkinTherapist> therapists;
+
     @ElementCollection
     @CollectionTable(name = "manager_staff", joinColumns = @JoinColumn(name = "manager_id"))
     @Column(name = "staff_id")
     private List<String> staffIds;
 
     @ElementCollection
-    @CollectionTable(name = "manager_therapist", joinColumns = @JoinColumn(name = "manager_id"))
-    @Column(name = "therapist_id")
-    private List<String> therapistIds;
-
-    @ElementCollection
     @CollectionTable(name = "manager_member_account", joinColumns = @JoinColumn(name = "manager_id"))
     @Column(name = "member_account")
     private List<String> memberAccounts;
 
-    @ElementCollection
-    @CollectionTable(name = "manager_services", joinColumns = @JoinColumn(name = "manager_id"))
-    @Column(name = "service")
-    private List<String> services;
-
-    @ElementCollection
-    @CollectionTable(name = "manager_services_booking", joinColumns = @JoinColumn(name = "manager_id"))
-    @Column(name = "service_booking")
-    private List<String> servicesBooking;
+    // Quan hệ One-to-Many với Services nếu Manager quản lý các dịch vụ
+    @OneToMany(mappedBy = "manager", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Services> services;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
@@ -72,7 +65,6 @@ public class Manager {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    // Constructor có tham số
     public Manager(String email, String password, String managerName, String displayName) {
         this.id = UUID.randomUUID().toString();
         this.email = email;

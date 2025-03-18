@@ -10,7 +10,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -43,10 +42,19 @@ public class SkinTherapist {
     @Column(length = 50, nullable = false)
     private String role = "Therapist";
 
-    @ElementCollection
-    @CollectionTable(name = "therapist_services_booking", joinColumns = @JoinColumn(name = "therapist_id"))
-    @Column(name = "service_booking")
-    private List<String> servicesBooking;
+    // Liên kết với Manager (Many therapists có 1 Manager)
+    @ManyToOne
+    @JoinColumn(name = "manager_id")
+    private Manager manager;
+
+    // Quan hệ Many-to-Many với Services
+    @ManyToMany
+    @JoinTable(
+            name = "therapist_services",
+            joinColumns = @JoinColumn(name = "therapist_id"),
+            inverseJoinColumns = @JoinColumn(name = "service_id")
+    )
+    private List<Services> services;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
