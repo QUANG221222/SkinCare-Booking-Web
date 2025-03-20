@@ -31,8 +31,6 @@ public class UserPageController {
     public String userContactPage() {
         return "user/contact";
     }
-    @GetMapping("/blog")
-    public String userBlog() { return "user/blog"; }
 
     @GetMapping("/master")
     public String userMasterPage() {

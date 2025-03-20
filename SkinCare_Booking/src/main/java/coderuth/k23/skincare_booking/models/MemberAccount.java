@@ -32,9 +32,9 @@ public class MemberAccount {
     @Column(name = "role", nullable = false)
     private String role = "Member";
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "member_account_id")
-    private List<ServiceBooking> servicesBooking = new ArrayList<>();
+//    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JoinColumn(name = "member_account_id")
+//    private List<ServiceBooking> servicesBooking = new ArrayList<>();
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt = LocalDateTime.now();
@@ -111,13 +111,13 @@ public class MemberAccount {
         this.role = role;
     }
 
-    public List<ServiceBooking> getServicesBooking() {
-        return servicesBooking;
-    }
-
-    public void setServicesBooking(List<ServiceBooking> servicesBooking) {
-        this.servicesBooking = servicesBooking;
-    }
+//    public List<ServiceBooking> getServicesBooking() {
+//        return servicesBooking;
+//    }
+//
+//    public void setServicesBooking(List<ServiceBooking> servicesBooking) {
+//        this.servicesBooking = servicesBooking;
+//    }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
