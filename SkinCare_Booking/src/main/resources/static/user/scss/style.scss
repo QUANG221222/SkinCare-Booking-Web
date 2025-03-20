@@ -47,7 +47,6 @@
 }
 
 /* :: 2.0 Import All CSS */
-
 @import 'css/bootstrap.min.css';
 @import 'css/classy-nav.css';
 @import 'css/owl.carousel.min.css';
@@ -1421,6 +1420,7 @@ img {
         text-align: center;
         margin-top: -145px;
         background-color: $white-color;
+
         @media #{$breakpoint-xs} {
             width: 90%;
             left: 5%;
