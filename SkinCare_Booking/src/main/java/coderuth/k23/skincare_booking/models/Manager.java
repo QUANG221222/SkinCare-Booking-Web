@@ -8,6 +8,7 @@ import java.util.List;
 @Entity
 public class Manager {
 
+    //đánh dấu id là PK
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, unique = true)
@@ -30,24 +31,28 @@ public class Manager {
     private String role = "Manager";
 
     @ElementCollection
+    //lưu trữ danh sách các ID staff mà manager quản lý
     @CollectionTable(name = "manager_staff")
     @Column(name = "staff_id")
     private List<String> staff = new ArrayList<>();
 
     @ElementCollection
+    //lưu trữ danh sách các ID therapist mà manager quản lý
     @CollectionTable(name = "manager_therapist")
     @Column(name = "therapist_id")
     private List<String> therapistId = new ArrayList<>();
 
     @ElementCollection
+    //lưu trữ danh sách các ID memberAccount
     @CollectionTable(name = "manager_member_account")
     @Column(name = "member_account_id")
     private List<String> memberAccountId = new ArrayList<>();
 
-//    @ElementCollection
-//    @CollectionTable(name = "manager_services")
-//    @Column(name = "services_id")
-//    private List<String> services = new ArrayList<>();
+    @ElementCollection
+    //lưu trữ danh sách các ID services
+    @CollectionTable(name = "manager_services")
+    @Column(name = "services_Spa_id")
+    private List<String> services = new ArrayList<>();
 
 //    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 //    @JoinColumn(name = "manager_id")
@@ -143,14 +148,14 @@ public class Manager {
         this.memberAccountId = memberAccountId;
     }
 
-//    public List<String> getServices() {
-//        return services;
-//    }
-//
-//    public void setServices(List<String> services) {
-//        this.services = services;
-//    }
-//
+    public List<String> getServices() {
+        return services;
+    }
+
+    public void setServices(List<String> services) {
+        this.services = services;
+    }
+
 //    public List<ServiceBooking> getServicesBooking() {
 //        return servicesBooking;
 //    }
