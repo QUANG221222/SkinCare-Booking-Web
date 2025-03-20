@@ -6,11 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class Staff {
+public class Manager {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, unique = true)
+
     private Long id;
 
     @Column(name = "email", nullable = false, unique = true)
@@ -19,27 +20,37 @@ public class Staff {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "staff_name", nullable = false, unique = true)
-    private String staffName;
+    @Column(name = "manager_name", nullable = false, unique = true)
+    private String managerName;
 
     @Column(name = "display_name")
     private String displayName;
 
     @Column(name = "role", nullable = false)
-    private String role = "Staff";
+    private String role = "Manager";
 
     @ElementCollection
-    @CollectionTable(name = "staff_members")
-    @Column(name = "member_id")
-    private List<String> member = new ArrayList<>();
+    @CollectionTable(name = "manager_staff")
+    @Column(name = "staff_id")
+    private List<String> staff = new ArrayList<>();
 
     @ElementCollection
-    @CollectionTable(name = "staff_therapists")
+    @CollectionTable(name = "manager_therapist")
     @Column(name = "therapist_id")
-    private List<String> therapist = new ArrayList<>();
+    private List<String> therapistId = new ArrayList<>();
+
+    @ElementCollection
+    @CollectionTable(name = "manager_member_account")
+    @Column(name = "member_account_id")
+    private List<String> memberAccountId = new ArrayList<>();
+
+//    @ElementCollection
+//    @CollectionTable(name = "manager_services")
+//    @Column(name = "services_id")
+//    private List<String> services = new ArrayList<>();
 
 //    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-//    @JoinColumn(name = "staff_id")
+//    @JoinColumn(name = "manager_id")
 //    private List<ServiceBooking> servicesBooking = new ArrayList<>();
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
@@ -48,18 +59,15 @@ public class Staff {
     @Column(name = "updated_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime updateAt;
 
-    @Column(name = "fire", columnDefinition = "BOOLEAN DEFAULT FALSE")
-    private boolean fire = false;
-
     // Default Constructor
-    public Staff() {
+    public Manager() {
     }
 
     // Constructor with required fields
-    public Staff(String email, String password, String staffName) {
+    public Manager(String email, String password, String managerName) {
         this.email = email;
         this.password = password;
-        this.staffName = staffName;
+        this.managerName = managerName;
     }
 
     // Getters and Setters
@@ -87,12 +95,12 @@ public class Staff {
         this.password = password;
     }
 
-    public String getStaffName() {
-        return staffName;
+    public String getManagerName() {
+        return managerName;
     }
 
-    public void setStaffName(String staffName) {
-        this.staffName = staffName;
+    public void setManagerName(String managerName) {
+        this.managerName = managerName;
     }
 
     public String getDisplayName() {
@@ -111,22 +119,38 @@ public class Staff {
         this.role = role;
     }
 
-    public List<String> getMember() {
-        return member;
+    public List<String> getStaff() {
+        return staff;
     }
 
-    public void setMember(List<String> member) {
-        this.member = member;
+    public void setStaff(List<String> staff) {
+        this.staff = staff;
     }
 
-    public List<String> getTherapist() {
-        return therapist;
+    public List<String> getTherapistId() {
+        return therapistId;
     }
 
-    public void setTherapist(List<String> therapist) {
-        this.therapist = therapist;
+    public void setTherapistId(List<String> therapistId) {
+        this.therapistId = therapistId;
     }
 
+    public List<String> getMemberAccountId() {
+        return memberAccountId;
+    }
+
+    public void setMemberAccountId(List<String> memberAccountId) {
+        this.memberAccountId = memberAccountId;
+    }
+
+//    public List<String> getServices() {
+//        return services;
+//    }
+//
+//    public void setServices(List<String> services) {
+//        this.services = services;
+//    }
+//
 //    public List<ServiceBooking> getServicesBooking() {
 //        return servicesBooking;
 //    }
@@ -149,13 +173,5 @@ public class Staff {
 
     public void setUpdateAt(LocalDateTime updateAt) {
         this.updateAt = updateAt;
-    }
-
-    public boolean isFire() {
-        return fire;
-    }
-
-    public void setFire(boolean fire) {
-        this.fire = fire;
     }
 }

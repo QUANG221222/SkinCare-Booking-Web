@@ -6,11 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class Staff {
+public class SkinTherapist {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, unique = true)
+
     private Long id;
 
     @Column(name = "email", nullable = false, unique = true)
@@ -19,27 +20,20 @@ public class Staff {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "staff_name", nullable = false, unique = true)
-    private String staffName;
+    @Column(name = "phone_number", nullable = false)
+    private String phoneNumber;
+
+    @Column(name = "therapist_name", nullable = false, unique = true)
+    private String therapistName;
 
     @Column(name = "display_name")
     private String displayName;
 
     @Column(name = "role", nullable = false)
-    private String role = "Staff";
-
-    @ElementCollection
-    @CollectionTable(name = "staff_members")
-    @Column(name = "member_id")
-    private List<String> member = new ArrayList<>();
-
-    @ElementCollection
-    @CollectionTable(name = "staff_therapists")
-    @Column(name = "therapist_id")
-    private List<String> therapist = new ArrayList<>();
+    private String role = "Therapist";
 
 //    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-//    @JoinColumn(name = "staff_id")
+//    @JoinColumn(name = "skin_therapist_id")
 //    private List<ServiceBooking> servicesBooking = new ArrayList<>();
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
@@ -48,18 +42,19 @@ public class Staff {
     @Column(name = "updated_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime updateAt;
 
-    @Column(name = "fire", columnDefinition = "BOOLEAN DEFAULT FALSE")
-    private boolean fire = false;
+    @Column(name = "working", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean working = false;
 
     // Default Constructor
-    public Staff() {
+    public SkinTherapist() {
     }
 
     // Constructor with required fields
-    public Staff(String email, String password, String staffName) {
+    public SkinTherapist(String email, String password, String phoneNumber, String therapistName) {
         this.email = email;
         this.password = password;
-        this.staffName = staffName;
+        this.phoneNumber = phoneNumber;
+        this.therapistName = therapistName;
     }
 
     // Getters and Setters
@@ -87,12 +82,20 @@ public class Staff {
         this.password = password;
     }
 
-    public String getStaffName() {
-        return staffName;
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
 
-    public void setStaffName(String staffName) {
-        this.staffName = staffName;
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getTherapistName() {
+        return therapistName;
+    }
+
+    public void setTherapistName(String therapistName) {
+        this.therapistName = therapistName;
     }
 
     public String getDisplayName() {
@@ -109,22 +112,6 @@ public class Staff {
 
     public void setRole(String role) {
         this.role = role;
-    }
-
-    public List<String> getMember() {
-        return member;
-    }
-
-    public void setMember(List<String> member) {
-        this.member = member;
-    }
-
-    public List<String> getTherapist() {
-        return therapist;
-    }
-
-    public void setTherapist(List<String> therapist) {
-        this.therapist = therapist;
     }
 
 //    public List<ServiceBooking> getServicesBooking() {
@@ -151,11 +138,11 @@ public class Staff {
         this.updateAt = updateAt;
     }
 
-    public boolean isFire() {
-        return fire;
+    public boolean isWorking() {
+        return working;
     }
 
-    public void setFire(boolean fire) {
-        this.fire = fire;
+    public void setWorking(boolean working) {
+        this.working = working;
     }
 }
