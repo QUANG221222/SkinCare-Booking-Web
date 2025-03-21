@@ -1,0 +1,54 @@
+<div th:fragment="modal" class="modal fade" id="bookingModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="bookingModalLable"></h1>
+<!--                <button type="button" class="btn-close border-0 bg-transparent" data-bs-dismiss="modal" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>-->
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="row g-3">
+                        <div class="col-12 col-sm-6 my-2">
+                            <input type="text" class="form-control form-control__modal border-0" placeholder="Your Name" style="height: 55px;">
+                        </div>
+                        <div class="col-12 col-sm-6 my-2">
+                            <input type="email" class="form-control form-control__modal border-0" placeholder="Your Email" style="height: 55px;">
+                        </div>
+                        <div class="col-12 col-sm-6 my-2">
+                            <input type="text" class="form-control form-control__modal border-0" placeholder="Your Phone" style="height: 55px;">
+                        </div>
+                        <div class="col-12 col-sm-6 my-2">
+                            <select class="form-select form-select__modal border-0" style="height: 55px;">
+                                <option selected>Choose Skin Therapist</option>
+                                <option value="1">Skin Therapist 1</option>
+                                <option value="2">Skin Therapist 2</option>
+                                <option value="3">Skin Therapist 3</option>
+                            </select>
+                        </div>
+                        <div class="col-12 col-sm-6 my-2">
+                            <div class="date" id="date" data-target-input="nearest">
+                                <input type="text"
+                                       class="form-control form-control__modal border-0 datetimepicker-input"
+                                       placeholder="Choose Date" data-target="#date" data-toggle="datetimepicker" style="height: 55px;">
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6 my-2">
+                            <div class="time" id="time" data-target-input="nearest">
+                                <input type="time"
+                                       class="form-control form-control__modal border-0 datetimepicker-input"
+                                       placeholder="Choose Time" style="height: 55px;">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <button class="btn btn-primary btn-modal w-100 py-3" type="submit">Book</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+<!--                <button type="button" class="btn btn-primary">Understood</button>-->
+            </div>
+        </div>
+    </div>
+</div>
