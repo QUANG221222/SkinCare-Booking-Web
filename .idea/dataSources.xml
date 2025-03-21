@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="skincare_booking@localhost" uuid="bab9c614-2996-4fef-ab39-c8519be9d2fa">
+    <data-source source="LOCAL" name="SkinCare_Booking@localhost" uuid="f725fc4b-20b9-4601-a310-79a673d06092">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
+      <remarks>Project Java Spring Boot2025</remarks>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
       <jdbc-url>jdbc:mysql://localhost:3307/skincare_booking</jdbc-url>
       <jdbc-additional-properties>
