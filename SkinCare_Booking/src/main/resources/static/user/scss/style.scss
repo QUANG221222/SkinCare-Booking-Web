@@ -47,7 +47,6 @@
 }
 
 /* :: 2.0 Import All CSS */
-
 @import 'static/user/css/bootstrap.min.css';
 @import 'static/user/css/classy-nav.css';
 @import 'static/user/css/owl.carousel.min.css';
@@ -56,6 +55,7 @@
 @import 'static/user/css/font-awesome.min.css';
 @import 'static/user/css/nice-select.css';
 @import 'static/user/css/travel-icon.css';
+
 
 /* :: 3.0 Base CSS */
 
@@ -1421,6 +1421,7 @@ img {
         text-align: center;
         margin-top: -145px;
         background-color: $white-color;
+
         @media #{$breakpoint-xs} {
             width: 90%;
             left: 5%;
