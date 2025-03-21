@@ -53,7 +53,8 @@
 
 body {
   font-family: "Roboto";
-  font-size: 14px; }
+  font-size: 14px;
+}
 
 h1,
 h2,
@@ -67,6 +68,18 @@ h6 {
 
 h2{
   font-family: "Playfair Display";
+  font-size: 53px;
+  font-weight: 700;
+  line-height: 68.9px;
+}
+
+.rooms-text__desc{
+  color: #fff;
+  font-family: "Playfair Display";
+  font-weight: 600;
+  letter-spacing: 1.9px;
+  line-height: 45.5px;
+  text-align: center;
 }
 
 p {
@@ -192,7 +205,7 @@ img {
     margin-bottom: 40px; }
   .section-heading h2 {
     font-size: 48px;
-    color: #363636; }
+    color: #5f3204; }
     @media only screen and (min-width: 992px) and (max-width: 1199px) {
       .section-heading h2 {
         font-size: 40px; } }
@@ -935,7 +948,7 @@ img {
     transform: translateX(-50%);
     z-index: 50; }
   .single-rooms-area:hover .rooms-text, .single-rooms-area:focus .rooms-text {
-    background-color: #000; }
+    background-color: rgba(0, 0, 0, 0.4); }
 
 .pagination-area {
   position: relative;
@@ -1560,6 +1573,87 @@ img {
     margin-bottom: 0; }
   .palatin-tabs-content .tab-content h6 {
     font-size: 18px; }
+
+  .date-picker{
+    border: none;
+    background: transparent;
+    width: 185px;
+    color: white;
+    font-size: 1.5rem;
+  }
+.date-picker::-webkit-calendar-picker-indicator {
+  filter: invert(1); /* Đổi màu icon thành trắng */
+  opacity: 0.8;
+}
+.date-picker:focus {
+  border-color: #007bff;
+  box-shadow: none;
+  background: transparent;
+}
+.feature-services{
+  object-fit: cover;
+  background-position: center center;
+}
+.form-select__modal {
+  display: block;
+  width: 100%;
+  padding: .375rem 2.25rem .375rem .75rem;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #8D8E92;
+  background-color: #fff;
+  /*background-image: url(data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e);*/
+  background-repeat: no-repeat;
+  background-position: right .75rem center;
+  background-size: 16px 12px;
+  border: 1px solid #C7DCFB;
+  border-radius: 8px;
+}
+.form-control__modal {
+  display: block;
+  width: 100%;
+  padding: .375rem .75rem;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #8D8E92;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #C7DCFB;
+  appearance: none;
+  border-radius: 8px;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+.btn-modal{
+  background-color: #b57a68;
+  border: none;
+}
+.btn-modal:hover{
+  background-color: #b57a68;
+  opacity: 0.7;
+}
+@media (min-width: 768px) and (max-width: 1199px) {
+  .date-picker{
+    font-size: 14px;
+    width: 150px;
+  }
+}
+@media (min-width: 576px) and (max-width: 767px) {
+  .date-picker{
+    transform: translate(-165.3px, 0px);
+    font-size: 18px;
+    width: 141px;
+  }
+}
+@media (max-width: 575px)
+{
+  .date-picker{
+    transform: translate(-102.3px, 0px);
+    font-size: 18px;
+    width: 141px;
+  }
+}
 
 /* ====== The End ====== */
 
