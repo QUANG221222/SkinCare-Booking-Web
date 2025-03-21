@@ -49,7 +49,7 @@ Hệ thống hỗ trợ 5 vai trò chính:
    ```
 2. Xây dựng dự án:
    ```bash
-   mvn clean install
+   ./mvnw clean install
    ```
 3. Khởi động ứng dụng bằng Docker:
    ```bash
