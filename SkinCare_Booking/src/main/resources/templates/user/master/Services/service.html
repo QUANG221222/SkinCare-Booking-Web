@@ -1,0 +1,18 @@
+<div th:fragment="service(price, title, desc, bgimg)" class="col-12 col-md-6 col-lg-4">
+    <div class="single-rooms-area wow fadeInUp" data-wow-delay="200ms">
+        <!-- Thumbnail -->
+        <div class="bg-thumbnail bg-img" th:style="'background-image: url(' + ${bgimg} + ');'"></div>
+        <!-- Price -->
+        <p class="price-from" th:text="${price}">Price Service</p>
+        <!-- Rooms Text -->
+        <div class="rooms-text">
+            <div class="line"></div>
+            <h4 th:text="${title}">Title Service</h4>
+            <p th:text="${desc}">Desc Service</p>
+        </div>
+        <!-- Book Room -->
+        <button type="button" class="book-room-btn btn palatin-btn" data-bs-toggle="modal" data-bs-target="#bookingModal" th:attr="data-title=${title}">
+            Book Now
+        </button>
+    </div>
+</div>
