@@ -26,3 +26,4 @@ public class Customer extends User {
     @OneToMany(mappedBy = "customer")
     private List<Feedback> feedbacks; // Danh sách phản hồi của khách hàng
 }
+

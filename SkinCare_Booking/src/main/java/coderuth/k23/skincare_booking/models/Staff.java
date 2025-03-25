@@ -5,7 +5,6 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import java.util.List;
 
-
 @Entity
 @Table(name = "staff")
 @Data
@@ -19,5 +18,5 @@ public class Staff extends User {
     @ToString.Exclude
     @OneToMany(mappedBy = "staff")
     private List<Appointment> appointments; // Danh sách lịch hẹn mà nhân viên quản lý
-
 }
+
