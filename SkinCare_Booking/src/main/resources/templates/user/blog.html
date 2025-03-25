@@ -24,73 +24,7 @@
     <!-- ##### Breadcumb Area End ##### -->
 
     <!-- ##### Book Now Area Start ##### -->
-    <div class="book-now-area">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-12 col-lg-10">
-                    <div class="book-now-form">
-                        <form action="#">
-                            <!-- Form Group -->
-                            <div class="form-group">
-                                <label for="select1">Check In</label>
-                                <select class="form-control" id="select1">
-                                  <option>19 June</option>
-                                  <option>20 June</option>
-                                  <option>21 June</option>
-                                  <option>22 June</option>
-                                  <option>23 June</option>
-                                  <option>24 June</option>
-                                  <option>25 June</option>
-                                </select>
-                            </div>
-
-                            <!-- Form Group -->
-                            <div class="form-group">
-                                <label for="select2">Check Out</label>
-                                <select class="form-control" id="select2">
-                                  <option>20 June</option>
-                                  <option>21 June</option>
-                                  <option>22 June</option>
-                                  <option>23 June</option>
-                                  <option>24 June</option>
-                                  <option>25 June</option>
-                                  <option>26 June</option>
-                                  <option>27 June</option>
-                                </select>
-                            </div>
-
-                            <!-- Form Group -->
-                            <div class="form-group">
-                                <label for="select3">Adults</label>
-                                <select class="form-control" id="select3">
-                                  <option>02</option>
-                                  <option>03</option>
-                                  <option>04</option>
-                                  <option>05</option>
-                                  <option>06</option>
-                                </select>
-                            </div>
-
-                            <!-- Form Group -->
-                            <div class="form-group">
-                                <label for="select4">Childrens</label>
-                                <select class="form-control" id="select4">
-                                  <option>01</option>
-                                  <option>02</option>
-                                  <option>03</option>
-                                  <option>04</option>
-                                  <option>05</option>
-                                </select>
-                            </div>
-
-                            <!-- Button -->
-                            <button type="submit">Book Now</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div th:replace="user/master/fragments/book-now:: book-now"></div>
     <!-- ##### Book Now Area End ##### -->
 
     <!-- ##### Blog Area Start ##### -->
@@ -111,7 +45,7 @@
                                 <!-- Post Date-->
                                 <a href="#" class="post-date btn palatin-btn">June 25, 2018</a>
                                 <!-- Post Title -->
-                                <a href="#" class="post-title">The program for the Summer of 2018</a>
+                                <a href="#" class="post-title">Sun-Kissed Radiance: Achieve Dewy Skin Under the Summer Heat</a>
                                 <!-- Post Meta -->
                                 <div class="post-meta d-flex justify-content-center">
                                     <!-- Catagory -->
@@ -120,7 +54,7 @@
                                     <a href="#" class="post-comments">3 comments</a>
                                 </div>
                                 <!-- Post Excerpt -->
-                                <p>Donec malesuada lorem maximus mauris sceleri sque, at rutrum nulla dictum. Ut ac ligula sapien. Suspendisse cursus faucibus finibus. Integer tempus ligula sem, id feugiat quam egestas et. Donec porttitor varius diam in vulputate. Fusce blandit consequat elit non egestas. Donec tortor odio, consectetur eu justo ut, auctor</p>
+                                <p>Summer's arrival brings sun-drenched days, and unique skincare challenges. This guide reveals the "golden" secrets to maintain your skin's vibrancy and dewy glow, despite the summer heat. From selecting the perfect sunscreen to mastering deep hydration techniques, we'll equip you with everything you need for healthy, glowing skin all season long.</p>
                             </div>
                         </div>
 
@@ -135,7 +69,7 @@
                                 <!-- Post Date-->
                                 <a href="#" class="post-date btn palatin-btn">June 25, 2018</a>
                                 <!-- Post Title -->
-                                <a href="#" class="post-title">June opening for our Pool Bar</a>
+                                <a href="#" class="post-title">Nature's Remedy: Exploring Natural Ingredients for Radiant Skin</a>
                                 <!-- Post Meta -->
                                 <div class="post-meta d-flex justify-content-center">
                                     <!-- Catagory -->
@@ -144,7 +78,7 @@
                                     <a href="#" class="post-comments">3 comments</a>
                                 </div>
                                 <!-- Post Excerpt -->
-                                <p>Donec malesuada lorem maximus mauris sceleri sque, at rutrum nulla dictum. Ut ac ligula sapien. Suspendisse cursus faucibus finibus. Integer tempus ligula sem, id feugiat quam egestas et. Donec porttitor varius diam in vulputate. Fusce blandit consequat elit non egestas. Donec tortor odio, consectetur eu justo ut, auctor</p>
+                                <p>Did you know that nature holds countless beauty secrets? In this blog, we unveil the powerful benefits of natural ingredients for nourishing and rejuvenating your skin. From honey and aloe vera to coconut oil, we'll guide you in creating safe and effective skincare routines that highlight your natural beauty from the inside out.</p>
                             </div>
                         </div>
 
@@ -159,7 +93,7 @@
                                 <!-- Post Date-->
                                 <a href="#" class="post-date btn palatin-btn">June 25, 2018</a>
                                 <!-- Post Title -->
-                                <a href="#" class="post-title">3 Tip for the perfect vacation</a>
+                                <a href="#" class="post-title">Beauty Forward: An Honest Look at the Newest Skincare Treatments</a>
                                 <!-- Post Meta -->
                                 <div class="post-meta d-flex justify-content-center">
                                     <!-- Catagory -->
@@ -168,67 +102,20 @@
                                     <a href="#" class="post-comments">3 comments</a>
                                 </div>
                                 <!-- Post Excerpt -->
-                                <p>Donec malesuada lorem maximus mauris sceleri sque, at rutrum nulla dictum. Ut ac ligula sapien. Suspendisse cursus faucibus finibus. Integer tempus ligula sem, id feugiat quam egestas et. Donec porttitor varius diam in vulputate. Fusce blandit consequat elit non egestas. Donec tortor odio, consectetur eu justo ut, auctor</p>
+                                <p>The beauty industry is constantly evolving, introducing cutting-edge skincare techniques and treatments. In this blog, we'll explore the latest advancements, from laser technology and light therapy to groundbreaking serums and moisturizers.  We’ll analyze, review, and offer expert advice to help you find the best solutions for your unique skincare needs.</p>
                             </div>
                         </div>
 
                     </div>
                 </div>
 
-                <div class="col-12">
-                    <div class="load-more-btn text-center wow fadeInUp" data-wow-delay="700ms">
-                        <a href="#" class="btn palatin-btn">Load More</a>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
     <!-- ##### Blog Area End ##### -->
 
     <!-- ##### Footer Area Start ##### -->
-    <footer class="footer-area">
-        <div class="container">
-            <div class="row">
-
-                <!-- Footer Widget Area -->
-                <div class="col-12 col-lg-5">
-                    <div class="footer-widget-area mt-50">
-                        <a href="#" class="d-block mb-5"><img src="/user/img/core-img/logo.png" alt=""></a>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec malesuada lorem maximus mauris sceleri sque, at rutrum nulla dictum. Ut ac ligula sapien. Suspendisse cursus faucibus finibus. </p>
-                    </div>
-                </div>
-
-                <!-- Footer Widget Area -->
-                <div class="col-12 col-md-6 col-lg-4">
-                    <div class="footer-widget-area mt-50">
-                        <h6 class="widget-title mb-5">Find us on the map</h6>
-                        <img src="/user/img/bg-img/footer-map.png" alt="">
-                    </div>
-                </div>
-
-                <!-- Footer Widget Area -->
-                <div class="col-12 col-md-6 col-lg-3">
-                    <div class="footer-widget-area mt-50">
-                        <h6 class="widget-title mb-5">Subscribe to our newsletter</h6>
-                        <form action="#" method="post" class="subscribe-form">
-                            <input type="email" name="subscribe-email" id="subscribeemail" placeholder="Your E-mail">
-                            <button type="submit">Subscribe</button>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Copywrite Text -->
-                <div class="col-12">
-                    <div class="copywrite-text mt-30">
-                        <p><a href="#"><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-            Copyright &copy;<script>document.write(new Date().getFullYear());</script>
-                            All rights reserved | This template is made with <i class="fa fa-heart-o" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
-<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
+    <div th:replace="user/master/fragments/footer:: footer"></div>
     <!-- ##### Footer Area End ##### -->
 
     <!-- ##### All Javascript Script ##### -->
