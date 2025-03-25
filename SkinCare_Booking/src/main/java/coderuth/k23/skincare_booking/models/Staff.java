@@ -1,9 +1,7 @@
 package coderuth.k23.skincare_booking.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.*;
-import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import java.util.List;
 
@@ -14,8 +12,11 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
+@EqualsAndHashCode(callSuper = true)
 public class Staff extends User {
 
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     @OneToMany(mappedBy = "staff")
     private List<Appointment> appointments; // Danh sách lịch hẹn mà nhân viên quản lý
 

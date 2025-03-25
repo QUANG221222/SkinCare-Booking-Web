@@ -5,8 +5,6 @@ import lombok.experimental.SuperBuilder;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
-
-
 @MappedSuperclass // Class User này không tạo bảng, chỉ để các class con kế thừa
 @Data //sinh ra getter,setter
 @SuperBuilder
@@ -16,13 +14,11 @@ public abstract class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "User_id", nullable = false, unique = true)
     private Long id;
 
     @Column(name = "username", nullable = false, unique = true)
     private String username;
-
-    @Column(name = "user_id", nullable = false, unique = true)
-    private String userId;
 
     @Column(name = "password", nullable = false)
     private String password;
