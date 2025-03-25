@@ -18,5 +18,5 @@ public class Staff extends User {
     @ToString.Exclude
     @OneToMany(mappedBy = "staff")
     private List<Appointment> appointments; // Danh sách lịch hẹn mà nhân viên quản lý
-
 }
+
