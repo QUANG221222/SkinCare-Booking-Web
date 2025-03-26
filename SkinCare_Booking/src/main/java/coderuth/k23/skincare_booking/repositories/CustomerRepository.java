@@ -11,6 +11,7 @@ import coderuth.k23.skincare_booking.models.Customer;
 public interface CustomerRepository extends JpaRepository<Customer, String> {
     Optional<Customer> findByUsername(String username);
     Optional<Customer> findByEmail(String email);
+    Optional<Customer> findByUsernameAndEmail(String username, String email);
 
     boolean existsByUsername(String username);
     boolean existsByEmail (String email);
