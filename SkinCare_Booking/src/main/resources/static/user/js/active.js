@@ -19,7 +19,6 @@
     if ($.fn.niceSelect) {
         $('select').niceSelect();
     }
-
     // :: 4.0 Sliders Active Code
     if ($.fn.owlCarousel) {
         var welcomeSlide = $('.hero-slides');
@@ -162,5 +161,17 @@
     if (browserWindow.width() > 767) {
         new WOW().init();
     }
+
+    // Date and time picker
+    // $('.time').datetimepicker({
+    //     format: 'LT'
+    // });
+    $('.time').datetimepicker({
+        format: "HH:MM"
+    });
+    $('.date').datetimepicker({
+        // format: 'L',
+        format: "DD/MM/YYYY",
+    });
 
 })(jQuery);
