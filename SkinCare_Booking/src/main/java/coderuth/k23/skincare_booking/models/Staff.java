@@ -5,6 +5,8 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "staff")
 @Data
@@ -16,6 +18,7 @@ public class Staff extends User {
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
+    @JsonIgnore // Tránh vòng lặp khi gọi API
     @OneToMany(mappedBy = "staff")
     private List<Appointment> appointments; // Danh sách lịch hẹn mà nhân viên quản lý
 }
