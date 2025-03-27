@@ -23,11 +23,11 @@ public class AuthExceptionHandler {
                 .body(ApiResponse.error("Authentication error: " + e.getMessage()));
     }
 
-//    @ExceptionHandler(TokenRefreshException.class)
-//    public ResponseEntity<ApiResponse<Void>> handleTokenRefreshException(TokenRefreshException e) {
-//        return ResponseEntity.status(HttpStatus.FORBIDDEN)
-//                .body(ApiResponse.error(e.getMessage()));
-//    }
+    @ExceptionHandler(TokenRefreshException.class)
+    public ResponseEntity<ApiResponse<Void>> handleTokenRefreshException(TokenRefreshException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(ApiResponse.error(e.getMessage()));
+    }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiResponse<Void>> handleIllegalArgumentException(IllegalArgumentException e) {

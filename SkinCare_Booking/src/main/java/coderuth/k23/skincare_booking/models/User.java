@@ -1,9 +1,11 @@
 package coderuth.k23.skincare_booking.models;
 
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @MappedSuperclass // Class User này không tạo bảng, chỉ để các class con kế thừa
 @Data //sinh ra getter,setter
@@ -13,9 +15,9 @@ import java.time.LocalDateTime;
 public abstract class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "User_id", nullable = false, unique = true)
-    private Long id;
+    private UUID id;
 
     @Column(name = "username", nullable = false, unique = true)
     private String username;
@@ -35,8 +37,16 @@ public abstract class User {
     @Column(name = "location")
     private String location;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "role")
-    private String role;
+    private Role role;
+
+    public enum Role {
+        ROLE_CUSTOMER,
+        ROLE_MANAGER,
+        ROLE_STAFF,
+        ROLE_THERAPIST
+    }
 
 //    @Enumerated(EnumType.STRING)
 //    @Column(name = "role")
