@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/feedbacks")
 public class FeedbackController {
@@ -21,6 +23,12 @@ public class FeedbackController {
         feedbackService.createFeedback(feedbackDTO);
         return ResponseEntity.ok(ApiResponse.success("Feedback successfully"));
 
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<FeedbackDTO>>> getFeedbacksByUsername(@RequestParam String username) {
+        List<FeedbackDTO> feedbacks = feedbackService.getFeedbacksByUsername(username);
+        return ResponseEntity.ok(ApiResponse.success("Feedbacks retrieved successfully", feedbacks));
     }
 
 
