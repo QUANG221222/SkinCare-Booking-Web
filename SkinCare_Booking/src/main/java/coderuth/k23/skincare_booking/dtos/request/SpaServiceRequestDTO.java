@@ -20,4 +20,8 @@ public class SpaServiceRequestDTO {
     @Positive(message = "Duration must be positive")
     @Max(value = 1440, message = "Duration cannot exceed 24 hours (1440 minutes)")
     private int duration;
-}
+
+    public void map(Object spaServiceFound) {
+
+    }
+    }
