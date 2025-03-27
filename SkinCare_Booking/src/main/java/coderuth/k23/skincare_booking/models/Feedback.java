@@ -34,7 +34,7 @@ public class Feedback {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @ManyToOne
-    @JoinColumn(name = "spa_service_id", nullable = false)
+    @JoinColumn(name = "spa_service_id")
     private SpaService spaService; // Dịch vụ được đánh giá
 
     @EqualsAndHashCode.Exclude
