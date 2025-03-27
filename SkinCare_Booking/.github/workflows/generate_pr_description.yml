@@ -1,0 +1,138 @@
+name: Generate Pull Request Description
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  pull-requests: write
+  contents: read
+  issues: write
+  repository-projects: read
+
+jobs:
+  generate_description:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Needed to get all commit history
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: pip install google-generativeai
+
+      - name: Get Pull Request Information
+        id: pr_info
+        run: |
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+          BASE_BRANCH="${{ github.event.pull_request.base.ref }}"
+          HEAD_BRANCH="${{ github.event.pull_request.head.ref }}"
+          echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_OUTPUT
+          echo "BASE_BRANCH=$BASE_BRANCH" >> $GITHUB_OUTPUT
+          echo "HEAD_BRANCH=$HEAD_BRANCH" >> $GITHUB_OUTPUT
+
+      - name: Get Commit Messages
+        id: commit_messages
+        run: |
+          git fetch origin ${{ github.event.pull_request.base.ref }} ${{ github.event.pull_request.head.ref }}
+          COMMIT_MESSAGES=$(git log --pretty=format:"%s" origin/${{ github.event.pull_request.base.ref }}...origin/${{ github.event.pull_request.head.ref }})
+          echo "COMMIT_MESSAGES<<EOF" >> $GITHUB_OUTPUT
+          echo "$COMMIT_MESSAGES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Get Code Changes (Diff)
+        id: diff
+        run: |
+          DIFF=$(git diff origin/${{ github.event.pull_request.base.ref }} origin/${{ github.event.pull_request.head.ref }})
+          echo "DIFF<<EOF" >> $GITHUB_OUTPUT
+          echo "$DIFF" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create Python Script
+        run: |
+          cat > generate_description.py << 'EOL'
+          import os
+          import google.generativeai as genai
+          import sys
+          import re
+
+          # Configure Gemini AI with the updated model
+          GOOGLE_API_KEY = os.environ.get("GEMINI_API_KEY")
+          genai.configure(api_key=GOOGLE_API_KEY)
+
+          # Use Gemini 2.0 Flash model
+          model = genai.GenerativeModel('gemini-2.0-flash')
+
+          # Get the input data from environment variables
+          commit_messages = os.environ.get("COMMIT_MESSAGES")
+          diff = os.environ.get("DIFF")
+
+          # Construct the prompt
+          prompt = f"""
+          Please generate a professional and concise pull request description based on the following information.
+          Write the description IN VIETNAMESE:
+
+          Commit Messages:
+          {commit_messages}
+
+          Code Changes (Diff):
+          {diff}
+
+          Focus on summarizing the key changes, their purpose, and any important context.
+          Do not include any sensitive information or details that are not relevant to the pull request.
+          Do not wrap the entire description in triple backticks (```).
+          Do not start or end your response with triple backticks.
+          Ensure your entire response is in Vietnamese with proper Vietnamese diacritical marks.
+          Use a professional tone suitable for a development team.
+          Include a pull request title, a brief description and a detailed description of the changes.
+          """
+
+          # Generate the description
+          try:
+              response = model.generate_content(prompt)
+              generated_description = response.text
+              
+              # Remove leading and trailing triple backticks if present
+              generated_description = re.sub(r'^```.*?\n', '', generated_description, flags=re.DOTALL)
+              generated_description = re.sub(r'\n```\s*$', '', generated_description)
+              
+              # Save the clean description to a file for later use
+              with open('pr_description.txt', 'w') as f:
+                  f.write(generated_description)
+              
+              print("Successfully generated PR description in Vietnamese using Gemini 2.0 Flash")
+          except Exception as e:
+              print(f"Error generating description: {e}", file=sys.stderr)
+              sys.exit(1)
+          EOL
+
+      - name: Generate Description with Gemini AI
+        id: gemini_description
+        run: python generate_description.py
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          COMMIT_MESSAGES: ${{ steps.commit_messages.outputs.COMMIT_MESSAGES }}
+          DIFF: ${{ steps.diff.outputs.DIFF }}
+
+      - name: Update Pull Request Description
+        run: |
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+
+          # Use the GitHub REST API directly via curl instead of the GitHub CLI
+          curl -X PATCH \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER" \
+            -d @- << EOF
+          {
+            "body": $(cat pr_description.txt | jq -R -s '.')
+          }
+          EOF
