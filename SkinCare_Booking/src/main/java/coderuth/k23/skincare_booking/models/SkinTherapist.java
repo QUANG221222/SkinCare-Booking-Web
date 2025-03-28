@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.experimental.SuperBuilder;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -21,6 +23,7 @@ public class SkinTherapist extends User {
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
+    @JsonIgnore // Tránh vòng lặp khi gọi API
     @OneToMany(mappedBy = "skinTherapist")
     private List<Appointment> appointments; // Danh sách lịch hẹn của chuyên viên
 

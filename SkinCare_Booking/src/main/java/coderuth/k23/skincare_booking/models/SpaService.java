@@ -4,6 +4,8 @@ import lombok.*;
 import jakarta.persistence.*;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "spa_services")
 @Data
@@ -33,6 +35,7 @@ public class SpaService {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     //Vì Spa là dịch vụ được đặt trong lịch hẹn -> thêm quan hệ @OneToMany với Appointment
+    @JsonIgnore // Tránh vòng lặp khi gọi API
     @OneToMany(mappedBy = "spaService")
     private List<Appointment> appointments; // Danh sách lịch hẹn liên quan đến dịch vụ
 
