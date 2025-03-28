@@ -19,6 +19,9 @@ public class Feedback {
     @Column(name = "rating", nullable = false)
     private byte rating; // Điểm đánh giá (ví dụ: 1-5)
 
+    @Column(name = "subject")
+    private String subject;
+
     @Column(name = "comment")
     private String comment; // Nội dung phản hồi
 
@@ -31,7 +34,7 @@ public class Feedback {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @ManyToOne
-    @JoinColumn(name = "spa_service_id", nullable = false)
+    @JoinColumn(name = "spa_service_id")
     private SpaService spaService; // Dịch vụ được đánh giá
 
     @EqualsAndHashCode.Exclude
