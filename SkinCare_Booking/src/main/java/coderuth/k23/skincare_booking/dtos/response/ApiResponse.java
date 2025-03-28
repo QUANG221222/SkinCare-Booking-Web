@@ -30,6 +30,9 @@ public class ApiResponse<T> {
         return new ApiResponse<>(true, message);
     }
 
+    public static <T> ApiResponse<T> created(String message) {
+            return new ApiResponse<>(true, message);
+        }
     public static <T> ApiResponse<T> error(String message) {
         return new ApiResponse<>(false, message);
     }

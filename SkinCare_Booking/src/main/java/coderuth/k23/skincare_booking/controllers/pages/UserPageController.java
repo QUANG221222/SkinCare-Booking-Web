@@ -1,4 +1,4 @@
-package coderuth.k23.skincare_booking.controllers;
+package coderuth.k23.skincare_booking.controllers.pages;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

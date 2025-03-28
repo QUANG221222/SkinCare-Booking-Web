@@ -1,8 +1,11 @@
 package coderuth.k23.skincare_booking.controllers;
 
+import coderuth.k23.skincare_booking.dtos.response.ApiResponse;
 import coderuth.k23.skincare_booking.models.Appointment;
 import coderuth.k23.skincare_booking.services.AppointmentService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,8 +30,9 @@ public class AppointmentController {
   }
 
   @PostMapping
-  public Appointment createAppointment(@RequestBody Appointment appointment) {
-    return appointmentService.createAppointment(appointment);
+  public ResponseEntity<ApiResponse<Void>> createAppointment(@Valid @RequestBody Appointment appointment) {
+    appointmentService.createAppointment(appointment);
+    return ResponseEntity.ok(ApiResponse.success("You book successfully"));
   }
 
   @PutMapping("/{id}")

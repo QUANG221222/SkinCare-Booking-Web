@@ -11,6 +11,6 @@ public class UserInfoResponse {
     private UUID id;
     private String username;
     private String email;
-    private String token;
+//    private String token; // token is restored in HTTPOnly cookie, to prevent "Cross-site scripting (XSS)"
     private String role;
 }
