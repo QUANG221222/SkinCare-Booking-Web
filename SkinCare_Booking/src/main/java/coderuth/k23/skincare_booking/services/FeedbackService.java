@@ -56,6 +56,24 @@ public class FeedbackService {
                 .collect(Collectors.toList());
     }
 
+    public void updateFeedback(Long id, FeedbackRequest feedbackRequest) {
+        // Tìm Feedback theo id
+        Feedback feedback = feedBackRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Feedback not found with id: " + id));
+
+        // Tìm Customer dựa trên username và email
+        Customer customer = customerRepository.findByUsernameAndEmail(feedbackRequest.getUsername(), feedbackRequest.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("Customer not found"));
+
+        // Cập nhật các trường của Feedback
+        feedback.setSubject(feedbackRequest.getSubject());
+        feedback.setComment(feedbackRequest.getMessage());
+        feedback.setCustomer(customer);
+
+        // Lưu Feedback đã cập nhật
+        feedBackRepository.save(feedback);
+    }
+
     // Chuyển đổi từ Feedback sang FeedbackDTO
     private FeedbackRequest convertToDTO(Feedback feedback) {
         FeedbackRequest dto = new FeedbackRequest();
@@ -65,4 +83,5 @@ public class FeedbackService {
         dto.setMessage(feedback.getComment());
         return dto;
     }
+
 }

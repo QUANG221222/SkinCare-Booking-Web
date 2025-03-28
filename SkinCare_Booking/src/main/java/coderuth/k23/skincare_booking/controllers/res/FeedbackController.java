@@ -24,11 +24,6 @@ public class FeedbackController {
 
     }
 
-//    @GetMapping
-//    public ResponseEntity<ApiResponse<List<FeedbackRequest>>> getFeedbacksByUsername(@RequestParam String username) {
-//        List<FeedbackRequest> feedbacks = feedbackService.getFeedbacksByUsername(username);
-//        return ResponseEntity.ok(ApiResponse.success("Feedbacks retrieved successfully", feedbacks));
-//    }
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<FeedbackRequest>>> getFeedbacksByUsername(
@@ -41,6 +36,14 @@ public class FeedbackController {
             feedbacks = feedbackService.getAllFeedbacks();
         }
         return ResponseEntity.ok(ApiResponse.success("Feedbacks retrieved successfully", feedbacks));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> updateFeedback(
+            @PathVariable Long id,
+            @Valid @RequestBody FeedbackRequest feedbackRequest) {
+        feedbackService.updateFeedback(id, feedbackRequest);
+        return ResponseEntity.ok(ApiResponse.success("Feedback updated successfully"));
     }
 
 }
