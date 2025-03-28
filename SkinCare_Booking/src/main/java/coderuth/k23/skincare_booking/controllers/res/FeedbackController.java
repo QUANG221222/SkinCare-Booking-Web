@@ -1,7 +1,6 @@
 package coderuth.k23.skincare_booking.controllers.res;
 
-import coderuth.k23.skincare_booking.dtos.request.FeedbackDTO;
-import coderuth.k23.skincare_booking.dtos.request.RegisterDTO;
+import coderuth.k23.skincare_booking.dtos.request.FeedbackRequest;
 import coderuth.k23.skincare_booking.dtos.response.ApiResponse;
 import coderuth.k23.skincare_booking.services.FeedbackService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,17 +18,29 @@ public class FeedbackController {
     private FeedbackService feedbackService;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<Void>> createFeedback(@Valid @RequestBody FeedbackDTO feedbackDTO) {
-        feedbackService.createFeedback(feedbackDTO);
+    public ResponseEntity<ApiResponse<Void>> createFeedback(@Valid @RequestBody FeedbackRequest feedbackRequest) {
+        feedbackService.createFeedback(feedbackRequest);
         return ResponseEntity.ok(ApiResponse.success("Feedback successfully"));
 
     }
 
+//    @GetMapping
+//    public ResponseEntity<ApiResponse<List<FeedbackRequest>>> getFeedbacksByUsername(@RequestParam String username) {
+//        List<FeedbackRequest> feedbacks = feedbackService.getFeedbacksByUsername(username);
+//        return ResponseEntity.ok(ApiResponse.success("Feedbacks retrieved successfully", feedbacks));
+//    }
+
     @GetMapping
-    public ResponseEntity<ApiResponse<List<FeedbackDTO>>> getFeedbacksByUsername(@RequestParam String username) {
-        List<FeedbackDTO> feedbacks = feedbackService.getFeedbacksByUsername(username);
+    public ResponseEntity<ApiResponse<List<FeedbackRequest>>> getFeedbacksByUsername(
+            @RequestParam(required = false) String username) {
+        List<FeedbackRequest> feedbacks;
+        if (username != null && !username.isEmpty()) {
+            feedbacks = feedbackService.getFeedbacksByUsername(username);
+        } else {
+            // Nếu không có username, lấy tất cả Feedback
+            feedbacks = feedbackService.getAllFeedbacks();
+        }
         return ResponseEntity.ok(ApiResponse.success("Feedbacks retrieved successfully", feedbacks));
     }
-
 
 }
