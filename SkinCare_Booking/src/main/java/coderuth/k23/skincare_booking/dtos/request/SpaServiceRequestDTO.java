@@ -9,6 +9,7 @@ public class SpaServiceRequestDTO {
     @Size(min = 2, max = 100, message = "Service name must be between 2 and 100 characters")
     private String name;
 
+    @NotBlank(message = "Description is required")
     @Size(max = 500, message = "Description cannot exceed 500 characters")
     private String description;
 
@@ -21,7 +22,5 @@ public class SpaServiceRequestDTO {
     @Max(value = 1440, message = "Duration cannot exceed 24 hours (1440 minutes)")
     private int duration;
 
-    public void map(Object spaServiceFound) {
-
-    }
-    }
+    public void map(Object spaServiceFound) {}
+}
