@@ -2,6 +2,7 @@ package coderuth.k23.skincare_booking.services;
 
 import coderuth.k23.skincare_booking.models.RefreshToken;
 import coderuth.k23.skincare_booking.security.UserDetailsImpl;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -14,12 +15,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import coderuth.k23.skincare_booking.jwt.JwtUtil;
 import coderuth.k23.skincare_booking.dtos.request.LoginRequest;
 import coderuth.k23.skincare_booking.repositories.CustomerRepository;
-import coderuth.k23.skincare_booking.dtos.request.RegisterDTO;
+import coderuth.k23.skincare_booking.dtos.request.RegisterRequest;
 import coderuth.k23.skincare_booking.models.Customer;
 import coderuth.k23.skincare_booking.dtos.response.UserInfoResponse;
 
+import java.util.UUID;
+
 @Service
-public class CustomerService {
+public class AuthService {
    @Autowired
     private AuthenticationManager authenticationManager;
 
@@ -64,11 +67,10 @@ public class CustomerService {
                 userDetails.getId(),
                 userDetails.getUsername(),
                 userDetails.getEmail(),
-                accessToken,
                 userDetails.getAuthorities().stream().findFirst().get().getAuthority());
     }
 
-    public void registerUser(RegisterDTO registerRequest) {
+    public void registerCustomer(RegisterRequest registerRequest) {
         if(customerRepository.existsByEmail(registerRequest.getEmail())) {
             throw new IllegalArgumentException("Email is already in use");
         }
@@ -77,9 +79,9 @@ public class CustomerService {
             throw new IllegalArgumentException("Username is already taken");
         }
 
-        if(customerRepository.existsByPhone(registerRequest.getPhone())){
-            throw new IllegalArgumentException("Phone number is already in use");
-        }
+//        if(customerRepository.existsByPhone(registerRequest.getPhone())){
+//            throw new IllegalArgumentException("Phone number is already in use");
+//        }
 
         // Create new user account
         Customer customer = new Customer();
@@ -90,5 +92,53 @@ public class CustomerService {
         customer.setRole(Customer.Role.ROLE_CUSTOMER);//Default role
 
         customerRepository.save(customer);
+    }
+
+    public void refreshToken(HttpServletRequest request, HttpServletResponse response) {
+        String refreshToken = jwtUtil.getTokenFromCookies(request, "refreshToken");
+
+        if (refreshToken == null) {
+            throw new IllegalArgumentException("Refresh token is required");
+        }
+
+        // Validate refresh token and extract user ID
+        String userId = jwtUtil.getUserIdFromToken(refreshToken);
+        RefreshToken token = refreshTokenService.findByToken(refreshToken)
+                .orElseThrow(() -> new RuntimeException("Refresh token not found"));
+
+        refreshTokenService.verifyExpiration(token);
+
+        // Mark current refresh token as used
+        refreshTokenService.markTokenAsUsed(refreshToken);
+
+        // Generate new access token
+        Customer customer = customerRepository.findById(UUID.fromString(userId))
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        UserDetailsImpl userDetails = UserDetailsImpl.build(customer);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                userDetails, null, userDetails.getAuthorities());
+
+        String newAccessToken = jwtUtil.generateAccessToken(authentication);
+
+        // Add the new access token as HTTP-only cookie
+        jwtUtil.addAccessTokenCookie(response, newAccessToken);
+
+        // Generate new refresh token
+        RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(userId);
+
+        // Add the new refresh token as HTTP-only cookie
+        jwtUtil.addRefreshTokenCookie(response, newRefreshToken.getToken());
+    }
+
+    public void logoutUser(HttpServletRequest request, HttpServletResponse response) {
+        String refreshToken = jwtUtil.getTokenFromCookies(request, "refreshToken");
+
+        if (refreshToken != null) {
+            refreshTokenService.deleteByToken(refreshToken);
+        }
+
+        // Clear the cookies
+        jwtUtil.clearTokenCookies(response);
     }
 }

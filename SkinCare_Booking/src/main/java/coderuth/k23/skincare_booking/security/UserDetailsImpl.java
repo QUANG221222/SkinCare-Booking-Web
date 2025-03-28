@@ -19,7 +19,6 @@ public class UserDetailsImpl implements UserDetails {
     private UUID id;
     private String username;
     private String email;
-    private String token;
 
     @JsonIgnore
     private String password;
