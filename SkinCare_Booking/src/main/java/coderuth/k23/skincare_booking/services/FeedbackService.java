@@ -1,6 +1,7 @@
 package coderuth.k23.skincare_booking.services;
 
 import coderuth.k23.skincare_booking.dtos.request.FeedbackRequest;
+import coderuth.k23.skincare_booking.security.*;
 import coderuth.k23.skincare_booking.models.*;
 import coderuth.k23.skincare_booking.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,6 +74,27 @@ public class FeedbackService {
         // Lưu Feedback đã cập nhật
         feedBackRepository.save(feedback);
     }
+
+    // Delete Feedback
+    public void deleteFeedback(Long id, FeedbackRequest feedbackRequest) {
+        // Tìm Feedback theo id
+        Feedback feedback = feedBackRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Feedback not found with id: " + id));
+
+        // Tìm Customer dựa trên username và email
+        Customer customer = customerRepository.findByUsernameAndEmail(feedbackRequest.getUsername(), feedbackRequest.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("Customer not found"));
+
+        // Kiểm tra xem Feedback có thuộc về Customer này không
+        if (!feedback.getCustomer().getId().equals(customer.getId())) {
+            throw new IllegalArgumentException("You are not authorized to delete this feedback");
+        }
+
+        // Xóa Feedback
+        feedBackRepository.delete(feedback);
+    }
+
+
 
     // Chuyển đổi từ Feedback sang FeedbackDTO
     private FeedbackRequest convertToDTO(Feedback feedback) {
