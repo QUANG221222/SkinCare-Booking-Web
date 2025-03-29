@@ -22,6 +22,14 @@ public class AuthsController {
     @Autowired
     private AuthService authService;
 
+
+
+    @PostMapping("/manager/login")
+    public ResponseEntity<ApiResponse<UserInfoResponse>> authenticaAdmin(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+        UserInfoResponse userInfo = authService.authenticateManager(loginRequest, response);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("Admin authentication successful", userInfo));
+    }
+
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<UserInfoResponse>> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         UserInfoResponse userInfo = authService.authenticateCustomer(loginRequest, response);
@@ -32,6 +40,12 @@ public class AuthsController {
     public ResponseEntity<ApiResponse<Void>> registerCustomer(@Valid @RequestBody RegisterRequest registerRequest) {
         authService.registerCustomer(registerRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created("Register successfully"));
+    }
+
+    @PostMapping("/manager/register")
+    public ResponseEntity<ApiResponse<Void>> registerAdmin(@Valid @RequestBody RegisterRequest registerRequest) {
+        authService.registerManager(registerRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created("Admin registered successfully"));
     }
 
     @PostMapping("/refresh")

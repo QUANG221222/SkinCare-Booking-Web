@@ -1,6 +1,8 @@
 package coderuth.k23.skincare_booking.services;
 
+import coderuth.k23.skincare_booking.models.Manager;
 import coderuth.k23.skincare_booking.models.RefreshToken;
+import coderuth.k23.skincare_booking.models.User;
 import coderuth.k23.skincare_booking.security.UserDetailsImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,8 +20,8 @@ import coderuth.k23.skincare_booking.repositories.CustomerRepository;
 import coderuth.k23.skincare_booking.dtos.request.RegisterRequest;
 import coderuth.k23.skincare_booking.models.Customer;
 import coderuth.k23.skincare_booking.dtos.response.UserInfoResponse;
-
 import java.util.UUID;
+import coderuth.k23.skincare_booking.repositories.ManagerRepository;
 
 @Service
 public class AuthService {
@@ -38,6 +40,8 @@ public class AuthService {
     @Autowired
     private RefreshTokenService refreshTokenService;
 
+    @Autowired
+    private ManagerRepository managerRepository;
 //    @Override
 //    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 //        Customer user = customerRepository.findByUsername(username)
@@ -70,6 +74,38 @@ public class AuthService {
                 userDetails.getAuthorities().stream().findFirst().get().getAuthority());
     }
 
+    public UserInfoResponse authenticateManager(LoginRequest loginRequest, HttpServletResponse response) {
+        // Xác thực thông tin đăng nhập
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        loginRequest.getUsername(),
+                        loginRequest.getPassword()));
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+
+        // Kiểm tra vai trò của người dùng
+//        if (!userDetails.getAuthorities().stream()
+//                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"))) {
+//            throw new IllegalArgumentException("User is not an admin");
+//        }
+
+        // Tạo access token và refresh token
+        String accessToken = jwtUtil.generateAccessToken(authentication);
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(String.valueOf(userDetails.getId()));
+
+        // Thêm token vào cookie
+        jwtUtil.addAccessTokenCookie(response, accessToken);
+        jwtUtil.addRefreshTokenCookie(response, refreshToken.getToken());
+
+        // Trả về thông tin người dùng
+        return new UserInfoResponse(
+                userDetails.getId(),
+                userDetails.getUsername(),
+                userDetails.getEmail(),
+                userDetails.getAuthorities().stream().findFirst().get().getAuthority());
+    }
+
     public void registerCustomer(RegisterRequest registerRequest) {
         if(customerRepository.existsByEmail(registerRequest.getEmail())) {
             throw new IllegalArgumentException("Email is already in use");
@@ -92,6 +128,25 @@ public class AuthService {
         customer.setRole(Customer.Role.ROLE_CUSTOMER);//Default role
 
         customerRepository.save(customer);
+    }
+
+
+    public void registerManager(RegisterRequest registerRequest) {
+        if (managerRepository.existsByEmail(registerRequest.getEmail())) {
+            throw new IllegalArgumentException("Email is already in use");
+        }
+        if (managerRepository.existsByUsername(registerRequest.getUsername())) {
+            throw new IllegalArgumentException("Username is already taken");
+        }
+
+        Manager manager = new Manager();
+        manager.setEmail(registerRequest.getEmail());
+        manager.setUsername(registerRequest.getUsername());
+        manager.setPhone(registerRequest.getPhone());
+        manager.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+        manager.setRole(User.Role.ROLE_MANAGER); // Gán vai trò ADMIN
+
+        managerRepository.save(manager);
     }
 
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) {
