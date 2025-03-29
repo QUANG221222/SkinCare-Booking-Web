@@ -1,6 +1,6 @@
 package coderuth.k23.skincare_booking.services;
 
-import coderuth.k23.skincare_booking.dtos.request.FeedbackDTO;
+import coderuth.k23.skincare_booking.dtos.request.FeedbackRequest;
 import coderuth.k23.skincare_booking.models.*;
 import coderuth.k23.skincare_booking.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,15 +21,15 @@ public class FeedbackService {
     private SpaServiceRepository spaServiceRepository;
 
     // Create Feedback
-    public void createFeedback(FeedbackDTO feedbackDTO) {
+    public void createFeedback(FeedbackRequest feedbackRequest) {
 
-        Customer customer = customerRepository.findByUsernameAndEmail(feedbackDTO.getUsername(), feedbackDTO.getEmail())
+        Customer customer = customerRepository.findByUsernameAndEmail(feedbackRequest.getUsername(), feedbackRequest.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("Customer not found"));
 
 
         Feedback feedback = new Feedback();
-        feedback.setSubject(feedbackDTO.getSubject());
-        feedback.setComment(feedbackDTO.getMessage());
+        feedback.setSubject(feedbackRequest.getSubject());
+        feedback.setComment(feedbackRequest.getMessage());
         feedback.setCustomer(customer);
 
         // Lưu Feedback
@@ -37,7 +37,7 @@ public class FeedbackService {
     }
 
     // Read Feedbacks by Username
-    public List<FeedbackDTO> getFeedbacksByUsername(String username) {
+    public List<FeedbackRequest> getFeedbacksByUsername(String username) {
         // Tìm Customer dựa trên username
         Customer customer = customerRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("Customer not found with username: " + username));
@@ -49,13 +49,39 @@ public class FeedbackService {
         return feedbacks.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
+    // Trả về tất cả feedback
+    public List<FeedbackRequest> getAllFeedbacks() {
+        return feedBackRepository.findAll().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    public void updateFeedback(Long id, FeedbackRequest feedbackRequest) {
+        // Tìm Feedback theo id
+        Feedback feedback = feedBackRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Feedback not found with id: " + id));
+
+        // Tìm Customer dựa trên username và email
+        Customer customer = customerRepository.findByUsernameAndEmail(feedbackRequest.getUsername(), feedbackRequest.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("Customer not found"));
+
+        // Cập nhật các trường của Feedback
+        feedback.setSubject(feedbackRequest.getSubject());
+        feedback.setComment(feedbackRequest.getMessage());
+        feedback.setCustomer(customer);
+
+        // Lưu Feedback đã cập nhật
+        feedBackRepository.save(feedback);
+    }
+
     // Chuyển đổi từ Feedback sang FeedbackDTO
-    private FeedbackDTO convertToDTO(Feedback feedback) {
-        FeedbackDTO dto = new FeedbackDTO();
+    private FeedbackRequest convertToDTO(Feedback feedback) {
+        FeedbackRequest dto = new FeedbackRequest();
         dto.setUsername(feedback.getCustomer().getUsername());
         dto.setEmail(feedback.getCustomer().getEmail());
         dto.setSubject(feedback.getSubject());
         dto.setMessage(feedback.getComment());
         return dto;
     }
+
 }
