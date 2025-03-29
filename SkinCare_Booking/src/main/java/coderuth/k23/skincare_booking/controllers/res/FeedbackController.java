@@ -1,7 +1,6 @@
 package coderuth.k23.skincare_booking.controllers.res;
 
 import coderuth.k23.skincare_booking.dtos.request.FeedbackDTO;
-import coderuth.k23.skincare_booking.dtos.request.RegisterDTO;
 import coderuth.k23.skincare_booking.dtos.response.ApiResponse;
 import coderuth.k23.skincare_booking.services.FeedbackService;
 import org.springframework.beans.factory.annotation.Autowired;
