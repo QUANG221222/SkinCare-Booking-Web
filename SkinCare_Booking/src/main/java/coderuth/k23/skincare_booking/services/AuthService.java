@@ -32,6 +32,9 @@ public class AuthService {
     private CustomerRepository customerRepository;
 
     @Autowired
+    private ManagerRepository managerRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -39,7 +42,7 @@ public class AuthService {
 
     @Autowired
     private RefreshTokenService refreshTokenService;
-  
+
     public UserInfoResponse authenticateUser(LoginRequest loginRequest, HttpServletResponse response) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -61,38 +64,6 @@ public class AuthService {
                 userDetails.getUsername(),
                 userDetails.getEmail(),
                 userDetails.getUserType(),
-                userDetails.getAuthorities().stream().findFirst().get().getAuthority());
-    }
-
-    public UserInfoResponse authenticateManager(LoginRequest loginRequest, HttpServletResponse response) {
-        // Xác thực thông tin đăng nhập
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginRequest.getUsername(),
-                        loginRequest.getPassword()));
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-
-        // Kiểm tra vai trò của người dùng
-//        if (!userDetails.getAuthorities().stream()
-//                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"))) {
-//            throw new IllegalArgumentException("User is not an admin");
-//        }
-
-        // Tạo access token và refresh token
-        String accessToken = jwtUtil.generateAccessToken(authentication);
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(String.valueOf(userDetails.getId()));
-
-        // Thêm token vào cookie
-        jwtUtil.addAccessTokenCookie(response, accessToken);
-        jwtUtil.addRefreshTokenCookie(response, refreshToken.getToken());
-
-        // Trả về thông tin người dùng
-        return new UserInfoResponse(
-                userDetails.getId(),
-                userDetails.getUsername(),
-                userDetails.getEmail(),
                 userDetails.getAuthorities().stream().findFirst().get().getAuthority());
     }
 
@@ -130,7 +101,7 @@ public class AuthService {
         manager.setUsername(registerRequest.getUsername());
         manager.setPhone(registerRequest.getPhone());
         manager.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
-        manager.setRole(User.Role.ROLE_MANAGER); // Gán vai trò ADMIN
+        manager.setRole(Manager.Role.ROLE_MANAGER); // Gán vai trò ADMIN
 
         managerRepository.save(manager);
     }

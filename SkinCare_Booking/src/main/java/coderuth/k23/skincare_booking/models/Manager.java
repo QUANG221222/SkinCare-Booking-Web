@@ -18,6 +18,16 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Manager extends User {
 
+    @Builder.Default
+    private String userType = "MANAGER";
+
+    protected void onCreate() {
+        super.onCreate();
+        if (getRole() == null) {
+            setRole(Role.ROLE_MANAGER);
+        }
+    }
+
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @OneToMany(mappedBy = "manager")
