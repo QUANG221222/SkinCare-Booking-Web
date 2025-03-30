@@ -46,4 +46,10 @@ public class FeedbackController {
         return ResponseEntity.ok(ApiResponse.success("Feedback updated successfully"));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteFeedback(@PathVariable Long id, @Valid @RequestBody FeedbackRequest feedbackRequest) {
+        feedbackService.deleteFeedback(id, feedbackRequest);
+        return ResponseEntity.ok(ApiResponse.success("Feedback deleted successfully"));
+    }
+
 }
