@@ -1,12 +1,17 @@
 package coderuth.k23.skincare_booking.security;
 
-import coderuth.k23.skincare_booking.models.Customer;
+import coderuth.k23.skincare_booking.models.User;
 import coderuth.k23.skincare_booking.repositories.CustomerRepository;
+import coderuth.k23.skincare_booking.repositories.ManagerRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -14,11 +19,30 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private CustomerRepository customerRepository;
 
+    @Autowired
+    private ManagerRepository managerRepository;
+
+    // Add other repositories as needed
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Customer user = customerRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+        // Try to find the user in each repository
+        Optional<? extends User> user = customerRepository.findByUsername(username);
 
-        return UserDetailsImpl.build(user);
+        if (user.isEmpty()) {
+            user = managerRepository.findByUsername(username);
+        }
+
+        // Add additional repositories checks here
+        // if (user.isEmpty()) {
+        //     user = staffRepository.findByUsername(username);
+        // }
+
+        if (user.isEmpty()) {
+            throw new UsernameNotFoundException("User not found with username: " + username);
+        }
+
+        return UserDetailsImpl.build(user.get());
     }
+
 }

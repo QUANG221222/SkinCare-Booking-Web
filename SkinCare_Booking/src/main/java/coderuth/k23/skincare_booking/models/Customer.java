@@ -18,6 +18,18 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Customer extends User {
 
+    // Additional customer-specific fields
+
+    @Builder.Default
+    private String userType = "CUSTOMER";
+
+    protected void onCreate() {
+        super.onCreate();
+        if (getRole() == null) {
+            setRole(Role.ROLE_CUSTOMER);
+        }
+    }
+
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @JsonIgnore // Tránh vòng lặp khi gọi API

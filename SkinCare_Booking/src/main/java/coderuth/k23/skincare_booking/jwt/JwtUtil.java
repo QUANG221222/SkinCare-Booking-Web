@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 import coderuth.k23.skincare_booking.security.UserDetailsImpl;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -84,6 +85,15 @@ public class JwtUtil {
                 .getSubject();
     }
 
+    public String getUsernameFromToken(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("username", String.class);
+    }
+
     public String getTokenFromCookies(HttpServletRequest request, String cookieName) {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
@@ -95,6 +105,16 @@ public class JwtUtil {
         }
         return null;
     }
+
+//    public String getUsernameFromToken(String token) {
+//        Claims claims = Jwts.parserBuilder()
+//                .setSigningKey(getSigningKey())
+//                .build()
+//                .parseClaimsJws(token)
+//                .getBody();
+//
+//        return claims.getSubject();
+//    }
 
     public void clearTokenCookies(HttpServletResponse response) {
         Cookie accessCookie = new Cookie("accessToken", null);
@@ -114,7 +134,12 @@ public class JwtUtil {
     }
 
     public String extractUsername(String token) {
-        return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("username", String.class);
     }
 
     public boolean validateToken(String token) {
@@ -126,4 +151,6 @@ public class JwtUtil {
         }
         return false;
     }
+
+
 }

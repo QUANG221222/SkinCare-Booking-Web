@@ -58,6 +58,8 @@ public abstract class User {
     @Column(name = "updated_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime updatedAt;
 
+    private String userType;
+
     @PrePersist // sẽ được gọi khi 1 entity được lưu vào csdl đầu tiên.
     protected void onCreate() {
         createdAt = LocalDateTime.now();

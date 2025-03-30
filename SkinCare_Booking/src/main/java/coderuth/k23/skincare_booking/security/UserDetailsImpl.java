@@ -1,6 +1,7 @@
 package coderuth.k23.skincare_booking.security;
 
 import coderuth.k23.skincare_booking.models.Customer;
+import coderuth.k23.skincare_booking.models.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,25 +25,33 @@ public class UserDetailsImpl implements UserDetails {
     private String password;
 
     private Collection<? extends GrantedAuthority> authorities;
+    private String useType;
 
     public UserDetailsImpl(UUID id, String username, String email, String password,
-                           Collection<? extends GrantedAuthority> authorities) {
+                           Collection<? extends GrantedAuthority> authorities,  String useType) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.password = password;
+        this.useType = useType;
         this.authorities = authorities;
     }
 
-    public static UserDetailsImpl build(Customer customer) {
-        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(customer.getRole().name()));
+    public static UserDetailsImpl build(User user) {
+        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(user.getRole().name()));
 
         return new UserDetailsImpl(
-                customer.getId(),
-                customer.getUsername(),
-                customer.getEmail(),
-                customer.getPassword(),
-                authorities);
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getPassword(),
+                authorities,
+                user.getUserType()
+        );
+    }
+
+    public String getUserType() {
+        return useType;
     }
 
     public UUID getId() {
