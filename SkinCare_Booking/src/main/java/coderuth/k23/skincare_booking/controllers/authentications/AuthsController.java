@@ -2,12 +2,12 @@ package coderuth.k23.skincare_booking.controllers.authentications;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import jakarta.servlet.http.HttpServletRequest;
 
 import coderuth.k23.skincare_booking.services.AuthService;
 import coderuth.k23.skincare_booking.dtos.request.LoginRequest;
@@ -32,7 +32,7 @@ public class AuthsController {
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<UserInfoResponse>> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
-        UserInfoResponse userInfo = authService.authenticateCustomer(loginRequest, response);
+        UserInfoResponse userInfo = authService.authenticateUser(loginRequest, response);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("Authentication successful", userInfo));
     }
 

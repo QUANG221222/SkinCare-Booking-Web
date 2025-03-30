@@ -1,4 +1,4 @@
-package coderuth.k23.skincare_booking.controllers;
+package coderuth.k23.skincare_booking.controllers.res;
 
 import coderuth.k23.skincare_booking.dtos.response.ApiResponse;
 import coderuth.k23.skincare_booking.models.Appointment;

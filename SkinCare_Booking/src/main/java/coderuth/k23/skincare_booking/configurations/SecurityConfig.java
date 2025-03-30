@@ -13,18 +13,22 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import coderuth.k23.skincare_booking.security.JwtAuthenticationFilter;
 
 // import ut.edu.vn.dms.services.UserService;
 import coderuth.k23.skincare_booking.security.UserDetailsServiceImpl;
+import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    // @Autowired
-    // private UserService userService;
     @Autowired
     UserDetailsServiceImpl userDetailsService;
+
+    @Autowired
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
 
 
     @Bean
@@ -49,15 +53,25 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http
-                .csrf(csrf -> csrf.disable()) // Tắt CSRF
-//                .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/admin/**").hasRole("ADMIN") // Chỉ ADMIN mới truy cập được
-//                        .requestMatchers("/user/**").authenticated()   // User phải đăng nhập
-//                        .anyRequest().permitAll()                     // Các trang còn lại truy cập tự do
-//                )
-                // .userDetailsService(userService)
-                .build();
-    }
+        http
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        // Authorized
+                        .requestMatchers("/protected/customer/**").hasRole("CUSTOMER")
+                        .requestMatchers("/protected/manager/**").hasRole("MANAGER")
+                        .requestMatchers("/protected/staff/**").hasRole("STAFF")
+                        .requestMatchers("/protected/therapist/**").hasRole("THERAPIST")
 
+                        //Public
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/**").permitAll()
+
+                        .anyRequest().authenticated());
+
+        http.authenticationProvider(authenticationProvider());
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
+    }
 }

@@ -2,7 +2,7 @@ package coderuth.k23.skincare_booking.services;
 
 import coderuth.k23.skincare_booking.models.Manager;
 import coderuth.k23.skincare_booking.models.RefreshToken;
-import coderuth.k23.skincare_booking.models.User;
+import coderuth.k23.skincare_booking.repositories.UserBaseRepository;
 import coderuth.k23.skincare_booking.security.UserDetailsImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -39,19 +39,8 @@ public class AuthService {
 
     @Autowired
     private RefreshTokenService refreshTokenService;
-
-    @Autowired
-    private ManagerRepository managerRepository;
-//    @Override
-//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-//        Customer user = customerRepository.findByUsername(username)
-//                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-//        return new org.springframework.security.core.userdetails.User(
-//                user.getUsername(), user.getPassword(), Collections.singleton(new SimpleGrantedAuthority(user.getRole()))
-//        );
-//    }
-
-    public UserInfoResponse authenticateCustomer(LoginRequest loginRequest, HttpServletResponse response) {
+  
+    public UserInfoResponse authenticateUser(LoginRequest loginRequest, HttpServletResponse response) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getUsername(),
@@ -71,6 +60,7 @@ public class AuthService {
                 userDetails.getId(),
                 userDetails.getUsername(),
                 userDetails.getEmail(),
+                userDetails.getUserType(),
                 userDetails.getAuthorities().stream().findFirst().get().getAuthority());
     }
 
@@ -114,10 +104,6 @@ public class AuthService {
         if (customerRepository.existsByUsername(registerRequest.getUsername())) {
             throw new IllegalArgumentException("Username is already taken");
         }
-
-//        if(customerRepository.existsByPhone(registerRequest.getPhone())){
-//            throw new IllegalArgumentException("Phone number is already in use");
-//        }
 
         // Create new user account
         Customer customer = new Customer();
@@ -167,7 +153,7 @@ public class AuthService {
         refreshTokenService.markTokenAsUsed(refreshToken);
 
         // Generate new access token
-        Customer customer = customerRepository.findById(UUID.fromString(userId))
+        Customer customer = (Customer) customerRepository.findById(UUID.fromString(userId))
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         UserDetailsImpl userDetails = UserDetailsImpl.build(customer);

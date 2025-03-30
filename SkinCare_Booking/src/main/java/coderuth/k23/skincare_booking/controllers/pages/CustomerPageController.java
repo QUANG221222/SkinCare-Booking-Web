@@ -1,5 +1,6 @@
 package coderuth.k23.skincare_booking.controllers.pages;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -7,7 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
 //@GetMapping("/protected/user")
-public class UserPageController {
+public class CustomerPageController {
     @ModelAttribute("currentURI")
     public String currentURI(HttpServletRequest request) {
         return request.getRequestURI();
@@ -15,27 +16,32 @@ public class UserPageController {
 
 
     // Guest
-    @GetMapping("/")
+    @GetMapping("/protected/customer/")
+    @PreAuthorize("hasRole('CUSTOMER')")
     public String userHomePage() {
         return "user/index"; // Load file src/main/resources/templates/user/index.html
     }
 
-    @GetMapping("/about-us")
+    @GetMapping("/protected/customer/about-us")
+    @PreAuthorize("hasRole('CUSTOMER')")
     public String userAboutUsPage() {
         return "user/about-us";
     }
 
-    @GetMapping("/services")
+    @GetMapping("/protected/customer/services")
+    @PreAuthorize("hasRole('CUSTOMER')")
     public String userServicesPage() {
         return "user/services";
     }
 
-    @GetMapping("/contact")
+    @GetMapping("/protected/customer/contact")
+    @PreAuthorize("hasRole('CUSTOMER')")
     public String userContactPage() {
         return "user/contact";
     }
 
-    @GetMapping("/blog")
+    @GetMapping("/protected/customer/blog")
+    @PreAuthorize("hasRole('CUSTOMER')")
     public String userBlogPage() {
         return "user/blog";
     }
