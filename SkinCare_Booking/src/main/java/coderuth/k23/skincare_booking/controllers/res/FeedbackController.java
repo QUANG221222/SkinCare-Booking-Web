@@ -46,10 +46,27 @@ public class FeedbackController {
         return ResponseEntity.ok(ApiResponse.success("Feedback updated successfully"));
     }
 
+//    @DeleteMapping("/{id}")
+//    public ResponseEntity<ApiResponse<Void>> deleteFeedback(@PathVariable Long id, @Valid @RequestBody FeedbackRequest feedbackRequest) {
+//        feedbackService.deleteFeedback(id, feedbackRequest);
+//        return ResponseEntity.ok(ApiResponse.success("Feedback deleted successfully"));
+//    }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteFeedback(@PathVariable Long id, @Valid @RequestBody FeedbackRequest feedbackRequest) {
-        feedbackService.deleteFeedback(id, feedbackRequest);
-        return ResponseEntity.ok(ApiResponse.success("Feedback deleted successfully"));
+    public ResponseEntity<ApiResponse<Void>> deleteFeedback(
+            @PathVariable Long id,
+            @Valid @RequestBody FeedbackRequest feedbackRequest) {
+        try {
+            feedbackService.deleteFeedback(id, feedbackRequest);
+            return ResponseEntity.ok(ApiResponse.success("Feedback deleted successfully"));
+        } catch (IllegalArgumentException e) {
+            if (e.getMessage().contains("not found")) {
+                return ResponseEntity.status(404).body(ApiResponse.error(e.getMessage()));
+            } else if (e.getMessage().contains("not authorized")) {
+                return ResponseEntity.status(403).body(ApiResponse.error(e.getMessage()));
+            }
+            return ResponseEntity.status(400).body(ApiResponse.error(e.getMessage()));
+        }
     }
 
 }
