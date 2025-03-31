@@ -11,14 +11,15 @@ import java.util.Optional;
 
 @Repository
 public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
-//    List<Feedback> findByCustomer(Customer customer);
-
+    // Tìm tất cả Feedback của một Customer và chưa bị ẩn
     @Query("SELECT f FROM Feedback f WHERE f.customer = :customer AND f.isHidden = false")
     List<Feedback> findByCustomer(Customer customer);
 
+    // Tìm tất cả Feedback chưa bị ẩn.
     @Query("SELECT f FROM Feedback f WHERE f.isHidden = false")
     List<Feedback> findAllNotHidden();
 
+    // Tìm Feedback theo id và chưa bị ẩn.
     @Query("SELECT f FROM Feedback f WHERE f.Id = :id AND f.isHidden = false")
     Optional<Feedback> findByIdNotHidden(Long id);
 

@@ -26,8 +26,7 @@ public class FeedbackController {
 
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<FeedbackRequest>>> getFeedbacksByUsername(
-            @RequestParam(required = false) String username) {
+    public ResponseEntity<ApiResponse<List<FeedbackRequest>>> getFeedbacksByUsername(@RequestParam(required = false) String username) {
         List<FeedbackRequest> feedbacks;
         if (username != null && !username.isEmpty()) {
             feedbacks = feedbackService.getFeedbacksByUsername(username);
@@ -39,23 +38,13 @@ public class FeedbackController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> updateFeedback(
-            @PathVariable Long id,
-            @Valid @RequestBody FeedbackRequest feedbackRequest) {
+    public ResponseEntity<ApiResponse<Void>> updateFeedback(@PathVariable Long id, @Valid @RequestBody FeedbackRequest feedbackRequest) {
         feedbackService.updateFeedback(id, feedbackRequest);
         return ResponseEntity.ok(ApiResponse.success("Feedback updated successfully"));
     }
 
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<ApiResponse<Void>> deleteFeedback(@PathVariable Long id, @Valid @RequestBody FeedbackRequest feedbackRequest) {
-//        feedbackService.deleteFeedback(id, feedbackRequest);
-//        return ResponseEntity.ok(ApiResponse.success("Feedback deleted successfully"));
-//    }
-
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteFeedback(
-            @PathVariable Long id,
-            @Valid @RequestBody FeedbackRequest feedbackRequest) {
+    public ResponseEntity<ApiResponse<Void>> deleteFeedback(@PathVariable Long id, @Valid @RequestBody FeedbackRequest feedbackRequest) {
         try {
             feedbackService.deleteFeedback(id, feedbackRequest);
             return ResponseEntity.ok(ApiResponse.success("Feedback deleted successfully"));
@@ -69,4 +58,21 @@ public class FeedbackController {
         }
     }
 
+    @PostMapping("/{id}/unhide")
+    public ResponseEntity<ApiResponse<Void>> unhideFeedback(@PathVariable Long id, @Valid @RequestBody FeedbackRequest feedbackRequest) {
+        try {
+            feedbackService.unhideFeedback(id, feedbackRequest);
+            return ResponseEntity.ok(ApiResponse.success("Feedback unhidden successfully"));
+        } catch (IllegalArgumentException e) {
+            if (e.getMessage().contains("not found")) {
+                return ResponseEntity.status(404).body(ApiResponse.error(e.getMessage()));
+            } else if (e.getMessage().contains("Only managers")) {
+                return ResponseEntity.status(403).body(ApiResponse.error(e.getMessage()));
+            }
+            return ResponseEntity.status(400).body(ApiResponse.error(e.getMessage()));
+        }
+    }
 }
+
+
+
