@@ -51,6 +51,10 @@ public class Feedback {
     @JoinColumn(name = "manager_id")
     private Manager manager; // Quản lý giám sát phản hồi
 
+    @Column(name = "is_hidden")
+    private boolean isHidden = false; // Trường đánh dấu trạng thái xóa, mặc định là false
+
+
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
 
