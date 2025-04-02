@@ -10,6 +10,5 @@ import java.util.Optional;
 public interface StaffRepository extends UserBaseRepository<Staff> {
     // This class can be used to add manager-specific queries if needed in the future.
     // Currently, it inherits all methods from UserBaseRepository.
-    Optional<Staff> findByUsername(String username);
 
 }
