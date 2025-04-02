@@ -63,11 +63,16 @@ public class SecurityConfig {
                         .requestMatchers("/protected/staff/**").hasRole("STAFF")
                         .requestMatchers("/protected/therapist/**").hasRole("THERAPIST")
 
+                        .requestMatchers("/api/auth/manager/login").hasRole("MANAGER")
+
                         //Public
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/login").permitAll()
+                        .requestMatchers("/register/**").permitAll()
                         .requestMatchers("/**").permitAll()
 
-                        .anyRequest().authenticated());
+                        .anyRequest().authenticated()
+                );
 
         http.authenticationProvider(authenticationProvider());
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

@@ -1,10 +1,17 @@
 package coderuth.k23.skincare_booking.services;
 
+import coderuth.k23.skincare_booking.exception.InvalidTokenException;
+import coderuth.k23.skincare_booking.mailing.AccountVerificationEmailContext;
+import coderuth.k23.skincare_booking.mailing.EmailService;
 import coderuth.k23.skincare_booking.models.Manager;
 import coderuth.k23.skincare_booking.models.RefreshToken;
+import coderuth.k23.skincare_booking.models.SecureToken;
 import coderuth.k23.skincare_booking.repositories.UserBaseRepository;
 import coderuth.k23.skincare_booking.security.UserDetailsImpl;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,11 +27,22 @@ import coderuth.k23.skincare_booking.repositories.CustomerRepository;
 import coderuth.k23.skincare_booking.dtos.request.RegisterRequest;
 import coderuth.k23.skincare_booking.models.Customer;
 import coderuth.k23.skincare_booking.dtos.response.UserInfoResponse;
+
+import java.util.Objects;
 import java.util.UUID;
 import coderuth.k23.skincare_booking.repositories.ManagerRepository;
 
 @Service
 public class AuthService {
+    @Value("${site.base.url.https}")
+    private String baseUrl;
+
+    @Autowired
+    private SecureTokenService secureTokenService;
+
+    @Autowired
+    private EmailService emailService;
+
    @Autowired
     private AuthenticationManager authenticationManager;
 
@@ -68,12 +86,16 @@ public class AuthService {
     }
 
     public void registerCustomer(RegisterRequest registerRequest) {
+        if (customerRepository.existsByUsername(registerRequest.getUsername())) {
+            throw new IllegalArgumentException("Username is already taken");
+        }
+
         if(customerRepository.existsByEmail(registerRequest.getEmail())) {
             throw new IllegalArgumentException("Email is already in use");
         }
 
-        if (customerRepository.existsByUsername(registerRequest.getUsername())) {
-            throw new IllegalArgumentException("Username is already taken");
+        if (customerRepository.existsByPhone(registerRequest.getPhone())) {
+            throw new IllegalArgumentException("Phone is already in use");
         }
 
         // Create new user account
@@ -85,8 +107,48 @@ public class AuthService {
         customer.setRole(Customer.Role.ROLE_CUSTOMER);//Default role
 
         customerRepository.save(customer);
+        sendRegistrationConfirmationEmail(customer);
     }
 
+    public void sendRegistrationConfirmationEmail(Customer customer) {
+        // Đảm bảo customer đã được lưu trong database trước khi tạo token
+        if (customer.getId() == null) {
+            customer = customerRepository.save(customer);
+        }
+
+        SecureToken secureToken = secureTokenService.createToken(customer);
+        secureToken.setCustomer(customer);
+        secureTokenService.saveSecureToken(secureToken);
+
+        AccountVerificationEmailContext context = new AccountVerificationEmailContext();
+        context.init(customer);
+        context.setToken(secureToken.getToken());
+        context.buildVerificationUrl(baseUrl, secureToken.getToken());
+
+        try {
+            emailService.sendMail(context);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean verifyUser(String token) throws InvalidTokenException {
+        SecureToken secureToken = secureTokenService.findByToken(token);
+        if (Objects.isNull(token) || !StringUtils.equals(token, secureToken.getToken()) || secureToken.isExpired()) {
+            throw new InvalidTokenException("Token is not valid");
+        }
+
+        Customer customer = customerRepository.getById(secureToken.getCustomer().getId());
+        if (Objects.isNull(customer)) {
+            return false;
+        }
+
+        customer.setAccountVerified(true);
+        customerRepository.save(customer);
+
+        secureTokenService.removeToken(secureToken);
+        return true;
+    }
 
     public void registerManager(RegisterRequest registerRequest) {
         if (managerRepository.existsByEmail(registerRequest.getEmail())) {

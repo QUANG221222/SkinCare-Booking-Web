@@ -9,6 +9,5 @@ import java.util.Optional;
 
 @Repository
 public interface CustomerRepository extends UserBaseRepository<Customer> {
-    Optional<Customer> findByUsername(String username);
     // Add specific customer methods if needed
 }
