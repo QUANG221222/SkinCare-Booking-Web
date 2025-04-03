@@ -10,34 +10,41 @@ import java.util.Optional;
 @Service
 public class AppointmentService {
 
-  @Autowired
-  private AppointmentRepository appointmentRepository;
+    @Autowired
+    private AppointmentRepository appointmentRepository;
 
-  public List<Appointment> getAllAppointments() {
-    return appointmentRepository.findAll();
-  }
+    // Lấy danh sách tất cả các lịch hẹn
+    public List<Appointment> getAllAppointments() {
+        return appointmentRepository.findAll();
+    }
 
-  public Optional<Appointment> getAppointmentById(Long id) {
-    return appointmentRepository.findById(id);
-  }
+    // Lấy thông tin chi tiết của một lịch hẹn
+    public Optional<Appointment> getAppointmentById(Long id) {
+        return appointmentRepository.findById(id);
+    }
 
-  public Appointment createAppointment(Appointment appointment) {
+    // Tạo mới một lịch hẹn
+    public Appointment createAppointment(Appointment appointment) {
+        return appointmentRepository.save(appointment);
+    }
 
-    return appointmentRepository.save(appointment);
-  }
+    // Cập nhật thông tin lịch hẹn
+    public Appointment updateAppointment(Long id, Appointment newAppointment) {
+        return appointmentRepository.findById(id).map(appointment -> {
+            appointment.setCustomer(newAppointment.getCustomer());
+            appointment.setSkinTherapist(newAppointment.getSkinTherapist());
+            appointment.setSpaService(newAppointment.getSpaService());
+            appointment.setStaff(newAppointment.getStaff());
+            appointment.setManager(newAppointment.getManager());
+            return appointmentRepository.save(appointment);
+        }).orElseThrow(() -> new RuntimeException("Appointment not found"));
+    }
 
-  public Appointment updateAppointment(Long id, Appointment newAppointment) {
-    return appointmentRepository.findById(id).map(appointment -> {
-      appointment.setCustomer(newAppointment.getCustomer());
-      appointment.setSkinTherapist(newAppointment.getSkinTherapist());
-      appointment.setSpaService(newAppointment.getSpaService());
-      appointment.setAppointmentTime(newAppointment.getAppointmentTime());
-      appointment.setStatus(newAppointment.getStatus());
-      return appointmentRepository.save(appointment);
-    }).orElseThrow(() -> new RuntimeException("Appointment not found"));
-  }
-
-  public void deleteAppointment(Long id) {
-    appointmentRepository.deleteById(id);
-  }
+    // Xóa một lịch hẹn
+    public void deleteAppointment(Long id) {
+        if (!appointmentRepository.existsById(id)) {
+            throw new RuntimeException("Appointment not found");
+        }
+        appointmentRepository.deleteById(id);
+    }
 }
