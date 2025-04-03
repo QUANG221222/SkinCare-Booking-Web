@@ -1,5 +1,6 @@
 package coderuth.k23.skincare_booking.security;
 
+import coderuth.k23.skincare_booking.models.Customer;
 import coderuth.k23.skincare_booking.models.User;
 import coderuth.k23.skincare_booking.repositories.CustomerRepository;
 import coderuth.k23.skincare_booking.repositories.ManagerRepository;

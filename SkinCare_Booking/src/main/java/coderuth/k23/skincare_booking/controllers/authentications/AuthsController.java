@@ -1,5 +1,7 @@
 package coderuth.k23.skincare_booking.controllers.authentications;
 
+import coderuth.k23.skincare_booking.models.Customer;
+import coderuth.k23.skincare_booking.repositories.CustomerRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,12 +17,17 @@ import coderuth.k23.skincare_booking.dtos.request.RegisterRequest;
 import coderuth.k23.skincare_booking.dtos.response.ApiResponse;
 import coderuth.k23.skincare_booking.dtos.response.UserInfoResponse;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/api/auth")
 public class AuthsController {
 
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private CustomerRepository customerRepository;
 
     @PostMapping("/manager/login")
     public ResponseEntity<ApiResponse<UserInfoResponse>> authenticaAdmin(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
@@ -31,6 +38,16 @@ public class AuthsController {
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<UserInfoResponse>> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         UserInfoResponse userInfo = authService.authenticateUser(loginRequest, response);
+
+        Optional<Customer> customerOpt = customerRepository.findByUsername(loginRequest.getUsername());
+
+        if (customerOpt.isPresent()) {
+            Customer customer = customerOpt.get();
+            if (!customer.getAccountVerified()) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(ApiResponse.error("Your Account is not Verified. Please Check Your Email !!!"));
+            }
+        }
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("Authentication successful", userInfo));
     }
 

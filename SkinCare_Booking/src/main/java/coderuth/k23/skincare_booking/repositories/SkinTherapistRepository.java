@@ -1,7 +1,10 @@
 package coderuth.k23.skincare_booking.repositories;
+import coderuth.k23.skincare_booking.models.Customer;
 import org.springframework.stereotype.Repository;
 
 import coderuth.k23.skincare_booking.models.SkinTherapist;
+
+import java.util.Optional;
 
 @Repository
 public interface SkinTherapistRepository extends UserBaseRepository<SkinTherapist> {

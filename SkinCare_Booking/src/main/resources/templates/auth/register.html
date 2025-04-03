@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="author" content="">
+    <meta name="keyword" content="">
+    <!-- Favicon -->
+    <!--    <link rel="icon" href="/user/img/core-img/favicon_1.png">-->
+    <link rel="apple-touch-icon" sizes="57x57" href="/user/img/favicon/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/user/img/favicon/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/user/img/favicon/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/user/img/favicon/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/user/img/favicon/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/user/img/favicon/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/user/img/favicon/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/user/img/favicon/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/user/img/favicon/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/user/img/favicon/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/user/img/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/user/img/favicon/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/user/img/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/user/img/favicon/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/user/img/favicon/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    <!-- Title -->
+    <title>SkinSooth &amp; Relax - Restore - Radiate</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="/auth/css/bootstrap.min.css" rel="stylesheet">
+    <!-- bootstrap theme -->
+    <link href="/auth/css/bootstrap-theme.css" rel="stylesheet">
+    <!--external css-->
+    <!-- font icon -->
+    <link href="/auth/css/elegant-icons-style.css" rel="stylesheet"/>
+    <link href="/auth/css/font-awesome.css" rel="stylesheet"/>
+    <!-- Custom styles -->
+    <link href="/auth/css/style.css" rel="stylesheet">
+    <link href="/auth/css/style-responsive.css" rel="stylesheet"/>
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 -->
+    <!--[if lt IE 9]>
+    <script src="/auth/js/html5shiv.js"></script>
+    <![endif]-->
+
+    <!-- =======================================================
+      Theme Name: NiceAdmin
+      Theme URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
+      Author: BootstrapMade
+      Author URL: https://bootstrapmade.com
+    ======================================================= -->
+</head>
+
+<body class="login-img3-body">
+
+<div class="container" style="transform: translate(0px, -65px)">
+
+
+    <form class="login-form" id="registerForm" th:action="@{/register}" method="post">
+        <div style="text-align:center; font-size:20px; color:green; font-weight:bold">
+            <span id="message"></span>
+        </div>
+        <div class="login-wrap">
+            <p class="login-img"><i class="icon_lock_alt"></i></p>
+
+            <div class="input-group">
+                <span class="input-group-addon"><i class="icon_profile"></i></span>
+                <input
+                        type="text"
+                        class="form-control"
+                        placeholder="Username"
+                        name="username"
+                        required
+                        pattern="^[a-zA-Z0-9]{3,20}$"
+                        title="Username must be between 3 and 20 characters (letters and numbers only)"
+                        autofocus>
+            </div>
+
+            <div class="input-group">
+                <span class="input-group-addon"><i class="icon_mail"></i></span>
+                <input
+                        type="email"
+                        class="form-control"
+                        placeholder="Email"
+                        name="email"
+                        pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                        title="Please enter a valid email address"
+                        required
+                        autofocus>
+            </div>
+
+            <div class="input-group">
+                <span class="input-group-addon"><i class="icon_phone"></i></span>
+                <input
+                        type="text"
+                        class="form-control"
+                        placeholder="Phone"
+                        required
+                        autofocus
+                        pattern="^(\\+84|0)[1-9][0-9]{8}$"
+                        title="Invalid phone number format. Ex: 0987654321 or +84987654321"
+                        name="phone">
+            </div>
+
+            <div class="input-group">
+                <span class="input-group-addon"><i class="icon_key"></i></span>
+                <input
+                        type="password"
+                        class="form-control"
+                        placeholder="Password"
+                        id="password"
+                        oninput="onChange()"
+                        required
+                        pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,40}$"
+                        title="Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character. Ex: Abc@123"
+                        name="password"
+                        autocomplete="off"
+                >
+            </div>
+
+            <div class="input-group">
+                <span class="input-group-addon"><i class="icon_key_alt"></i></span>
+                <input
+                        type="password"
+                        class="form-control"
+                        placeholder="Confirm Password"
+                        oninput="onChange()"
+                        name="confirm"
+                        required
+                        id="confirmPassword"
+                        autocomplete="off"
+                >
+            </div>
+
+            <label class="checkbox">
+                <span><a th:href="@{/login}"> Login Page</a></span>
+<!--                <span class="pull-right"> <a href="#"> Forgot Password?</a></span>-->
+            </label>
+            <button class="btn btn-primary btn-lg btn-block" type="submit">Register</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    const passwordField = document.getElementById("password");
+    const passwordConfirmField = document.getElementById("confirmPassword")
+
+    showPassword(passwordField)
+    showPassword(passwordConfirmField)
+
+    function showPassword(passwordField)
+    {
+        passwordField.addEventListener("mouseover", function() {
+            this.type = "text"; // Hiện mật khẩu khi hover vào
+        });
+
+        passwordField.addEventListener("mouseout", function() {
+            this.type = "password"; // Ẩn lại khi rời chuột đi
+        });
+    }
+
+    function onChange() {
+        const password = document.querySelector("input[name='password']");
+        const confirm = document.querySelector("input[name='confirm']");
+
+        if (confirm.value === password.value) {
+            confirm.setCustomValidity("");
+        } else {
+            confirm.setCustomValidity("Passwords do not match");
+        }
+    }
+
+    document.getElementById("registerForm").addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const messageElement = document.getElementById("message");
+
+        const formData = {
+            username: document.querySelector("input[name='username']").value,
+            email: document.querySelector("input[name='email']").value,
+            phone: document.querySelector("input[name='phone']").value,
+            password: document.querySelector("input[name='password']").value
+        };
+
+        try {
+            const response = await fetch("/api/auth/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                messageElement.style.color = "green";
+                messageElement.textContent = data.message;
+                setTimeout(() => {window.location.href = "/registration";}, 1000)
+            } else {
+                messageElement.style.color = "red";
+                messageElement.textContent = data.message;
+            }
+        } catch (error) {
+            messageElement.style.color = "red";
+            messageElement.textContent = "Error: " + error.message;
+        }
+    });
+
+</script>
+
+
+<!-- javascripts -->
+<script src="/auth/js/jquery.js"></script>
+<script src="/auth/js/bootstrap.min.js"></script>
+
+<!--<script src="/auth/js/register.js"></script>-->
+
+</body>
+
+</html>

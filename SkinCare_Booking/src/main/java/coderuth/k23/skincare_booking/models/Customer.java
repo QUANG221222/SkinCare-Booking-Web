@@ -4,6 +4,7 @@ import lombok.*;
 import jakarta.persistence.*;
 import lombok.experimental.SuperBuilder;
 import java.util.List;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -14,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @AllArgsConstructor
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
-
+//@Inheritance(strategy = InheritanceType.JOINED)
 
 public class Customer extends User {
 
@@ -29,6 +30,17 @@ public class Customer extends User {
             setRole(Role.ROLE_CUSTOMER);
         }
     }
+
+    private boolean accountVerified;
+//    private boolean loginDisabled;
+
+    public boolean getAccountVerified() {
+        return accountVerified;
+    }
+
+    @OneToMany(mappedBy = "customer")
+    private Set<SecureToken> tokens;
+
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
