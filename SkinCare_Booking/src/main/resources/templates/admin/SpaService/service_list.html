@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="">
+<head>
+    <title>Danh sách dịch vụ</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <h1>Danh sách dịch vụ</h1>
+    <!-- Thông báo lỗi hoặc thành công -->
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+    <a th:href="@{/api/spa-services/new}" class="btn btn-primary mb-3">Tạo dịch vụ mới</a>
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Tên dịch vụ</th>
+            <th>Mô tả</th>
+            <th>Giá</th>
+            <th>Thời gian (phút)</th>
+            <th>Hành động</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="service : ${SpaService}">
+            <td th:text="${service.id}"></td>
+            <td th:text="${service.name}"></td>
+            <td th:text="${service.description}"></td>
+            <td th:text="${service.price}"></td>
+            <td th:text="${service.duration}"></td>
+            <td>
+                <a th:href="@{/api/spa-services/edit/{id}(id=${service.id})}" class="btn btn-warning">Sửa</a>
+                <a th:href="@{/api/spa-services/delete/{id}(id=${service.id})}" class="btn btn-danger">Xóa</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

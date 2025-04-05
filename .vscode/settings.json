@@ -1,0 +1,4 @@
+{
+  "java.compile.nullAnalysis.mode": "automatic",
+  "terminal.integrated.suggest.enabled": false
+}

@@ -16,6 +16,16 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @EqualsAndHashCode(callSuper = true)
 public class Staff extends User {
 
+    @Builder.Default
+    private String userType = "STAFF";
+
+    protected void onCreate() {
+        super.onCreate();
+        if (getRole() == null) {
+            setRole(Role.ROLE_STAFF);
+        }
+    }
+
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @JsonIgnore // Tránh vòng lặp khi gọi API

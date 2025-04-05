@@ -2,62 +2,127 @@ package coderuth.k23.skincare_booking.controllers.res;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import coderuth.k23.skincare_booking.services.SpaServiceService;
 import coderuth.k23.skincare_booking.dtos.response.ApiResponse;
 import coderuth.k23.skincare_booking.dtos.request.SpaServiceRequestDTO;
 import coderuth.k23.skincare_booking.dtos.response.SpaServiceResponseDTO;
+import coderuth.k23.skincare_booking.models.CenterSchedule;
+import coderuth.k23.skincare_booking.models.SpaService;
+
 import java.util.List;
 import java.util.Optional;
 
-@RestController
+@Controller
 @RequestMapping("/api/spa-services")
 public class SpaServiceController {
 
     @Autowired
     private SpaServiceService spaServiceService;
 
-    @PostMapping("/add")
-    public ResponseEntity<ApiResponse<SpaServiceResponseDTO>> addSpaService(@Valid @RequestBody SpaServiceRequestDTO requestDTO) {
-        Optional<SpaServiceResponseDTO> savedService = spaServiceService.addSpaService(requestDTO);
-        return savedService.map(service -> ResponseEntity.status(HttpStatus.CREATED)
-                        .body(ApiResponse.success("Spa service created successfully", service)))
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(ApiResponse.error("Failed to create spa service", null)));
+    // Quản lý dịch vụ
+    @GetMapping
+    public String listServices(Model model) {
+        model.addAttribute("SpaService", spaServiceService.getAllServices());
+        return "admin/SpaService/service_list";
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<SpaServiceResponseDTO>> getSpaService(@PathVariable Long id) {
-        Optional<SpaServiceResponseDTO> service = spaServiceService.getSpaServiceById(id);
-        return service.map(value -> ResponseEntity.ok(ApiResponse.success("Spa service found", value)))
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(ApiResponse.error("Spa service not found", null)));
+    @GetMapping("/new")
+    public String showCreateServiceForm(Model model) {
+        model.addAttribute("SpaService", new SpaService());
+        return "admin/SpaService/service_create";
     }
 
-    @GetMapping("/list")
-    public ResponseEntity<ApiResponse<List<SpaServiceResponseDTO>>> getAllSpaServices() {
-        List<SpaServiceResponseDTO> services = spaServiceService.getAllSpaServices();
-        return ResponseEntity.ok(ApiResponse.success("Spa services retrieved", services));
+    @PostMapping
+    public String createService(@ModelAttribute SpaService spaService) {
+        spaServiceService.createService(spaService);
+        return "redirect:/api/spa-services";
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<ApiResponse<SpaServiceResponseDTO>> updateSpaService(@PathVariable Long id, @Valid @RequestBody SpaServiceRequestDTO requestDTO) {
-        Optional<SpaServiceResponseDTO> updatedService = spaServiceService.updateSpaService(id, requestDTO);
-        return updatedService.map(service -> ResponseEntity.ok(ApiResponse.success("Spa service updated", service)))
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(ApiResponse.error("Spa service not found", null)));
+    @GetMapping("/edit/{id}")
+    public String showEditServiceForm(@PathVariable Long id, Model model) {
+        SpaService spaService = spaServiceService.getAllServices().stream()
+                .filter(s -> s.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy dịch vụ!"));
+        model.addAttribute("SpaService", spaService);
+        return "admin/SpaService/service_edit";
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteSpaService(@PathVariable Long id) {
-        boolean deleted = spaServiceService.deleteSpaService(id);
-        if (deleted) {
-            return ResponseEntity.ok(ApiResponse.success("Spa service deleted"));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ApiResponse.error("Spa service not found", null));
+    @PostMapping("/update/{id}")
+    public String updateService(@PathVariable Long id, @ModelAttribute SpaService spaService) {
+        spaServiceService.updateService(id, spaService);
+        return "redirect:/api/spa-services";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String deleteService(@PathVariable Long id,  RedirectAttributes redirectAttributes) {
+        // Kiểm tra xem dịch vụ có đang được sử dụng trong lịch hẹn không
+        Optional<SpaService> spaServiceOptional = spaServiceService.getAllServices().stream()
+                .filter(s -> s.getId().equals(id))
+                .findFirst();
+
+        if (spaServiceOptional.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Không tìm thấy dịch vụ để xóa.");
+            return "redirect:/api/spa-services";
         }
+
+        try {
+            spaServiceService.deleteService(id, redirectAttributes);
+            redirectAttributes.addFlashAttribute("success", "Xóa dịch vụ thành công!");
+        } catch (DataIntegrityViolationException e) {
+            redirectAttributes.addFlashAttribute("error", "Không thể xóa dịch vụ vì đang được sử dụng trong các cuộc hẹn.");
+        }
+        return "redirect:/api/spa-services";
+    }
+    // Quản lý lịch làm việc trung tâm
+    @GetMapping("/schedules")
+    public String listSchedules(Model model) {
+        model.addAttribute("schedules", spaServiceService.getAllSchedules());
+        return "/admin/Schedules/centerSchedule_List";
+    }
+
+    @GetMapping("/schedules/new")
+    public String showCreateScheduleForm(Model model) {
+        model.addAttribute("schedules", new CenterSchedule());
+        return "/admin/Schedules/centerSchedule_Create";
+    }
+
+    @PostMapping("/schedules")
+    public String createSchedule(@ModelAttribute CenterSchedule schedule, RedirectAttributes redirectAttributes) {
+        spaServiceService.createSchedule(schedule);
+        redirectAttributes.addFlashAttribute("success", "Tạo lịch làm việc thành công!");
+        return "redirect:/api/spa-services/schedules";
+    }
+
+    @GetMapping("/schedules/edit/{id}")
+    public String showEditScheduleForm(@PathVariable Long id, Model model) {
+        CenterSchedule schedule = spaServiceService.getAllSchedules().stream()
+                .filter(s -> s.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy lịch làm việc!"));
+        model.addAttribute("schedules", schedule);
+        return "/admin/Schedules/centerSchedule_Edit";
+    }
+
+    @PostMapping("/schedules/update/{id}")
+    public String updateSchedule(@PathVariable Long id, @ModelAttribute CenterSchedule schedule, RedirectAttributes redirectAttributes) {
+        spaServiceService.updateSchedule(id, schedule);
+        redirectAttributes.addFlashAttribute("success", "Sửa lịch làm việc thành công!");
+        return "redirect:/api/spa-services/schedules";
+    }
+
+    @GetMapping("/schedules/delete/{id}")
+    public String deleteSchedule(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        spaServiceService.deleteSchedule(id);
+        redirectAttributes.addFlashAttribute("success", "Xóa lịch làm việc thành công!");
+        return "redirect:/api/spa-services/schedules";
     }
 }

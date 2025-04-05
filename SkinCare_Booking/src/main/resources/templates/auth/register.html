@@ -176,16 +176,16 @@
     }
 
     document.getElementById("registerForm").addEventListener("submit", async function (event) {
-        event.preventDefault();
+        event.preventDefault()
 
-        const messageElement = document.getElementById("message");
+        const messageElement = document.getElementById("message")
 
         const formData = {
             username: document.querySelector("input[name='username']").value,
             email: document.querySelector("input[name='email']").value,
             phone: document.querySelector("input[name='phone']").value,
             password: document.querySelector("input[name='password']").value
-        };
+        }
 
         try {
             const response = await fetch("/api/auth/register", {
@@ -194,22 +194,22 @@
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify(formData)
-            });
+            })
 
-            const data = await response.json();
+            const data = await response.json()
             if (response.ok) {
-                messageElement.style.color = "green";
-                messageElement.textContent = data.message;
+                messageElement.style.color = "green"
+                messageElement.textContent = data.message
                 setTimeout(() => {window.location.href = "/registration";}, 1000)
             } else {
-                messageElement.style.color = "red";
-                messageElement.textContent = data.message;
+                messageElement.style.color = "red"
+                messageElement.textContent = data.message
             }
         } catch (error) {
-            messageElement.style.color = "red";
-            messageElement.textContent = "Error: " + error.message;
+            messageElement.style.color = "red"
+            messageElement.textContent = "Error: " + error.message
         }
-    });
+    })
 
 </script>
 
