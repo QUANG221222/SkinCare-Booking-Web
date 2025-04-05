@@ -29,11 +29,11 @@ public class AuthsController {
     @Autowired
     private CustomerRepository customerRepository;
 
-    @PostMapping("/manager/login")
-    public ResponseEntity<ApiResponse<UserInfoResponse>> authenticaAdmin(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
-        UserInfoResponse userInfo = authService.authenticateUser(loginRequest, response);
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("Authentication successful", userInfo));
-    }
+//    @PostMapping("/manager/login")
+//    public ResponseEntity<ApiResponse<UserInfoResponse>> authenticaAdmin(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+//        UserInfoResponse userInfo = authService.authenticateUser(loginRequest, response);
+//        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("Authentication successful", userInfo));
+//    }
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<UserInfoResponse>> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
@@ -60,6 +60,18 @@ public class AuthsController {
     @PostMapping("/manager/register")
     public ResponseEntity<ApiResponse<Void>> registerAdmin(@Valid @RequestBody RegisterRequest registerRequest) {
         authService.registerManager(registerRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created("Registered successfully"));
+    }
+
+    @PostMapping("/manager/register-staff")
+    public ResponseEntity<ApiResponse<Void>> registerStaff(@Valid @RequestBody RegisterRequest registerRequest) {
+        authService.registerStaff(registerRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created("Registered successfully"));
+    }
+
+    @PostMapping("/manager/register-therapist")
+    public ResponseEntity<ApiResponse<Void>> registerTherapist(@Valid @RequestBody RegisterRequest registerRequest) {
+        authService.registerSkinTherapist(registerRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created("Registered successfully"));
     }
 

@@ -24,17 +24,59 @@
 
                         <!-- Nav Start -->
                         <div id="navList" class="classynav">
+<!--                            <ul>-->
+<!--                                <li th:classappend="${currentURI == '/' ? 'active' : ''}">-->
+<!--                                    <a th:href="@{/}">Home</a>-->
+<!--                                </li>-->
+<!--                                <li th:classappend="${currentURI == '/about-us' ? 'active' : ''}">-->
+<!--                                    <a th:href="@{/about-us}" >About Us</a>-->
+<!--                                </li>-->
+<!--                                <li th:classappend="${currentURI == '/services' ? 'active' : ''}">-->
+<!--                                    <a th:href="@{services}" >Services</a>-->
+<!--                                </li>-->
+<!--                                <li th:classappend="${currentURI == '/blog' ? 'active' : ''}">-->
+<!--                                    <a th:href="@{blog}">Blog</a>-->
+<!--                                </li>-->
+<!--                                <li th:classappend="${currentURI == '/contact' ? 'active' : ''}">-->
+<!--                                    <a th:href="@{contact}" >Contact</a>-->
+<!--                                </li>-->
+<!--                            </ul>-->
                             <ul>
-                                <li th:classappend="${currentURI == '/' ? 'active' : ''}"><a th:href="@{/}">Home</a></li>
-                                <li th:classappend="${currentURI == '/about-us' ? 'active' : ''}"><a th:href="@{/about-us}" >About Us</a></li>
-                                <li th:classappend="${currentURI == '/services' ? 'active' : ''}"><a th:href="@{services}" >Services</a></li>
-                                <li th:classappend="${currentURI == '/blog' ? 'active' : ''}"><a th:href="@{blog}">Blog</a></li>
-                                <li th:classappend="${currentURI == '/contact' ? 'active' : ''}"><a th:href="@{contact}" >Contact</a></li>
+                                <li th:classappend="${#strings.contains(currentURI, '/customer/home') or (currentURI == '/') ? 'active' : ''}">
+                                    <a th:href="${#strings.contains(currentURI, 'customer')} ? @{/protected/customer/home} : @{/}">Home</a>
+                                </li>
+                                <li th:classappend="${#strings.contains(currentURI, '/customer/about-us') or (currentURI == '/about-us') ? 'active' : ''}">
+                                    <a th:href="${#strings.contains(currentURI, 'customer')} ? @{/protected/customer/about-us} : @{/about-us}">About Us</a>
+                                </li>
+                                <li th:classappend="${#strings.contains(currentURI, '/customer/services') or (currentURI == '/services') ? 'active' : ''}">
+                                    <a th:href="${#strings.contains(currentURI, 'customer')} ? @{/protected/customer/services} : @{/services}">Services</a>
+                                </li>
+                                <li th:classappend="${#strings.contains(currentURI, '/customer/blog') or (currentURI == '/blog') ? 'active' : ''}">
+                                    <a th:href="${#strings.contains(currentURI, 'customer')} ? @{/protected/customer/blog} : @{/blog}">Blog</a>
+                                </li>
+                                <li th:classappend="${#strings.contains(currentURI, '/customer/contact') or (currentURI == '/contact') ? 'active' : ''}">
+                                    <a th:href="${#strings.contains(currentURI, 'customer')} ? @{/protected/customer/contact} : @{/contact}">Contact</a>
+                                </li>
                             </ul>
-
                             <!-- Button -->
                             <div class="menu-btn">
-                                <a href="/make-a-reservation" class="btn palatin-btn">Make a Reservation</a>
+                                <!-- Guest -->
+                                <a th:if="${!#strings.contains(currentURI, 'customer')}" th:href="@{/login}" class="btn palatin-btn">Make a Reservation</a>
+
+                                <!-- Customer -->
+                                <div th:if="${#strings.contains(currentURI, 'customer')}" class="user-info dropdown position-relative">
+                                    <!-- Hiển thị tên người dùng -->
+                                    <button type="button" class="btn palatin-btn" data-bs-toggle="dropdown" aria-expanded="false">
+                                        User Name
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-end">
+                                        <li><a class="dropdown-item text-dark" href="#">Customer Profile</a></li>
+                                        <li><a class="dropdown-item text-dark" href="#">Booking History</a></li>
+                                        <li><a class="dropdown-item text-dark" href="#">Do Quiz (new)</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a th:href="@{/logout}" class="dropdown-item text-dark">Logout</a></li>
+                                    </div>
+                                </div>
                             </div>
 
                         </div>

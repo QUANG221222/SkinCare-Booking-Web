@@ -3,10 +3,8 @@ package coderuth.k23.skincare_booking.services;
 import coderuth.k23.skincare_booking.exception.InvalidTokenException;
 import coderuth.k23.skincare_booking.mailing.AccountVerificationEmailContext;
 import coderuth.k23.skincare_booking.mailing.EmailService;
-import coderuth.k23.skincare_booking.models.Manager;
-import coderuth.k23.skincare_booking.models.RefreshToken;
-import coderuth.k23.skincare_booking.models.SecureToken;
-import coderuth.k23.skincare_booking.repositories.UserBaseRepository;
+import coderuth.k23.skincare_booking.models.*;
+import coderuth.k23.skincare_booking.repositories.*;
 import coderuth.k23.skincare_booking.security.UserDetailsImpl;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,14 +21,11 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import coderuth.k23.skincare_booking.jwt.JwtUtil;
 import coderuth.k23.skincare_booking.dtos.request.LoginRequest;
-import coderuth.k23.skincare_booking.repositories.CustomerRepository;
 import coderuth.k23.skincare_booking.dtos.request.RegisterRequest;
-import coderuth.k23.skincare_booking.models.Customer;
 import coderuth.k23.skincare_booking.dtos.response.UserInfoResponse;
 
 import java.util.Objects;
 import java.util.UUID;
-import coderuth.k23.skincare_booking.repositories.ManagerRepository;
 
 @Service
 public class AuthService {
@@ -51,6 +46,12 @@ public class AuthService {
 
     @Autowired
     private ManagerRepository managerRepository;
+
+    @Autowired
+    private StaffRepository staffRepository;
+
+    @Autowired
+    private SkinTherapistRepository skinTherapistRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -163,9 +164,45 @@ public class AuthService {
         manager.setUsername(registerRequest.getUsername());
         manager.setPhone(registerRequest.getPhone());
         manager.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
-        manager.setRole(Manager.Role.ROLE_MANAGER); // Gán vai trò ADMIN
+        manager.setRole(Manager.Role.ROLE_MANAGER); // ADMIN
 
         managerRepository.save(manager);
+    }
+
+    public void registerStaff(RegisterRequest registerRequest) {
+        if (staffRepository.existsByEmail(registerRequest.getEmail())) {
+            throw new IllegalArgumentException("Email is already in use");
+        }
+        if (staffRepository.existsByUsername(registerRequest.getUsername())) {
+            throw new IllegalArgumentException("Username is already taken");
+        }
+
+        Staff staff = new Staff();
+        staff.setEmail(registerRequest.getEmail());
+        staff.setUsername(registerRequest.getUsername());
+        staff.setPhone(registerRequest.getPhone());
+        staff.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+        staff.setRole(Staff.Role.ROLE_STAFF); // STAFF
+
+        staffRepository.save(staff);
+    }
+
+    public void registerSkinTherapist(RegisterRequest registerRequest) {
+        if (skinTherapistRepository.existsByEmail(registerRequest.getEmail())) {
+            throw new IllegalArgumentException("Email is already in use");
+        }
+        if (skinTherapistRepository.existsByUsername(registerRequest.getUsername())) {
+            throw new IllegalArgumentException("Username is already taken");
+        }
+
+        SkinTherapist skinTherapist = new SkinTherapist();
+        skinTherapist.setEmail(registerRequest.getEmail());
+        skinTherapist.setUsername(registerRequest.getUsername());
+        skinTherapist.setPhone(registerRequest.getPhone());
+        skinTherapist.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+        skinTherapist.setRole(SkinTherapist.Role.ROLE_THERAPIST); // SKIN THERAPIST
+
+        skinTherapistRepository.save(skinTherapist);
     }
 
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) {

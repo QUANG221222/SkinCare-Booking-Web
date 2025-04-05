@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class ManagerPageController {
-    @GetMapping("/protected/manager/")
-    @PreAuthorize("hasRole('ROLE_MANAGER')")
+    @GetMapping("/protected/manager/home")
+    @PreAuthorize("hasRole('MANAGER')")
     public String adminPage() {
         return "admin/index"; // "user/index.html"
     }
