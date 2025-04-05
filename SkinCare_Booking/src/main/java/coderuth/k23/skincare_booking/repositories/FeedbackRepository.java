@@ -23,4 +23,10 @@ public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
     @Query("SELECT f FROM Feedback f WHERE f.Id = :id AND f.isHidden = false")
     Optional<Feedback> findByIdNotHidden(Long id);
 
+    @Query("SELECT f FROM Feedback f WHERE f.customer = :customer AND f.isHidden = false")
+    List<Feedback> findByCustomerNotHidden(Customer customer);
+
+    @Query("SELECT f FROM Feedback f")
+    List<Feedback> findAllIncludingHidden();
+
 }
