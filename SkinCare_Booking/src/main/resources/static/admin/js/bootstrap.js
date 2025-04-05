@@ -1,4 +1,4 @@
-import * as bootstrap from 'bootstrap'
+import * as bootstrap from 'static/admin/js/bootstrap'
 
 try {
   window.bootstrap = bootstrap

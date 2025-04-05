@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/SkinCare_Booking/SkinCare_Booking.iml" filepath="$PROJECT_DIR$/SkinCare_Booking/SkinCare_Booking.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/SkinCare_Shop_Project.iml" filepath="$PROJECT_DIR$/.idea/SkinCare_Shop_Project.iml" />
     </modules>
   </component>

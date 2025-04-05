@@ -1,4 +1,4 @@
-import ApexCharts from 'apexcharts';
+import ApexCharts from 'static/admin/libs/apex-charts/apexcharts';
 
 try {
   window.ApexCharts = ApexCharts;
