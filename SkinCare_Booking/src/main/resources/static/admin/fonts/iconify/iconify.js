@@ -14,7 +14,7 @@ let buildPath;
 
 // Load configuration
 const conf = (() => {
-  const _conf = require('../../build-config');
+  const _conf = require('../../../../../../../../../../../../Download/sneat-bootstrap-html-admin-template-free-main/sneat-bootstrap-html-admin-template-free-main/build-config');
   serverPath = _conf.base.serverPath;
   templatePath = _conf.base.buildTemplatePath;
   buildPath = _conf.base.buildPath;
