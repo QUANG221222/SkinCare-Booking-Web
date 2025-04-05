@@ -16,7 +16,7 @@ public class CustomerPageController {
 
 
     // Guest
-    @GetMapping("/protected/customer/")
+    @GetMapping("/protected/customer/home")
     @PreAuthorize("hasRole('CUSTOMER')")
     public String userHomePage() {
         return "user/index"; // Load file src/main/resources/templates/user/index.html

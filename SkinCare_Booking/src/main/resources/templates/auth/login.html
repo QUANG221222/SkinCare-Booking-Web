@@ -107,11 +107,11 @@
     });
 
     document.getElementById("login-form").addEventListener("submit", async function (event) {
-        event.preventDefault();
+        event.preventDefault()
 
-        const username = document.querySelector("input[name='username']").value;
-        const password = document.querySelector("input[name='password']").value;
-        const messageElement = document.getElementById("message");
+        const username = document.querySelector("input[name='username']").value
+        const password = document.querySelector("input[name='password']").value
+        const messageElement = document.getElementById("message")
 
         try {
             const response = await fetch("/api/auth/login", {
@@ -120,22 +120,33 @@
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({ username, password })
-            });
+            })
 
-            const data = await response.json();
+            const data = await response.json()
             if (response.ok) {
-                messageElement.style.color = "green";
-                messageElement.textContent = "Login successful! Redirecting...";
-                setTimeout(() => window.location.href = "/protected/customer/", 1000);
+                messageElement.style.color = "green"
+                messageElement.textContent = "Login successful! Redirecting..."
+                switch (data.payload.userType)
+                {
+                    case "CUSTOMER":
+                        setTimeout(() => window.location.href = "/protected/customer/home", 1000)
+                        break
+                    case "MANAGER":
+                        setTimeout(() => window.location.href = "/protected/manager/home", 1000)
+                        break
+                    case "STAFF":
+                        setTimeout(() => window.location.href = "/protected/staff/home", 1000)
+                        break
+                }
             } else {
-                messageElement.style.color = "red";
-                messageElement.textContent = data.message;
+                messageElement.style.color = "red"
+                messageElement.textContent = data.message
             }
         } catch (error) {
-            messageElement.style.color = "red";
-            messageElement.textContent = "Error: " + error.message;
+            messageElement.style.color = "red"
+            messageElement.textContent = "Error: " + error.message
         }
-    });
+    })
 </script>
 </body>
 
