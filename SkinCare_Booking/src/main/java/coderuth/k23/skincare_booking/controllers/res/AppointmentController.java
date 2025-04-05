@@ -52,7 +52,7 @@ public class AppointmentController {
 
     // Tạo mới một lịch hẹn
     @PostMapping
-public ResponseEntity<Appointment> createAppointment(@RequestBody AppointmentRequest appointmentRequest) {
+    public ResponseEntity<Appointment> createAppointment(@RequestBody AppointmentRequest appointmentRequest) {
     // Tìm Customer từ customerId
     Customer customer = customerRepository.findById(appointmentRequest.getCustomerId())
             .orElseThrow(() -> new IllegalArgumentException("Customer not found"));
