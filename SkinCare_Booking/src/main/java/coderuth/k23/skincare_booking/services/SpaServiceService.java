@@ -2,10 +2,13 @@ package coderuth.k23.skincare_booking.services;
 
 import coderuth.k23.skincare_booking.dtos.request.SpaServiceRequestDTO;
 import coderuth.k23.skincare_booking.dtos.response.SpaServiceResponseDTO;
+import coderuth.k23.skincare_booking.models.CenterSchedule;
 import coderuth.k23.skincare_booking.models.SpaService;
+import coderuth.k23.skincare_booking.repositories.CenterScheduleRepository;
 import coderuth.k23.skincare_booking.repositories.SpaServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,56 +20,52 @@ public class SpaServiceService {
     @Autowired
     private SpaServiceRepository spaServiceRepository;
 
-    public Optional<SpaServiceResponseDTO> addSpaService(SpaServiceRequestDTO requestDTO) {
-        if (spaServiceRepository.existsByName(requestDTO.getName())) {
-            throw new IllegalArgumentException("Service name already exists");
-        }
+    @Autowired
+    private CenterScheduleRepository centerScheduleRepository;
 
-        SpaService spaService = new SpaService();
-        spaService.setName(requestDTO.getName());
-        spaService.setDescription(requestDTO.getDescription());
-        spaService.setPrice(requestDTO.getPrice());
-        spaService.setDuration(requestDTO.getDuration());
-
-        SpaService savedService = spaServiceRepository.save(spaService);
-        return Optional.of(convertToDTO(savedService));
+    // Quản lý dịch vụ
+    public List<SpaService> getAllServices() {
+        return spaServiceRepository.findAll();
     }
 
-    public Optional<SpaServiceResponseDTO> getSpaServiceById(Long id) {
-        return spaServiceRepository.findById(id).map(this::convertToDTO);
+    public SpaService createService(SpaService spaService) {
+        return spaServiceRepository.save(spaService);
     }
 
-    public List<SpaServiceResponseDTO> getAllSpaServices() {
-        return spaServiceRepository.findAll().stream().map(this::convertToDTO).collect(Collectors.toList());
+    public SpaService updateService(Long id, SpaService updatedService) {
+        SpaService spaService = spaServiceRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy dịch vụ!"));
+        spaService.setName(updatedService.getName());
+        spaService.setDescription(updatedService.getDescription());
+        spaService.setPrice(updatedService.getPrice());
+        spaService.setDuration(updatedService.getDuration());
+        return spaServiceRepository.save(spaService);
     }
 
-    public Optional<SpaServiceResponseDTO> updateSpaService(Long id, SpaServiceRequestDTO requestDTO) {
-        return spaServiceRepository.findById(id).map(spaService -> {
-            spaService.setName(requestDTO.getName());
-            spaService.setDescription(requestDTO.getDescription());
-            spaService.setPrice(requestDTO.getPrice());
-            spaService.setDuration(requestDTO.getDuration());
-
-            SpaService updatedService = spaServiceRepository.save(spaService);
-            return convertToDTO(updatedService);
-        });
+    public void deleteService(Long id,  RedirectAttributes redirectAttributes) {
+        spaServiceRepository.deleteById(id);
     }
 
-    public boolean deleteSpaService(Long id) {
-        if (spaServiceRepository.existsById(id)) {
-            spaServiceRepository.deleteById(id);
-            return true;
-        }
-        return false;
+    // Quản lý lịch làm việc trung tâm
+    public List<CenterSchedule> getAllSchedules() {
+        return centerScheduleRepository.findAll();
     }
 
-    private SpaServiceResponseDTO convertToDTO(SpaService spaService) {
-        SpaServiceResponseDTO dto = new SpaServiceResponseDTO();
-        dto.setId(spaService.getId());
-        dto.setName(spaService.getName());
-        dto.setDescription(spaService.getDescription());
-        dto.setPrice(spaService.getPrice());
-        dto.setDuration(spaService.getDuration());
-        return dto;
+    public CenterSchedule createSchedule(CenterSchedule schedule) {
+        return centerScheduleRepository.save(schedule);
+    }
+
+    public CenterSchedule updateSchedule(Long id, CenterSchedule updatedSchedule) {
+        CenterSchedule schedule = centerScheduleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy lịch làm việc!"));
+        schedule.setDayOfWeek(updatedSchedule.getDayOfWeek());
+        schedule.setStartTime(updatedSchedule.getStartTime());
+        schedule.setEndTime(updatedSchedule.getEndTime());
+        schedule.setIsClosed(updatedSchedule.getIsClosed());
+        return centerScheduleRepository.save(schedule);
+    }
+    
+    public void deleteSchedule(Long id) {
+        centerScheduleRepository.deleteById(id);
     }
 }
