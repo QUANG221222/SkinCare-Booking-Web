@@ -72,6 +72,15 @@ public class SecurityConfig {
                         .requestMatchers("/**").permitAll()
 
                         .anyRequest().authenticated()
+                )
+                // Exception handling: redirect to /login on access denied
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) ->
+                                response.sendRedirect("/login") // Redirect when not authenticated (401)
+                        )
+                        .accessDeniedHandler((request, response, accessDeniedException) ->
+                                response.sendRedirect("/login") // Redirect when forbidden (403)
+                        )
                 );
 
         http.authenticationProvider(authenticationProvider());

@@ -18,6 +18,16 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class SkinTherapist extends User {
 
 
+    @Builder.Default
+    private String userType = "THERAPIST";
+
+    protected void onCreate() {
+        super.onCreate();
+        if (getRole() == null) {
+            setRole(Role.ROLE_THERAPIST);
+        }
+    }
+
     @Column(name = "specialization")
     private String specialization;
 
