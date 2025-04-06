@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Chi tiết bài viết</title>
+    <style>
+        .blog-detail {
+            margin: 20px;
+        }
+        .blog-detail h1 {
+            margin-bottom: 10px;
+        }
+        .blog-meta {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .blog-content {
+            line-height: 1.6;
+        }
+        a {
+            text-decoration: none;
+            color: #007bff;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="blog-detail">
+    <h1 th:text="${blog.title}"></h1>
+    <div class="blog-meta">
+        <p th:text="'Tác giả: ' + (${blog.author} ?: 'Không xác định')"></p>
+        <p th:text="'Đăng ngày: ' + ${#temporals.format(blog.createdAt, 'dd/MM/yyyy HH:mm')}"></p>
+    </div>
+    <div class="blog-content">
+        <p th:text="${blog.content}"></p>
+    </div>
+    <a th:href="@{/blogs}">Quay lại danh sách</a>
+</div>
+</body>
+</html>

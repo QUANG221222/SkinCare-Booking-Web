@@ -37,79 +37,78 @@ public class FeedbackService {
         feedback.setComment(feedbackRequest.getMessage());
         feedback.setCustomer(customer);
 
-        // Lưu Feedback
         feedBackRepository.save(feedback);
     }
 
-//    // Read Feedbacks by Username
-//    public List<FeedbackRequest> getFeedbacksByUsername(String username) {
-//        // Tìm Customer dựa trên username
-//        Customer customer = customerRepository.findByUsername(username)
-//                .orElseThrow(() -> new IllegalArgumentException("Customer not found with username: " + username));
-//
-//        // Lấy danh sách Feedback của Customer
-//        List<Feedback> feedbacks = feedBackRepository.findByCustomer(customer);
-//
-//        // Chuyển đổi từ List<Feedback> sang List<FeedbackDTO>
-//        return feedbacks.stream().map(this::convertToDTO).collect(Collectors.toList());
-//    }
-//
-//    // Trả về tất cả feedback
-//    public List<FeedbackRequest> getAllFeedbacks() {
-//        return feedBackRepository.findAllNotHidden().stream()
-//                .map(this::convertToDTO)
-//                .collect(Collectors.toList());
-//    }
-
-    public List<FeedbackRequest> getFeedbacksByUsername(String username, String requesterUsername, String requesterEmail) {
+    // Read Feedbacks by Username
+    public List<FeedbackRequest> getFeedbacksByUsername(String username) {
         // Tìm Customer dựa trên username
         Customer customer = customerRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("Customer not found with username: " + username));
 
-        // Kiểm tra xem người yêu cầu có phải là Manager không
-        Optional<Manager> managerOptional = managerRepository.findByUsernameAndEmail(requesterUsername, requesterEmail);
+        // Lấy danh sách Feedback của Customer
+        List<Feedback> feedbacks = feedBackRepository.findByCustomer(customer);
 
-        List<Feedback> feedbacks;
-        if (managerOptional.isPresent()) {
-            // Nếu là Manager, trả về tất cả Feedback (bao gồm cả Feedback đã ẩn)
-            feedbacks = feedBackRepository.findByCustomer(customer);
-        } else {
-            // Nếu không phải Manager, kiểm tra xem có phải là Customer sở hữu Feedback không
-            Customer requester = customerRepository.findByUsernameAndEmail(requesterUsername, requesterEmail)
-                    .orElseThrow(() -> new IllegalArgumentException("Requester not found"));
-
-            if (!customer.getId().equals(requester.getId())) {
-                throw new IllegalArgumentException("You are not authorized to view this customer's feedbacks");
-            }
-
-            // Chỉ trả về Feedback chưa bị ẩn
-            feedbacks = feedBackRepository.findByCustomerNotHidden(customer);
-        }
-
-        // Chuyển đổi từ List<Feedback> sang List<FeedbackRequest>
+        // Chuyển đổi từ List<Feedback> sang List<FeedbackDTO>
         return feedbacks.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
     // Trả về tất cả feedback
-    public List<FeedbackRequest> getAllFeedbacks(String requesterUsername, String requesterEmail) {
-        // Kiểm tra xem người yêu cầu có phải là Manager không
-        Optional<Manager> managerOptional = managerRepository.findByUsernameAndEmail(requesterUsername, requesterEmail);
-
-        List<Feedback> feedbacks;
-        if (managerOptional.isPresent()) {
-            // Nếu là Manager, trả về tất cả Feedback (bao gồm cả Feedback đã ẩn)
-            feedbacks = feedBackRepository.findAllIncludingHidden();
-        } else {
-            // Nếu không phải Manager, kiểm tra xem có phải là Customer không
-            customerRepository.findByUsernameAndEmail(requesterUsername, requesterEmail)
-                    .orElseThrow(() -> new IllegalArgumentException("Requester not found"));
-
-            // Chỉ trả về Feedback chưa bị ẩn
-            feedbacks = feedBackRepository.findAllNotHidden();
-        }
-
-        return feedbacks.stream().map(this::convertToDTO).collect(Collectors.toList());
+    public List<FeedbackRequest> getAllFeedbacks() {
+        return feedBackRepository.findAllNotHidden().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
+
+//    public List<FeedbackRequest> getFeedbacksByUsername(String username, String requesterUsername, String requesterEmail) {
+//        // Tìm Customer dựa trên username
+//        Customer customer = customerRepository.findByUsername(username)
+//                .orElseThrow(() -> new IllegalArgumentException("Customer not found with username: " + username));
+//
+//        // Kiểm tra xem người yêu cầu có phải là Manager không
+//        Optional<Manager> managerOptional = managerRepository.findByUsernameAndEmail(requesterUsername, requesterEmail);
+//
+//        List<Feedback> feedbacks;
+//        if (managerOptional.isPresent()) {
+//            // Nếu là Manager, trả về tất cả Feedback (bao gồm cả Feedback đã ẩn)
+//            feedbacks = feedBackRepository.findByCustomer(customer);
+//        } else {
+//            // Nếu không phải Manager, kiểm tra xem có phải là Customer sở hữu Feedback không
+//            Customer requester = customerRepository.findByUsernameAndEmail(requesterUsername, requesterEmail)
+//                    .orElseThrow(() -> new IllegalArgumentException("Requester not found"));
+//
+//            if (!customer.getId().equals(requester.getId())) {
+//                throw new IllegalArgumentException("You are not authorized to view this customer's feedbacks");
+//            }
+//
+//            // Chỉ trả về Feedback chưa bị ẩn
+//            feedbacks = feedBackRepository.findByCustomerNotHidden(customer);
+//        }
+//
+//        // Chuyển đổi từ List<Feedback> sang List<FeedbackRequest>
+//        return feedbacks.stream().map(this::convertToDTO).collect(Collectors.toList());
+//    }
+
+//    // Trả về tất cả feedback
+//    public List<FeedbackRequest> getAllFeedbacks(String requesterUsername, String requesterEmail) {
+//        // Kiểm tra xem người yêu cầu có phải là Manager không
+//        Optional<Manager> managerOptional = managerRepository.findByUsernameAndEmail(requesterUsername, requesterEmail);
+//
+//        List<Feedback> feedbacks;
+//        if (managerOptional.isPresent()) {
+//            // Nếu là Manager, trả về tất cả Feedback (bao gồm cả Feedback đã ẩn)
+//            feedbacks = feedBackRepository.findAllIncludingHidden();
+//        } else {
+//            // Nếu không phải Manager, kiểm tra xem có phải là Customer không
+//            customerRepository.findByUsernameAndEmail(requesterUsername, requesterEmail)
+//                    .orElseThrow(() -> new IllegalArgumentException("Requester not found"));
+//
+//            // Chỉ trả về Feedback chưa bị ẩn
+//            feedbacks = feedBackRepository.findAllNotHidden();
+//        }
+//
+//        return feedbacks.stream().map(this::convertToDTO).collect(Collectors.toList());
+//    }
 
     //update feedback
     public void updateFeedback(Long id, FeedbackRequest feedbackRequest) {

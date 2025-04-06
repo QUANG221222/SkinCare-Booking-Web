@@ -63,7 +63,9 @@ public class SecurityConfig {
                         .requestMatchers("/protected/staff/**").hasRole("STAFF")
                         .requestMatchers("/protected/therapist/**").hasRole("THERAPIST")
 
-                        .requestMatchers("/api/auth/manager/login").hasRole("MANAGER")
+                        .requestMatchers("/api/feedbacks/**").authenticated()
+
+                        .requestMatchers("/api/auth/manager/").hasRole("MANAGER")
 
                         //Public
                         .requestMatchers("/api/auth/**").permitAll()
