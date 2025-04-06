@@ -1,51 +1,41 @@
 package coderuth.k23.skincare_booking.models;
 
-import java.time.LocalDateTime;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import lombok.*;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "blogs")
+@Data
+@AllArgsConstructor
 public class Blog {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "blog_id", nullable = false, unique = true)
     private Long id;
-    
-    @NotBlank(message = "Title is required")
-    @Size(min = 2, max = 100, message = "Title must be between 2 and 100 characters")
+
+    @NotBlank(message = "Tiêu đề không được để trống!")
+    @Size(min = 2, max = 100, message = "Tiêu đề phải từ 2 đến 100 ký tự!")
+    @Column(name = "title", nullable = false)
     private String title;
-    
-    @NotBlank(message = "Content is required")
-    @Size(min = 10, message = "Content must be at least 10 characters")
-    @Column(columnDefinition = "TEXT")
+
+    @NotBlank(message = "Nội dung không được để trống!")
+    @Size(min = 10, message = "Nội dung phải có ít nhất 10 ký tự!")
+    @Column(name = "content", columnDefinition = "TEXT")
     private String content;
-    
+
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
-    
+
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    // Constructors
+    // Constructor mặc định với thời gian tạo và cập nhật
     public Blog() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
-
-    // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
-    public String getContent() { return content; }
-    public void setContent(String content) { this.content = content; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 }
