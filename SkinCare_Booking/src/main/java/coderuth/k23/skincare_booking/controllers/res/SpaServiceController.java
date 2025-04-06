@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/api/spa-services")
+@RequestMapping("/spa-services")
 public class SpaServiceController {
 
     @Autowired
@@ -43,7 +43,7 @@ public class SpaServiceController {
     @PostMapping
     public String createService(@ModelAttribute SpaService spaService) {
         spaServiceService.createService(spaService);
-        return "redirect:/api/spa-services";
+        return "redirect:/spa-services";
     }
 
     @GetMapping("/edit/{id}")
@@ -59,7 +59,7 @@ public class SpaServiceController {
     @PostMapping("/update/{id}")
     public String updateService(@PathVariable Long id, @ModelAttribute SpaService spaService) {
         spaServiceService.updateService(id, spaService);
-        return "redirect:/api/spa-services";
+        return "redirect:/spa-services";
     }
 
     @GetMapping("/delete/{id}")
@@ -71,7 +71,7 @@ public class SpaServiceController {
 
         if (spaServiceOptional.isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "Không tìm thấy dịch vụ để xóa.");
-            return "redirect:/api/spa-services";
+            return "redirect:/spa-services";
         }
 
         try {
@@ -80,7 +80,7 @@ public class SpaServiceController {
         } catch (DataIntegrityViolationException e) {
             redirectAttributes.addFlashAttribute("error", "Không thể xóa dịch vụ vì đang được sử dụng trong các cuộc hẹn.");
         }
-        return "redirect:/api/spa-services";
+        return "redirect:/spa-services";
     }
     // Quản lý lịch làm việc trung tâm
     @GetMapping("/schedules")
@@ -99,7 +99,7 @@ public class SpaServiceController {
     public String createSchedule(@ModelAttribute CenterSchedule schedule, RedirectAttributes redirectAttributes) {
         spaServiceService.createSchedule(schedule);
         redirectAttributes.addFlashAttribute("success", "Tạo lịch làm việc thành công!");
-        return "redirect:/api/spa-services/schedules";
+        return "redirect:/spa-services/schedules";
     }
 
     @GetMapping("/schedules/edit/{id}")
@@ -116,13 +116,13 @@ public class SpaServiceController {
     public String updateSchedule(@PathVariable Long id, @ModelAttribute CenterSchedule schedule, RedirectAttributes redirectAttributes) {
         spaServiceService.updateSchedule(id, schedule);
         redirectAttributes.addFlashAttribute("success", "Sửa lịch làm việc thành công!");
-        return "redirect:/api/spa-services/schedules";
+        return "redirect:/spa-services/schedules";
     }
 
     @GetMapping("/schedules/delete/{id}")
     public String deleteSchedule(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         spaServiceService.deleteSchedule(id);
         redirectAttributes.addFlashAttribute("success", "Xóa lịch làm việc thành công!");
-        return "redirect:/api/spa-services/schedules";
+        return "redirect:/spa-services/schedules";
     }
 }
