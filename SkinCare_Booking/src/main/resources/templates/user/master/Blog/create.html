@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Create Blog</title>
+    <style>
+        .error { color: red; }
+        form {
+            margin-top: 20px;
+        }
+        div {
+            margin-bottom: 15px;
+        }
+        label {
+            display: inline-block;
+            width: 100px;
+        }
+        input[type="text"], textarea {
+            width: 300px;
+            padding: 5px;
+        }
+        textarea {
+            height: 100px;
+        }
+        button, a {
+            padding: 5px 10px;
+            text-decoration: none;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        a {
+            color: blue;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>Create New Blog</h1>
+    <form th:action="@{/blogs}" th:object="${blog}" method="post">
+        <div>
+            <label>Title:</label>
+            <input type="text" th:field="*{title}">
+            <span class="error" th:if="${#fields.hasErrors('title')}"
+                  th:errors="*{title}"></span>
+        </div>
+        <div>
+            <label>Content:</label>
+            <textarea th:field="*{content}"></textarea>
+            <span class="error" th:if="${#fields.hasErrors('content')}"
+                  th:errors="*{content}"></span>
+        </div>
+        <button type="submit">Save</button>
+        <a th:href="@{/blogs}">Cancel</a>
+    </form>
+</body>
+</html>

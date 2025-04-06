@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Edit Blog</title>
+    <style>
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Edit Blog</h1>
+    <form th:action="@{/blogs/update/{id}(id=${blog.id})}" th:object="${blog}" method="post">
+        <div>
+            <label>Title:</label>
+            <input type="text" th:field="*{title}">
+            <span class="error" th:if="${#fields.hasErrors('title')}" 
+                  th:errors="*{title}"></span>
+        </div>
+        <div>
+            <label>Content:</label>
+            <textarea th:field="*{content}"></textarea>
+            <span class="error" th:if="${#fields.hasErrors('content')}" 
+                  th:errors="*{content}"></span>
+        </div>
+        <button type="submit">Update</button>
+        <a th:href="@{/blogs}">Cancel</a>
+    </form>
+</body>
+</html>
