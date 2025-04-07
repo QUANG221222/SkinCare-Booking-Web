@@ -1,6 +1,5 @@
 package coderuth.k23.skincare_booking.models;
 
-import jakarta.validation.constraints.Pattern;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import jakarta.persistence.*;
@@ -8,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @MappedSuperclass // Class User này không tạo bảng, chỉ để các class con kế thừa
-@Data //sinh ra getter,setter
+@Data
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -48,9 +47,6 @@ public abstract class User {
         ROLE_THERAPIST
     }
 
-//    @Enumerated(EnumType.STRING)
-//    @Column(name = "role")
-//    public Role role;
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;

@@ -125,12 +125,12 @@
     - `/auth/verify-email` (GET): Xác thực email (sử dụng token hoặc code được gửi trong email). ✅
 
 - **Thay Đổi Mật Khẩu:**
-  - Cung cấp endpoint cho phép người dùng thay đổi mật khẩu.
-  - Yêu cầu xác thực người dùng (dùng JWT).
-  - Xác nhận mật khẩu cũ (tùy chọn).
-  - Lưu mật khẩu mới đã mã hóa.
+  - Cung cấp endpoint cho phép người dùng thay đổi mật khẩu. ✅
+  - Yêu cầu xác thực người dùng (dùng JWT). ✅
+  - Xác nhận mật khẩu cũ (tùy chọn). ✅
+  - Lưu mật khẩu mới đã mã hóa. ✅
   - **Endpoints liên quan:**
-    - `/auth/change-password` (POST/PUT): Thay đổi mật khẩu (yêu cầu authentication).
+    - `/auth/change-password` (POST/PUT): Thay đổi mật khẩu (yêu cầu authentication). ✅
 
 #### Authorization
 

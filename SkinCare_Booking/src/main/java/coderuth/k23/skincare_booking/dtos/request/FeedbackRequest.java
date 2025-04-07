@@ -23,7 +23,7 @@ public class FeedbackRequest {
     private String email;
 
     @NotBlank(message = "Subject is required")
-    private String subject; // subject là tên vấn đề khách hàng gặp phải
+    private String subject;
 
     @NotBlank(message = "Message is required")
     private String message;

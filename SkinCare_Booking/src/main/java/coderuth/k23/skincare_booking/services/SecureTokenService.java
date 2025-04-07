@@ -17,7 +17,7 @@ public class SecureTokenService {
 
     private static BytesKeyGenerator DEFAULT_TOKEN_GENERATOR = KeyGenerators.secureRandom(12);
 
-    @Value("2800")
+    @Value("2800") // 46m = 2800s
     private int tokenValidityInSeconds;
 
     @Autowired
