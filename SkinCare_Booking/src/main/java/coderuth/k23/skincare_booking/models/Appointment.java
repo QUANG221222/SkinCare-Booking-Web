@@ -4,6 +4,8 @@ import lombok.*;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 @Entity
 @Table(name = "appointments")
 @Data
@@ -37,6 +39,7 @@ public class Appointment {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @ManyToOne
+
     //Cột staff_id trong bảng appointments sẽ chỉ ra quản lý nào giám sát lịch hẹn đó.
     @JoinColumn(name = "staff_id")
     private Staff staff;
@@ -49,10 +52,21 @@ public class Appointment {
     private Manager manager; // Quản lý giám sát lịch hẹn
 
     @Column(name = "appointment_time", nullable = false)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime appointmentTime; // Thời gian diễn ra lịch hẹn
 
-    @Column(name = "status")
-    private String status; // Trạng thái: PENDING, CONFIRMED, COMPLETED, CANCELLED
+    @Enumerated(EnumType.STRING)
+    private AppointmentStatus status; // Trạng thái đặt dịch vụ
+
+    private String result; // Kết quả thực hiện dịch vụ (do chuyên viên ghi nhận)
+
+    public enum AppointmentStatus {
+        PENDING,        // Đang chờ xử lý (mới đặt)
+        CHECKED_IN,     // Đã check-in tại trung tâm
+        ASSIGNED,       // Đã phân công chuyên viên
+        COMPLETED,      // Chuyên viên đã hoàn thành dịch vụ
+        CHECKED_OUT     // Đã check-out
+    }
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
