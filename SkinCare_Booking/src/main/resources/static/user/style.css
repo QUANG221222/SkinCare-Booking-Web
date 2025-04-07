@@ -1638,7 +1638,6 @@ img {
   background-color: rgba(203, 134, 112, 0.49);
   color: #0b0b0b;
 }
-
 @media (min-width: 768px) and (max-width: 1199px) {
   .date-picker{
     font-size: 14px;
