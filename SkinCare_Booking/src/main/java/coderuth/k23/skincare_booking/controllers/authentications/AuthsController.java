@@ -29,12 +29,6 @@ public class AuthsController {
     @Autowired
     private CustomerRepository customerRepository;
 
-//    @PostMapping("/manager/login")
-//    public ResponseEntity<ApiResponse<UserInfoResponse>> authenticaAdmin(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
-//        UserInfoResponse userInfo = authService.authenticateUser(loginRequest, response);
-//        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("Authentication successful", userInfo));
-//    }
-
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<UserInfoResponse>> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         UserInfoResponse userInfo = authService.authenticateUser(loginRequest, response);

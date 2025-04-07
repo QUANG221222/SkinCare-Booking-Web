@@ -37,7 +37,6 @@ public class FeedbackService {
         feedback.setComment(feedbackRequest.getMessage());
         feedback.setCustomer(customer);
 
-        // Lưu Feedback
         feedBackRepository.save(feedback);
     }
 
@@ -60,6 +59,56 @@ public class FeedbackService {
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
+
+//    public List<FeedbackRequest> getFeedbacksByUsername(String username, String requesterUsername, String requesterEmail) {
+//        // Tìm Customer dựa trên username
+//        Customer customer = customerRepository.findByUsername(username)
+//                .orElseThrow(() -> new IllegalArgumentException("Customer not found with username: " + username));
+//
+//        // Kiểm tra xem người yêu cầu có phải là Manager không
+//        Optional<Manager> managerOptional = managerRepository.findByUsernameAndEmail(requesterUsername, requesterEmail);
+//
+//        List<Feedback> feedbacks;
+//        if (managerOptional.isPresent()) {
+//            // Nếu là Manager, trả về tất cả Feedback (bao gồm cả Feedback đã ẩn)
+//            feedbacks = feedBackRepository.findByCustomer(customer);
+//        } else {
+//            // Nếu không phải Manager, kiểm tra xem có phải là Customer sở hữu Feedback không
+//            Customer requester = customerRepository.findByUsernameAndEmail(requesterUsername, requesterEmail)
+//                    .orElseThrow(() -> new IllegalArgumentException("Requester not found"));
+//
+//            if (!customer.getId().equals(requester.getId())) {
+//                throw new IllegalArgumentException("You are not authorized to view this customer's feedbacks");
+//            }
+//
+//            // Chỉ trả về Feedback chưa bị ẩn
+//            feedbacks = feedBackRepository.findByCustomerNotHidden(customer);
+//        }
+//
+//        // Chuyển đổi từ List<Feedback> sang List<FeedbackRequest>
+//        return feedbacks.stream().map(this::convertToDTO).collect(Collectors.toList());
+//    }
+
+//    // Trả về tất cả feedback
+//    public List<FeedbackRequest> getAllFeedbacks(String requesterUsername, String requesterEmail) {
+//        // Kiểm tra xem người yêu cầu có phải là Manager không
+//        Optional<Manager> managerOptional = managerRepository.findByUsernameAndEmail(requesterUsername, requesterEmail);
+//
+//        List<Feedback> feedbacks;
+//        if (managerOptional.isPresent()) {
+//            // Nếu là Manager, trả về tất cả Feedback (bao gồm cả Feedback đã ẩn)
+//            feedbacks = feedBackRepository.findAllIncludingHidden();
+//        } else {
+//            // Nếu không phải Manager, kiểm tra xem có phải là Customer không
+//            customerRepository.findByUsernameAndEmail(requesterUsername, requesterEmail)
+//                    .orElseThrow(() -> new IllegalArgumentException("Requester not found"));
+//
+//            // Chỉ trả về Feedback chưa bị ẩn
+//            feedbacks = feedBackRepository.findAllNotHidden();
+//        }
+//
+//        return feedbacks.stream().map(this::convertToDTO).collect(Collectors.toList());
+//    }
 
     //update feedback
     public void updateFeedback(Long id, FeedbackRequest feedbackRequest) {
@@ -85,24 +134,34 @@ public class FeedbackService {
         feedBackRepository.save(feedback);
     }
 
-    // Delete Feedback theo username và email
-    public void deleteFeedback(Long id, FeedbackRequest feedbackRequest) {
-        // Tìm Feedback theo id
-        Feedback feedback = feedBackRepository.findByIdNotHidden(id)
-                .orElseThrow(() -> new IllegalArgumentException("Feedback not found with id: " + id));
-
+    // Delete Feedback
+    public void deleteFeedback(Long id, FeedbackRequest feedbackRequest, boolean isPermanent) {
         // Kiểm tra xem người dùng có phải là Manager không
         Optional<Manager> managerOptional = managerRepository.findByUsernameAndEmail(
                 feedbackRequest.getUsername(), feedbackRequest.getEmail());
 
+        Feedback feedback;
         if (managerOptional.isPresent()) {
-            // Nếu là Manager, có quyền ẩn bất kỳ Feedback nào
-            feedback.setHidden(true);
-            feedBackRepository.save(feedback);
+            // Nếu là Manager, tìm Feedback bằng findById (có thể tìm cả Feedback đã ẩn)
+            feedback = feedBackRepository.findById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("Feedback not found with id: " + id));
+
+            if (isPermanent) {
+                // Hard delete: Xóa hoàn toàn khỏi cơ sở dữ liệu
+                feedBackRepository.delete(feedback);
+            } else {
+                // Soft delete: Đặt isHidden = true
+                feedback.setHidden(true);
+                feedBackRepository.save(feedback);
+            }
             return;
         }
 
         // Nếu không phải Manager, kiểm tra xem có phải là Customer sở hữu Feedback không
+        // Customer chỉ có thể thao tác với Feedback chưa bị ẩn
+        feedback = feedBackRepository.findByIdNotHidden(id)
+                .orElseThrow(() -> new IllegalArgumentException("Feedback not found with id: " + id));
+
         Customer customer = customerRepository.findByUsernameAndEmail(
                         feedbackRequest.getUsername(), feedbackRequest.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -111,7 +170,12 @@ public class FeedbackService {
             throw new IllegalArgumentException("You are not authorized to delete this feedback");
         }
 
-        // Đánh dấu Feedback là đã ẩn
+        // Customer chỉ có thể soft delete
+        if (isPermanent) {
+            throw new IllegalArgumentException("Only managers can permanently delete feedback");
+        }
+
+        // Soft delete cho Customer
         feedback.setHidden(true);
         feedBackRepository.save(feedback);
     }
