@@ -15,7 +15,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @AllArgsConstructor
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
-//@Inheritance(strategy = InheritanceType.JOINED)
 
 public class Customer extends User {
 
@@ -32,7 +31,6 @@ public class Customer extends User {
     }
 
     private boolean accountVerified;
-//    private boolean loginDisabled;
 
     public boolean getAccountVerified() {
         return accountVerified;
