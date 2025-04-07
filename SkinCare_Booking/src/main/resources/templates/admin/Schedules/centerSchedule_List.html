@@ -7,12 +7,18 @@
 <body>
 <div class="container">
   <h1>Danh sách lịch làm việc trung tâm</h1>
-  <!-- Thông báo thành công -->
-  <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
-
+  <!-- Thông báo lỗi hoặc thành công -->
+  <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+    <span th:text="${success}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <span th:text="${error}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
   <!-- Thông báo lỗi -->
   <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
-  <a th:href="@{/api/spa-services/schedules/new}" class="btn btn-primary mb-3">Tạo lịch mới</a>
+  <a th:href="@{/spa-services/schedules/new}" class="btn btn-primary mb-3">Tạo lịch mới</a>
   <table class="table table-bordered">
     <thead>
     <tr>
@@ -32,8 +38,8 @@
       <td th:text="${schedule.endTime}"></td>
       <td th:text="${schedule.isClosed} ? 'Có' : 'Không'"></td>
       <td>
-        <a th:href="@{/api/spa-services/schedules/edit/{id}(id=${schedule.id})}" class="btn btn-warning">Sửa</a>
-        <a th:href="@{/api/spa-services/schedules/delete/{id}(id=${schedule.id})}" class="btn btn-danger">Xóa</a>
+        <a th:href="@{/spa-services/schedules/edit/{id}(id=${schedule.id})}" class="btn btn-warning">Sửa</a>
+        <a th:href="@{/spa-services/schedules/delete/{id}(id=${schedule.id})}" class="btn btn-danger">Xóa</a>
       </td>
     </tr>
     </tbody>

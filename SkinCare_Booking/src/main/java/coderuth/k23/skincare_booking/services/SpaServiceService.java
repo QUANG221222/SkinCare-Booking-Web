@@ -27,6 +27,10 @@ public class SpaServiceService {
     public List<SpaService> getAllServices() {
         return spaServiceRepository.findAll();
     }
+    public SpaService getServiceById(Long id) {
+        return spaServiceRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Service not found!"));
+    }
 
     public SpaService createService(SpaService spaService) {
         return spaServiceRepository.save(spaService);
@@ -34,7 +38,7 @@ public class SpaServiceService {
 
     public SpaService updateService(Long id, SpaService updatedService) {
         SpaService spaService = spaServiceRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy dịch vụ!"));
+                .orElseThrow(() -> new RuntimeException("Service not found!"));
         spaService.setName(updatedService.getName());
         spaService.setDescription(updatedService.getDescription());
         spaService.setPrice(updatedService.getPrice());
@@ -57,7 +61,7 @@ public class SpaServiceService {
 
     public CenterSchedule updateSchedule(Long id, CenterSchedule updatedSchedule) {
         CenterSchedule schedule = centerScheduleRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy lịch làm việc!"));
+                .orElseThrow(() -> new RuntimeException("Schedule not found!"));
         schedule.setDayOfWeek(updatedSchedule.getDayOfWeek());
         schedule.setStartTime(updatedSchedule.getStartTime());
         schedule.setEndTime(updatedSchedule.getEndTime());

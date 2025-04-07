@@ -7,6 +7,15 @@
 <body>
 <div class="container">
   <h1>Danh sách nhà trị liệu</h1>
+  <!-- Thông báo lỗi hoặc thành công -->
+  <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+    <span th:text="${success}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <span th:text="${error}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
   <a th:href="@{/therapists/new}" class="btn btn-primary mb-3">Tạo nhà trị liệu mới</a>
   <table class="table table-bordered">
     <thead>

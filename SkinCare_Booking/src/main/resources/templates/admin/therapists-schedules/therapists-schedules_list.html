@@ -7,12 +7,21 @@
 <body>
 <div class="container">
   <h1>Lịch làm việc của <span th:text="${therapist.fullName}"></span></h1>
+  <!-- Thông báo lỗi hoặc thành công -->
+  <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+    <span th:text="${success}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <span th:text="${error}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
   <a th:href="@{/therapists/{id}/schedules/new(id=${therapist.id})}" class="btn btn-primary mb-3">Tạo lịch mới</a>
   <table class="table table-bordered">
     <thead>
     <tr>
       <th>ID</th>
-      <th>Thứ</th>
+      <th>Thứ</th >
       <th>Giờ bắt đầu</th>
       <th>Giờ kết thúc</th>
       <th>Hành động</th>

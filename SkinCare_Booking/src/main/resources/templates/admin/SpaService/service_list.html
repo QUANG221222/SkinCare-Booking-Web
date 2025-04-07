@@ -8,10 +8,15 @@
 <div class="container">
     <h1>Danh sách dịch vụ</h1>
     <!-- Thông báo lỗi hoặc thành công -->
-    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
-    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
-
-    <a th:href="@{/api/spa-services/new}" class="btn btn-primary mb-3">Tạo dịch vụ mới</a>
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <a th:href="@{/spa-services/new}" class="btn btn-primary mb-3">Tạo dịch vụ mới</a>
     <table class="table table-bordered">
         <thead>
         <tr>
@@ -31,8 +36,8 @@
             <td th:text="${service.price}"></td>
             <td th:text="${service.duration}"></td>
             <td>
-                <a th:href="@{/api/spa-services/edit/{id}(id=${service.id})}" class="btn btn-warning">Sửa</a>
-                <a th:href="@{/api/spa-services/delete/{id}(id=${service.id})}" class="btn btn-danger">Xóa</a>
+                <a th:href="@{/spa-services/edit/{id}(id=${service.id})}" class="btn btn-warning">Sửa</a>
+                <a th:href="@{/spa-services/delete/{id}(id=${service.id})}" class="btn btn-danger">Xóa</a>
             </td>
         </tr>
         </tbody>

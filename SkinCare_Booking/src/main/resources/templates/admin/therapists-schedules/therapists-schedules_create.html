@@ -7,6 +7,15 @@
 <body>
 <div class="container">
     <h1>Tạo lịch làm việc cho <span th:text="${schedule.skinTherapist.fullName}"></span></h1>
+    <!-- Thông báo lỗi hoặc thành công -->
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
     <form th:action="@{/therapists/schedules}" th:object="${schedule}" method="post">
         <input type="hidden" th:field="*{skinTherapist.id}"/>
         <div class="mb-3">

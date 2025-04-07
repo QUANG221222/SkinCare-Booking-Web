@@ -1,23 +1,16 @@
 package coderuth.k23.skincare_booking.controllers.res;
 
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import coderuth.k23.skincare_booking.services.SpaServiceService;
-import coderuth.k23.skincare_booking.dtos.response.ApiResponse;
-import coderuth.k23.skincare_booking.dtos.request.SpaServiceRequestDTO;
-import coderuth.k23.skincare_booking.dtos.response.SpaServiceResponseDTO;
 import coderuth.k23.skincare_booking.models.CenterSchedule;
 import coderuth.k23.skincare_booking.models.SpaService;
 
-import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -41,8 +34,13 @@ public class SpaServiceController {
     }
 
     @PostMapping
-    public String createService(@ModelAttribute SpaService spaService) {
-        spaServiceService.createService(spaService);
+    public String createService(@ModelAttribute SpaService spaService, RedirectAttributes redirectAttributes) {
+        try {
+            spaServiceService.createService(spaService);
+            redirectAttributes.addFlashAttribute("success", "Service has been created successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "An error occurred while creating the service: " + e.getMessage());
+        }
         return "redirect:/spa-services";
     }
 
@@ -51,34 +49,39 @@ public class SpaServiceController {
         SpaService spaService = spaServiceService.getAllServices().stream()
                 .filter(s -> s.getId().equals(id))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy dịch vụ!"));
+                .orElseThrow(() -> new RuntimeException("Service not found!"));
         model.addAttribute("SpaService", spaService);
         return "admin/SpaService/service_edit";
     }
 
     @PostMapping("/update/{id}")
-    public String updateService(@PathVariable Long id, @ModelAttribute SpaService spaService) {
-        spaServiceService.updateService(id, spaService);
+    public String updateService(@PathVariable Long id, @ModelAttribute SpaService spaService, RedirectAttributes redirectAttributes) {
+        try {
+            spaServiceService.updateService(id, spaService);
+            redirectAttributes.addFlashAttribute("success", "Service has been updated successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "An error occurred while updating the service: " + e.getMessage());
+        }
         return "redirect:/spa-services";
     }
 
     @GetMapping("/delete/{id}")
     public String deleteService(@PathVariable Long id,  RedirectAttributes redirectAttributes) {
-        // Kiểm tra xem dịch vụ có đang được sử dụng trong lịch hẹn không
-        Optional<SpaService> spaServiceOptional = spaServiceService.getAllServices().stream()
-                .filter(s -> s.getId().equals(id))
-                .findFirst();
-
-        if (spaServiceOptional.isEmpty()) {
-            redirectAttributes.addFlashAttribute("error", "Không tìm thấy dịch vụ để xóa.");
-            return "redirect:/spa-services";
-        }
-
         try {
+            // Kiểm tra xem dịch vụ có đang được sử dụng trong lịch hẹn không
+            Optional<SpaService> spaServiceOptional = spaServiceService.getAllServices().stream()
+                    .filter(s -> s.getId().equals(id))
+                    .findFirst();
+    
+            if (spaServiceOptional.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "Service not found to delete.");
+                return "redirect:/spa-services";
+            }
+    
             spaServiceService.deleteService(id, redirectAttributes);
-            redirectAttributes.addFlashAttribute("success", "Xóa dịch vụ thành công!");
-        } catch (DataIntegrityViolationException e) {
-            redirectAttributes.addFlashAttribute("error", "Không thể xóa dịch vụ vì đang được sử dụng trong các cuộc hẹn.");
+            redirectAttributes.addFlashAttribute("success", "Service has been deleted successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "An error occurred while deleting the service: " + e.getMessage());
         }
         return "redirect:/spa-services";
     }
@@ -97,8 +100,12 @@ public class SpaServiceController {
 
     @PostMapping("/schedules")
     public String createSchedule(@ModelAttribute CenterSchedule schedule, RedirectAttributes redirectAttributes) {
-        spaServiceService.createSchedule(schedule);
-        redirectAttributes.addFlashAttribute("success", "Tạo lịch làm việc thành công!");
+        try {
+            spaServiceService.createSchedule(schedule);
+            redirectAttributes.addFlashAttribute("success", "Schedule has been created successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "An error occurred while creating the schedule: " + e.getMessage());
+        }
         return "redirect:/spa-services/schedules";
     }
 
@@ -107,22 +114,29 @@ public class SpaServiceController {
         CenterSchedule schedule = spaServiceService.getAllSchedules().stream()
                 .filter(s -> s.getId().equals(id))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy lịch làm việc!"));
+                .orElseThrow(() -> new RuntimeException("Schedule not found!"));
         model.addAttribute("schedules", schedule);
         return "/admin/Schedules/centerSchedule_Edit";
     }
 
-    @PostMapping("/schedules/update/{id}")
     public String updateSchedule(@PathVariable Long id, @ModelAttribute CenterSchedule schedule, RedirectAttributes redirectAttributes) {
-        spaServiceService.updateSchedule(id, schedule);
-        redirectAttributes.addFlashAttribute("success", "Sửa lịch làm việc thành công!");
+        try {
+            spaServiceService.updateSchedule(id, schedule);
+            redirectAttributes.addFlashAttribute("success", "Schedule has been updated successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "An error occurred while updating the schedule: " + e.getMessage());
+        }
         return "redirect:/spa-services/schedules";
     }
 
     @GetMapping("/schedules/delete/{id}")
     public String deleteSchedule(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        spaServiceService.deleteSchedule(id);
-        redirectAttributes.addFlashAttribute("success", "Xóa lịch làm việc thành công!");
+        try {
+            spaServiceService.deleteSchedule(id);
+            redirectAttributes.addFlashAttribute("success", "Schedule has been deleted successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "An error occurred while deleting the schedule: " + e.getMessage());
+        }
         return "redirect:/spa-services/schedules";
     }
 }

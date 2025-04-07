@@ -7,7 +7,17 @@
 <body>
 <div class="container">
     <h1>Tạo dịch vụ mới</h1>
-    <form th:action="@{/api/spa-services}" th:object="${SpaService}" method="post">
+      <!-- Thông báo lỗi hoặc thành công -->
+      <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <form th:action="@{/spa-services}" th:object="${SpaService}" method="post">
         <div class="mb-3">
             <label>Tên dịch vụ:</label>
             <input type="text" th:field="*{name}" class="form-control" required/>

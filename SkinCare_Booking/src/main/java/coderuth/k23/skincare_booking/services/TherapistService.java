@@ -31,7 +31,7 @@ public class TherapistService {
 
     public SkinTherapist updateTherapist(UUID id, SkinTherapist updatedTherapist) {
         SkinTherapist therapist = skinTherapistRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy nhà trị liệu!"));
+                .orElseThrow(() -> new RuntimeException("Therapist not found!"));
         therapist.setFullName(updatedTherapist.getFullName());
         therapist.setEmail(updatedTherapist.getEmail());
         therapist.setPhone(updatedTherapist.getPhone());
@@ -56,7 +56,7 @@ public class TherapistService {
 
     public TherapistSchedule updateSchedule(UUID id, TherapistSchedule updatedSchedule) {
         TherapistSchedule schedule = therapistScheduleRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy lịch làm việc!"));
+                .orElseThrow(() -> new RuntimeException("Schedule not found!"));
         schedule.setDayOfWeek(updatedSchedule.getDayOfWeek());
         schedule.setStartTime(updatedSchedule.getStartTime());
         schedule.setEndTime(updatedSchedule.getEndTime());

@@ -7,6 +7,15 @@
 <body>
 <div class="container">
   <h1>Chỉnh sửa nhà trị liệu</h1>
+   <!-- Thông báo lỗi hoặc thành công -->
+   <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+    <span th:text="${success}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <span th:text="${error}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
   <form th:action="@{/therapists/update/{id}(id=${therapist.id})}" th:object="${therapist}" method="post">
     <div class="mb-3">
       <label>Tên:</label>
