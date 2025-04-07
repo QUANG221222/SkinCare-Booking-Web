@@ -5,6 +5,7 @@ import coderuth.k23.skincare_booking.models.User;
 import coderuth.k23.skincare_booking.repositories.CustomerRepository;
 import coderuth.k23.skincare_booking.repositories.ManagerRepository;
 
+import coderuth.k23.skincare_booking.repositories.StaffRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -23,6 +24,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private ManagerRepository managerRepository;
 
+    @Autowired
+    private StaffRepository staffRepository;
+
     // Add other repositories as needed
 
     @Override
@@ -34,10 +38,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             user = managerRepository.findByUsername(username);
         }
 
-        // Add additional repositories checks here
-        // if (user.isEmpty()) {
-        //     user = staffRepository.findByUsername(username);
-        // }
+         if (user.isEmpty()) {
+             user = staffRepository.findByUsername(username);
+         }
 
         if (user.isEmpty()) {
             throw new UsernameNotFoundException("User not found with username: " + username);

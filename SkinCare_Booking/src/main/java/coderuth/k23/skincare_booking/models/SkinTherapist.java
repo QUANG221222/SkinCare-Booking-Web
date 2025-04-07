@@ -28,15 +28,12 @@ public class SkinTherapist extends User {
         }
     }
 
-    @Column(name = "specialization")
-    private String specialization;
+    @Column(name = "specialty")
+    private String specialty;
 
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
-    @JsonIgnore // Tránh vòng lặp khi gọi API
-    @OneToMany(mappedBy = "skinTherapist")
-    private List<Appointment> appointments; // Danh sách lịch hẹn của chuyên viên
-
+    @Column(name = "experience")
+    private String experience;
+    
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @OneToMany(mappedBy = "skinTherapist")

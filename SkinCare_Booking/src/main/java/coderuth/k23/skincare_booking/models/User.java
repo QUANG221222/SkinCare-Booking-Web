@@ -16,7 +16,7 @@ public abstract class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "User_id", nullable = false, unique = true)
+    @Column(name = "user_id", nullable = false, unique = true)
     private UUID id;
 
     @Column(name = "username", nullable = false, unique = true)
