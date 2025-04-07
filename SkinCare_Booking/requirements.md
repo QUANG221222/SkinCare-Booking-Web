@@ -25,7 +25,7 @@
 - **Trang chủ (Guest/Public)**
   - Giới thiệu ✅
   - Hiển thị thông tin các dịch vụ chăm sóc da ✅
-  - Hiển thị thông tin chuyên viên trị liệu da
+  - Hiển thị thông tin chuyên viên trị liệu da 
   - Blog giới thiệu ✅
   - Tin tức ✅
 - **Trang đặt lịch (Customer)**
@@ -42,7 +42,7 @@
 - **Trang hồ sơ (Customer)**
   - Cho phép xem thông tin cá nhân đã đăng ký với trung tâm ✅
   - Cho phép thay đổi một số thông tin cá nhân ✅
-  - Cho phép thay đổi mật khẩu
+  - Cho phép thay đổi mật khẩu ✅
 
 #### 1.2 Skin Therapist
 
