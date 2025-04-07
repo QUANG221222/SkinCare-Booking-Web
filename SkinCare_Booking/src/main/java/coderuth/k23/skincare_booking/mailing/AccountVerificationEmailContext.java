@@ -19,6 +19,11 @@ public class AccountVerificationEmailContext extends AbstractEmailContext {
         setTo(customer.getEmail());
     }
 
+    @Override
+    public String getBody() {
+        return "";
+    }
+
     public void setToken(String token) {
         this.token = token;
         put("token", token);

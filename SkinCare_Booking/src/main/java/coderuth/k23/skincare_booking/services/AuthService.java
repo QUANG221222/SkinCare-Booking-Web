@@ -1,5 +1,6 @@
 package coderuth.k23.skincare_booking.services;
 
+import coderuth.k23.skincare_booking.dtos.request.ChangePasswordRequest;
 import coderuth.k23.skincare_booking.exception.InvalidTokenException;
 import coderuth.k23.skincare_booking.mailing.AccountVerificationEmailContext;
 import coderuth.k23.skincare_booking.mailing.EmailService;
@@ -14,6 +15,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,7 @@ import coderuth.k23.skincare_booking.dtos.request.RegisterRequest;
 import coderuth.k23.skincare_booking.dtos.response.UserInfoResponse;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -61,6 +64,8 @@ public class AuthService {
 
     @Autowired
     private RefreshTokenService refreshTokenService;
+
+
 
     public UserInfoResponse authenticateUser(LoginRequest loginRequest, HttpServletResponse response) {
         Authentication authentication = authenticationManager.authenticate(
@@ -252,4 +257,84 @@ public class AuthService {
         // Clear the cookies
         jwtUtil.clearTokenCookies(response);
     }
+
+
+    public void changePassword(String username, ChangePasswordRequest request) {
+        // Find the user by username from all repositories
+        User user = findUserByUsername(username);
+
+        // Validate old password
+        if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("Old password is incorrect");
+        }
+
+        // Optional: Ensure new password is different from old password
+        if (request.getOldPassword().equals(request.getNewPassword())) {
+            throw new IllegalArgumentException("New password must be different from the old password");
+        }
+
+        // Optional: Add additional password validation (e.g., length, special characters)
+        validateNewPassword(request.getNewPassword());
+
+        // Encode and set the new password
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+
+        // Save the user to the appropriate repository based on user type
+        saveUser(user);
+    }
+
+    private User findUserByUsername(String username) {
+        // Check Customer repository
+        Optional<Customer> customerOpt = customerRepository.findByUsername(username);
+        if (customerOpt.isPresent()) {
+            return customerOpt.get();
+        }
+
+        // Check Manager repository
+        Optional<Manager> managerOpt = managerRepository.findByUsername(username);
+        if (managerOpt.isPresent()) {
+            return managerOpt.get();
+        }
+
+        // Check Staff repository
+        Optional<Staff> staffOpt = staffRepository.findByUsername(username);
+        if (staffOpt.isPresent()) {
+            return staffOpt.get();
+        }
+
+        // Check SkinTherapist repository
+        Optional<SkinTherapist> therapistOpt = skinTherapistRepository.findByUsername(username);
+        if (therapistOpt.isPresent()) {
+            return therapistOpt.get();
+        }
+
+        // If user is not found in any repository, throw an exception
+        throw new UsernameNotFoundException("User not found with username: " + username);
+    }
+
+    private void saveUser(User user) {
+        if (user instanceof Customer) {
+            customerRepository.save((Customer) user);
+        } else if (user instanceof Manager) {
+            managerRepository.save((Manager) user);
+        } else if (user instanceof Staff) {
+            staffRepository.save((Staff) user);
+        } else if (user instanceof SkinTherapist) {
+            skinTherapistRepository.save((SkinTherapist) user);
+        } else {
+            throw new IllegalArgumentException("Unknown user type");
+        }
+    }
+
+    private void validateNewPassword(String newPassword) {
+        // Example: Enforce minimum length and at least one special character
+        if (newPassword.length() < 8) {
+            throw new IllegalArgumentException("New password must be at least 8 characters long");
+        }
+        if (!newPassword.matches(".*[!@#$%^&*(),.?\":{}|<>].*")) {
+            throw new IllegalArgumentException("New password must contain at least one special character");
+        }
+    }
 }
+
+

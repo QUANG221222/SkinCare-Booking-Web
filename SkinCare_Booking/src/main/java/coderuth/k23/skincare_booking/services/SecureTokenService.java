@@ -47,4 +47,6 @@ public class SecureTokenService {
     public void removeToken(SecureToken token) {
         secureTokenRepository.delete(token);
     }
+
+
 }

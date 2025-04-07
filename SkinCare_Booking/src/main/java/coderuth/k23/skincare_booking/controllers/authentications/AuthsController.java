@@ -1,5 +1,6 @@
 package coderuth.k23.skincare_booking.controllers.authentications;
 
+import coderuth.k23.skincare_booking.dtos.request.ChangePasswordRequest;
 import coderuth.k23.skincare_booking.models.Customer;
 import coderuth.k23.skincare_booking.repositories.CustomerRepository;
 import jakarta.servlet.http.HttpServletResponse;
@@ -9,6 +10,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import coderuth.k23.skincare_booking.services.AuthService;
@@ -28,6 +32,7 @@ public class AuthsController {
 
     @Autowired
     private CustomerRepository customerRepository;
+
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<UserInfoResponse>> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
@@ -81,4 +86,24 @@ public class AuthsController {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("You've been signed out!"));
     }
 
+    @PostMapping("/change-password")
+    public ResponseEntity<ApiResponse<Void>> changePassword(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @Valid @RequestBody ChangePasswordRequest request) {
+        try {
+            authService.changePassword(userDetails.getUsername(), request);
+            return ResponseEntity.ok(ApiResponse.success("Password changed successfully"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.error(e.getMessage()));
+        } catch (UsernameNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.error(e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("An error occurred while changing the password"));
+        }
+    }
 }
+
+

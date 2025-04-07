@@ -26,4 +26,6 @@ public abstract class AbstractEmailContext {
     public Object put(String key, Object value) {
         return key == null ? null : this.context.put(key.intern(), value);
     }
+
+    public abstract String getBody();
 }
