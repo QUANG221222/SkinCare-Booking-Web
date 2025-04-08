@@ -29,7 +29,7 @@ public class UserBlogController {
         Blog blog = blogService.getAllBlogs().stream()
                 .filter(b -> b.getId().equals(id))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy bài viết!"));
+                .orElseThrow(() -> new RuntimeException("Blog not found!"));
         model.addAttribute("blog", blog);
         return "user/blog_detail";
     }
