@@ -37,14 +37,14 @@ public class JwtUtil {
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
     }
-    //token co nhung thong tin gi??
+
     public String generateAccessToken(Authentication authentication) {
         UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
         return Jwts.builder()
                 .setSubject(String.valueOf(userPrincipal.getId()))
                 .claim("username", userPrincipal.getUsername())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + accessTokenExpirationMs)) // 1 giờ
+                .setExpiration(new Date(System.currentTimeMillis() + accessTokenExpirationMs)) // 1h
                 .signWith(getSigningKey())
                 .compact();
     }
@@ -53,7 +53,7 @@ public class JwtUtil {
         return Jwts.builder()
                 .setSubject(userId)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + refreshTokenExpirationMs)) //24 giờ
+                .setExpiration(new Date(System.currentTimeMillis() + refreshTokenExpirationMs)) //24h
                 .signWith(getSigningKey())
                 .compact();
     }
@@ -105,16 +105,6 @@ public class JwtUtil {
         }
         return null;
     }
-
-//    public String getUsernameFromToken(String token) {
-//        Claims claims = Jwts.parserBuilder()
-//                .setSigningKey(getSigningKey())
-//                .build()
-//                .parseClaimsJws(token)
-//                .getBody();
-//
-//        return claims.getSubject();
-//    }
 
     public void clearTokenCookies(HttpServletResponse response) {
         Cookie accessCookie = new Cookie("accessToken", null);

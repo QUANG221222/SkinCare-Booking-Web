@@ -25,7 +25,7 @@
 - **Trang chủ (Guest/Public)**
   - Giới thiệu ✅
   - Hiển thị thông tin các dịch vụ chăm sóc da ✅
-  - Hiển thị thông tin chuyên viên trị liệu da
+  - Hiển thị thông tin chuyên viên trị liệu da 
   - Blog giới thiệu ✅
   - Tin tức ✅
 - **Trang đặt lịch (Customer)**
@@ -42,7 +42,7 @@
 - **Trang hồ sơ (Customer)**
   - Cho phép xem thông tin cá nhân đã đăng ký với trung tâm ✅
   - Cho phép thay đổi một số thông tin cá nhân ✅
-  - Cho phép thay đổi mật khẩu
+  - Cho phép thay đổi mật khẩu ✅
 
 #### 1.2 Skin Therapist
 
@@ -125,12 +125,12 @@
     - `/auth/verify-email` (GET): Xác thực email (sử dụng token hoặc code được gửi trong email). ✅
 
 - **Thay Đổi Mật Khẩu:**
-  - Cung cấp endpoint cho phép người dùng thay đổi mật khẩu.
-  - Yêu cầu xác thực người dùng (dùng JWT).
-  - Xác nhận mật khẩu cũ (tùy chọn).
-  - Lưu mật khẩu mới đã mã hóa.
+  - Cung cấp endpoint cho phép người dùng thay đổi mật khẩu. ✅
+  - Yêu cầu xác thực người dùng (dùng JWT). ✅
+  - Xác nhận mật khẩu cũ (tùy chọn). ✅
+  - Lưu mật khẩu mới đã mã hóa. ✅
   - **Endpoints liên quan:**
-    - `/auth/change-password` (POST/PUT): Thay đổi mật khẩu (yêu cầu authentication).
+    - `/auth/change-password` (POST/PUT): Thay đổi mật khẩu (yêu cầu authentication). ✅
 
 #### Authorization
 

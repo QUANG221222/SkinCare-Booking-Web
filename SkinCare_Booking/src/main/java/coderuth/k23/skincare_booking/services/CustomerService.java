@@ -7,6 +7,7 @@ import coderuth.k23.skincare_booking.repositories.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Collections;
 import java.util.List;
@@ -17,6 +18,9 @@ public class CustomerService {
 
     @Autowired
     private CustomerRepository customerRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     // Lấy thông tin cơ bản của tất cả khách hàng
     public List<CustomerInfoResponse> getAllCustomers() {
@@ -43,6 +47,25 @@ public class CustomerService {
         customer.setLocation(profileRequest.getLocation());
 
         // Lưu lại thông tin
+        customerRepository.save(customer);
+    }
+
+    public void changePassword(String username, String currentPassword, String newPassword, String confirmPassword) {
+        Customer customer = customerRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Customer not found"));
+
+        // Kiểm tra mật khẩu hiện tại
+        if (!passwordEncoder.matches(currentPassword, customer.getPassword())) {
+            throw new RuntimeException("Current password is incorrect");
+        }
+
+        // Kiểm tra mật khẩu mới và xác nhận mật khẩu
+        if (!newPassword.equals(confirmPassword)) {
+            throw new RuntimeException("New password and confirm password do not match");
+        }
+
+        // Cập nhật mật khẩu
+        customer.setPassword(passwordEncoder.encode(newPassword));
         customerRepository.save(customer);
     }
 }

@@ -92,18 +92,23 @@
                     data-bs-toggle="dropdown"
                     aria-expanded="false"
                   >
-                      <span th:text="${#authentication.name}">User Name</span>
+                    <span th:text="${#authentication.name}">User Name</span>
                   </button>
                   <div class="dropdown-menu dropdown-menu-end">
                     <li>
-                      <a class="dropdown-item text-dark" th:href="@{/protected/customer/profile}"
+                      <a
+                        class="dropdown-item text-dark"
+                        th:href="@{/protected/customer/profile}"
                         >Customer Profile</a
                       >
                     </li>
                     <li>
-                      <a class="dropdown-item text-dark" href="#"
-                        >Booking History</a
+                      <a
+                        class="dropdown-item text-dark"
+                        th:href="@{/protected/customer/booking-history}"
                       >
+                        Booking History
+                      </a>
                     </li>
                     <li>
                       <a class="dropdown-item text-dark" href="#"
@@ -117,7 +122,7 @@
                     </li>
                     <li><hr class="dropdown-divider" /></li>
                     <li>
-                      <a th:href="@{/logout}" class="dropdown-item text-dark"
+                      <a onclick="logoutUser()" class="dropdown-item text-dark cursor-pointer"
                         >Logout</a
                       >
                     </li>
