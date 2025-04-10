@@ -23,6 +23,10 @@
             <input type="text" th:field="*{name}" class="form-control" required/>
         </div>
         <div class="mb-3">
+            <label>Service Image:</label>
+            <input type="text" th:field="*{imageUrl}" class="form-control" required/>
+        </div>
+        <div class="mb-3">
             <label>Description:</label>
             <textarea th:field="*{description}" class="form-control"></textarea>
         </div>
@@ -30,6 +34,8 @@
             <label>Price:</label>
             <input type="number" step="0.01" th:field="*{price}" class="form-control" required/>
         </div>
+        <button type="submit" class="btn btn-primary">Create</button>
+        <a th:href="@{/spa-services}" class="btn btn-secondary">Cancel</a>
     </form>
 </div>
 </body>

@@ -11,6 +11,7 @@ import coderuth.k23.skincare_booking.services.SpaServiceService;
 import coderuth.k23.skincare_booking.models.CenterSchedule;
 import coderuth.k23.skincare_booking.models.SpaService;
 
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -19,6 +20,13 @@ public class SpaServiceController {
 
     @Autowired
     private SpaServiceService spaServiceService;
+
+    @GetMapping("/services")
+    public String showAllServices(Model model) {
+        List<SpaService> services = spaServiceService.getAllServices(); // Lấy từ DB
+        model.addAttribute("services", services); // Gửi qua view
+        return "user/master/Services/service"; // Tên file HTML
+    }
 
     // Quản lý dịch vụ
     @GetMapping

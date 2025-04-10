@@ -58,9 +58,9 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         // Authorized
-                        .requestMatchers("/protected/customer/**").hasRole("CUSTOMER")
+                        // .requestMatchers("/protected/customer/**").hasRole("CUSTOMER")
                         .requestMatchers("/protected/manager/**").hasRole("MANAGER")
-                        .requestMatchers("/protected/staff/**").hasRole("STAFF")
+                        // .requestMatchers("/protected/staff/**").hasRole("STAFF")
                         .requestMatchers("/protected/therapist/**").hasRole("THERAPIST")
 
                         .requestMatchers("/api/feedbacks/**").authenticated()
