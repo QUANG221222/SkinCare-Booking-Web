@@ -215,6 +215,10 @@
                         </a> 
                     </div>
                 </div>
+                <!-- Hiển thị thông báo nếu không có service -->
+                <div th:if="${serviceList == null or #lists.isEmpty(serviceList)}">
+                    <p>Không có dịch vụ nào được hiển thị.</p>
+                </div>
             </div>
     </section>
     <!-- ##### Rooms Area End ##### -->
