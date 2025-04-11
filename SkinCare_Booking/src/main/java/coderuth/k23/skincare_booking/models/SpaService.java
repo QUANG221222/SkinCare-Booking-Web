@@ -32,6 +32,9 @@ public class SpaService {
     @Column(name = "duration", nullable = false)
     private int duration;
 
+    @Column(name = "image_url")
+    private String imageUrl;
+
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     //Vì Spa là dịch vụ được đặt trong lịch hẹn -> thêm quan hệ @OneToMany với Appointment

@@ -7,6 +7,9 @@
 <body>
     <div class="container">
         <h1>Đặt dịch vụ chăm sóc da</h1>
+        <div th:if="${errorMessage}" class="alert alert-danger">
+            <span th:text="${errorMessage}"></span>
+        </div>
         <!-- Thông báo lỗi hoặc thành công -->
         <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
             <span th:text="${success}"></span>

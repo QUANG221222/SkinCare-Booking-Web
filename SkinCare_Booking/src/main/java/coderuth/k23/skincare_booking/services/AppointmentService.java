@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,11 +33,8 @@ public class AppointmentService {
     
         // Only check schedule if a therapist is assigned
         if (appointment.getSkinTherapist() != null) {
-            validateTherapistAvailability(appointment.getSkinTherapist(), appointment.getAppointmentTime());
+            validateTherapistAvailability(appointment.getSkinTherapist(), appointment.getAppointmentTime(), appointment.getSpaService());
         }
-    
-        // Log the value of skinTherapist
-        System.out.println("SkinTherapist: " + appointment.getSkinTherapist());
     
         // Set default status for the appointment
         appointment.setStatus(Appointment.AppointmentStatus.PENDING);
@@ -46,23 +44,33 @@ public class AppointmentService {
     }
 
     // Check the therapist's schedule
-    private void validateTherapistAvailability(SkinTherapist therapist, LocalDateTime appointmentTime) {
+    private void validateTherapistAvailability(SkinTherapist therapist, LocalDateTime appointmentTime, SpaService spaService) {
         // If no therapist is assigned or ID is invalid, skip the check
         if (therapist == null || therapist.getId() == null) {
             return;
         }
-    
         // Get the therapist's schedule
         List<TherapistSchedule> schedules = therapistScheduleRepository.findBySkinTherapistId(therapist.getId());
-        boolean isAvailable = schedules.stream().anyMatch(schedule ->
-                schedule.getDayOfWeek().equalsIgnoreCase(appointmentTime.getDayOfWeek().toString()) &&
-                appointmentTime.toLocalTime().isAfter(schedule.getStartTime()) &&
-                appointmentTime.toLocalTime().isBefore(schedule.getEndTime())
-        );
-    
+        boolean isAvailable = schedules.stream().anyMatch(schedule -> {
+            // Check if the appointment day matches the therapist's schedule
+            boolean isDayMatching = schedule.getDayOfWeek().equalsIgnoreCase(appointmentTime.getDayOfWeek().toString());
+
+            // Check if the appointment time falls within the therapist's available hours
+            boolean isTimeMatching = appointmentTime.toLocalTime().isAfter(schedule.getStartTime()) &&
+                                    appointmentTime.toLocalTime().isBefore(schedule.getEndTime());
+
+            // Calculate the end time of the service based on its duration
+            LocalTime serviceEndTime = appointmentTime.toLocalTime().plusMinutes(spaService.getDuration());
+
+            // Check if the service duration fits within the available time
+            boolean isDurationValid = serviceEndTime.isBefore(schedule.getEndTime()) || serviceEndTime.equals(schedule.getEndTime());
+
+            return isDayMatching && isTimeMatching && isDurationValid;
+        });
+
         // If no suitable schedule is found, throw an exception
         if (!isAvailable) {
-            throw new RuntimeException("The therapist is not available at this time!");
+            throw new RuntimeException("The therapist is not available at this time or the service duration exceeds the available time!");
         }
     }
 
@@ -89,7 +97,7 @@ public class AppointmentService {
         }
         SkinTherapist therapist = skinTherapistRepository.findById(therapistId)
                 .orElseThrow(() -> new RuntimeException("Therapist not found!"));
-        validateTherapistAvailability(therapist, appointment.getAppointmentTime());
+        validateTherapistAvailability(therapist, appointment.getAppointmentTime(), appointment.getSpaService());
         appointment.setSkinTherapist(therapist);
         appointment.setStatus(Appointment.AppointmentStatus.ASSIGNED);
         return appointmentRepository.save(appointment);
