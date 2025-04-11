@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<!-- Nhúng head từ fragment -->
+<div th:replace="user/master/fragments/head :: head"></div>
+
+<body>
+<!-- Preloader -->
+<div diaphrag="user/master/fragments/preloader :: preloader"></div>
+
+<!-- ##### Header Area Start ##### -->
+<div th:replace="user/master/fragments/header :: header"></div>
+<!-- ##### Header Area End ##### -->
+
+<!-- ##### Breadcumb Area Start ##### -->
+<section class="breadcumb-area bg-img d-flex align-items-center justify-content-center" style="background-image: url(/user/img/bg-img/bg-8.jpg);">
+    <div class="bradcumbContent">
+        <h2>Your Feedbacks</h2>
+    </div>
+</section>
+<!-- ##### Breadcumb Area End ##### -->
+
+<!-- ##### Feedback List Area Start ##### -->
+<section class="feedback-list-area mb-100">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="section-heading">
+                    <div class="line-"></div>
+                    <h2>Your Feedback History</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+<!--                &lt;!&ndash; Hiển thị thông báo nếu có &ndash;&gt;-->
+<!--                <div th:if="${successMessage}" class="alert alert-success" role="alert">-->
+<!--                    <span th:text="${successMessage}"></span>-->
+<!--                </div>-->
+<!--                <div th:if="${errorMessage}" class="alert alert-danger" role="alert">-->
+<!--                    <span th:text="${errorMessage}"></span>-->
+<!--                </div>-->
+
+                <!-- Danh sách Feedback -->
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Message</th>
+                        <th>Rating</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="feedback : ${feedbacks}">
+                        <td th:text="${feedback.subject}"></td>
+                        <td th:text="${feedback.message}"></td>
+                        <td>
+                            <div class="star-rating">
+                  <span th:each="i : ${#numbers.sequence(1, 5)}"
+                        th:classappend="${i <= feedback.rating} ? 'fas fa-star' : 'far fa-star'"></span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(feedbacks)}">
+                        <td colspan="3" class="text-center">No feedbacks found.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- ##### Feedback List Area End ##### -->
+
+<!-- ##### Footer Area Start ##### -->
+<div th:replace="user/master/fragments/footer :: footer"></div>
+<!-- ##### Footer Area End ##### -->
+
+<!-- ##### All Javascript Script ##### -->
+<div th:replace="user/master/fragments/script"></div>
+
+<!-- CSS for Star Rating -->
+<style>
+    .feedback-list-area .star-rating .fas.fa-star {
+        color: #ffd700; /* Màu vàng cho ngôi sao được chọn */
+    }
+    .feedback-list-area .star-rating .far.fa-star {
+        color: #ccc; /* Màu xám cho ngôi sao chưa chọn */
+    }
+</style>
+
+</body>
+</html>
