@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<div th:replace="user/master/fragments/head :: head"></div>
+
+<body>
+    <!-- Preloader -->
+    <div class="preloader d-flex align-items-center justify-content-center">
+        <div class="cssload-container">
+            <div class="cssload-loading"><i></i><i></i><i></i><i></i></div>
+        </div>
+    </div>
+
+    <!-- ##### Header Area Start ##### -->
+    <div th:replace="user/master/fragments/header:: header"></div>
+    <!-- ##### Header Area End ##### -->
+
+    <!-- ##### Breadcumb Area Start ##### -->
+    <section class="breadcumb-area bg-img d-flex align-items-center justify-content-center" style="background-image: url(/user/img/bg-img/bg-hero-3.jpg);">
+        <div class="bradcumbContent">
+            <h2>Our Skin Therapist</h2>
+        </div>
+    </section>
+    <!-- ##### Breadcumb Area End ##### -->
+
+    <!-- ##### Book Now Area Start ##### -->
+    <div th:replace="user/master/fragments/book-now :: book-now"></div>
+    <!-- ##### Book Now Area End ##### -->
+
+    <!-- ##### Rooms Area Start ##### -->
+    <section class="rooms-area section-padding-0-100">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-12 col-lg-6">
+                    <div class="section-heading text-center">
+                        <div class="line-"></div>
+                        <h2>Our Skin Therapist</h2>
+                        <p>Our certified skin therapists are dedicated to understanding your unique skin needs, offering personalized care to help you achieve radiant, healthy skin.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div th:each="therapist: ${therapist}" class="col-12 col-md-6 col-lg-4">
+                    <div th:replace="/user/master/SkinTherapistProfile/skinTherapist :: skintherapist(${therapist.fullName}, ${therapist.specialty}, ${therapist.img})"></div>
+                </div>
+
+
+<!--                <div class="col-12">-->
+<!--                    &lt;!&ndash; Pagination &ndash;&gt;-->
+<!--                    <div class="pagination-area wow fadeInUp" data-wow-delay="400ms">-->
+<!--                        <nav>-->
+<!--                            <ul class="pagination">-->
+<!--                                <li class="page-item active"><a class="page-link" href="#">01.</a></li>-->
+<!--                                <li class="page-item"><a class="page-link" href="#">02.</a></li>-->
+<!--                                <li class="page-item"><a class="page-link" href="#">03.</a></li>-->
+<!--                            </ul>-->
+<!--                        </nav>-->
+<!--                    </div>-->
+<!--                </div>-->
+
+            </div>
+        </div>
+    </section>
+    <!-- ##### Rooms Area End ##### -->
+
+    <!-- ##### Footer Area Start ##### -->
+    <footer class="footer-area">
+        <div class="container">
+            <div class="row">
+
+                <!-- Footer Widget Area -->
+                <div class="col-12 col-lg-5">
+                    <div class="footer-widget-area mt-50">
+                        <a href="#" class="d-block mb-5"><img src="img/core-img/logo.png" alt=""></a>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec malesuada lorem maximus mauris sceleri sque, at rutrum nulla dictum. Ut ac ligula sapien. Suspendisse cursus faucibus finibus. </p>
+                    </div>
+                </div>
+
+                <!-- Footer Widget Area -->
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="footer-widget-area mt-50">
+                        <h6 class="widget-title mb-5">Find us on the map</h6>
+                        <img src="img/bg-img/footer-map.png" alt="">
+                    </div>
+                </div>
+
+                <!-- Footer Widget Area -->
+                <div class="col-12 col-md-6 col-lg-3">
+                    <div class="footer-widget-area mt-50">
+                        <h6 class="widget-title mb-5">Subscribe to our newsletter</h6>
+                        <form action="#" method="post" class="subscribe-form">
+                            <input type="email" name="subscribe-email" id="subscribeemail" placeholder="Your E-mail">
+                            <button type="submit">Subscribe</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Copywrite Text -->
+                <div class="col-12">
+                    <div class="copywrite-text mt-30">
+                        <p><a href="#"><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart-o" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
+<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- ##### Footer Area End ##### -->
+
+    <!-- ##### All Javascript Script ##### -->
+    <div th:replace="user/master/fragments/script"></div>
+</body>
+
+</html>

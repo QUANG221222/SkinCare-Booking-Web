@@ -46,6 +46,14 @@
                   >
                 </li>
                 <li
+                      th:classappend="${#strings.contains(currentURI, '/customer/skin-therapist') or (currentURI == '/skin-therapist') ? 'active' : ''}"
+                >
+                <a
+                        th:href="${#strings.contains(currentURI, 'customer')} ? @{/protected/customer/skin-therapist} : @{/skin-therapist}"
+                >Skin Therapist</a
+                >
+              </li>
+                <li
                   th:classappend="${#strings.contains(currentURI, '/customer/services') or (currentURI == '/services') ? 'active' : ''}"
                 >
                   <a

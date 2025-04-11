@@ -1,5 +1,6 @@
 package coderuth.k23.skincare_booking.services;
 
+import coderuth.k23.skincare_booking.dtos.request.RegisterTherapistRequest;
 import coderuth.k23.skincare_booking.exception.InvalidTokenException;
 import coderuth.k23.skincare_booking.mailing.AccountVerificationEmailContext;
 import coderuth.k23.skincare_booking.mailing.EmailService;
@@ -187,20 +188,28 @@ public class AuthService {
         staffRepository.save(staff);
     }
 
-    public void registerSkinTherapist(RegisterRequest registerRequest) {
+    public void registerSkinTherapist(RegisterTherapistRequest registerRequest) {
         if (skinTherapistRepository.existsByEmail(registerRequest.getEmail())) {
             throw new IllegalArgumentException("Email is already in use");
         }
+
         if (skinTherapistRepository.existsByUsername(registerRequest.getUsername())) {
             throw new IllegalArgumentException("Username is already taken");
+        }
+
+        if (skinTherapistRepository.existsByPhone(registerRequest.getPhone())) {
+            throw new IllegalArgumentException("Phone number is already in use");
         }
 
         SkinTherapist skinTherapist = new SkinTherapist();
         skinTherapist.setEmail(registerRequest.getEmail());
         skinTherapist.setUsername(registerRequest.getUsername());
+        skinTherapist.setFullName(registerRequest.getFullname());
         skinTherapist.setPhone(registerRequest.getPhone());
         skinTherapist.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
-        skinTherapist.setRole(SkinTherapist.Role.ROLE_THERAPIST); // SKIN THERAPIST
+        skinTherapist.setSpecialty(registerRequest.getSpecialty());
+        skinTherapist.setImg(registerRequest.getImg());
+        skinTherapist.setRole(SkinTherapist.Role.ROLE_THERAPIST); // THERAPIST
 
         skinTherapistRepository.save(skinTherapist);
     }

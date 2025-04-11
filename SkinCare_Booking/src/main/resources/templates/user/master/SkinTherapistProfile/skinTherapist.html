@@ -1,0 +1,13 @@
+<div th:fragment="skintherapist(fullname, specialty, bgimg)" class="single-rooms-area wow fadeInUp" data-wow-delay="200ms">
+    <!-- Thumbnail -->
+    <div class="bg-thumbnail bg-img"
+         th:style="'background-image: url(' + ${bgimg} + ');'"></div>
+
+    <!-- Rooms Text -->
+    <div class="rooms-text">
+        <div class="line"></div>
+        <h4 th:text="${fullname}">Therapist Name</h4>
+        <p th:text="${specialty}">Specialty</p>
+    </div>
+</div>
+
