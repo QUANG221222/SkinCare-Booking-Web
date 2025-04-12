@@ -3,14 +3,28 @@ package coderuth.k23.skincare_booking.services;
 import coderuth.k23.skincare_booking.dtos.request.FeedbackRequest;
 import coderuth.k23.skincare_booking.models.*;
 import coderuth.k23.skincare_booking.repositories.*;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+@Data
+// Class để lưu thông tin số lượng feedback và thời gian bắt đầu chuỗi
+class FeedbackLimitInfo {
+    private int count; // Số lượng feedback đã gửi
+    private LocalDateTime startTime; // Thời gian bắt đầu chuỗi
+
+    public FeedbackLimitInfo(int count, LocalDateTime startTime) {
+        this.count = count;
+        this.startTime = startTime;
+    }}
 
 @Service
 public class FeedbackService {
@@ -19,6 +33,12 @@ public class FeedbackService {
     private FeedbackRepository feedBackRepository;
     @Autowired
     private CustomerRepository customerRepository;
+
+    // Lưu thời gian gửi feedback gần nhất của từng khách hàng (in-memory)
+    private final Map<String, FeedbackLimitInfo> feedbackLimits = new ConcurrentHashMap<>(); //<key: String:username,value: FeedbackLimitInfo: count>
+
+    private static final byte MAX_FEEDBACKS_PER_CYCLE = 3; // Giới hạn 3 feedback
+    private static final byte COOLDOWN_MINUTES = 30; // 30 phút
 
     // Create Feedback
     public void createFeedback(FeedbackRequest feedbackRequest) {
@@ -29,16 +49,43 @@ public class FeedbackService {
 
         // Tìm Customer dựa trên username
         Customer customer = customerRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("Customer not found with username: " + username));;
+                .orElseThrow(() -> new IllegalArgumentException("Customer not found with username: " + username));
 
+        // Kiểm tra thời gian gửi feedback gần nhất
+        LocalDateTime now = LocalDateTime.now();
+        FeedbackLimitInfo limitInfo = feedbackLimits.get(username);
+        if (limitInfo != null) //khách hàng đã gửi feed back
+             {
+            long minutesSinceStart = ChronoUnit.MINUTES.between(limitInfo.getStartTime(), now);
+            if (minutesSinceStart < COOLDOWN_MINUTES) {
+                // Chưa đủ 30 phút, kiểm tra số lượng feedback
+                if (limitInfo.getCount() >= MAX_FEEDBACKS_PER_CYCLE) {
+                    throw new IllegalStateException("You have reached the maximum of 3 feedbacks. Please wait " + (COOLDOWN_MINUTES - minutesSinceStart) + " more minutes to send another feedback.");
+                }
+            } else {
+                // Đã quá 30 phút, reset số lượng và thời gian
+                feedbackLimits.remove(username);
+                limitInfo = null;
+            }
+        }
 
         Feedback feedback = new Feedback();
         feedback.setSubject(feedbackRequest.getSubject());
         feedback.setComment(feedbackRequest.getMessage());
         feedback.setRating(feedbackRequest.getRating());
         feedback.setCustomer(customer);
-
+        //lưu feedback
         feedBackRepository.save(feedback);
+
+        // Cập nhật số lượng feedback và thời gian
+        if (limitInfo == null) {
+            // Bắt đầu chuỗi mới
+            limitInfo = new FeedbackLimitInfo(1, now);
+        } else {
+            // Tăng số lượng feedback trong chuỗi hiện tại
+            limitInfo.setCount(limitInfo.getCount() + 1);
+        }
+        feedbackLimits.put(username, limitInfo);
     }
 
     public List<FeedbackRequest> getFeedbacksByUsername(String username, String requesterUsername) {
