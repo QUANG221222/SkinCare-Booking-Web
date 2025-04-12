@@ -8,9 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -186,7 +184,7 @@ public class FeedbackService {
     // Chuyển đổi từ Feedback sang FeedbackRequest
     private FeedbackRequest convertToDTO(Feedback feedback) {
         FeedbackRequest dto = new FeedbackRequest();
-//        dto.setId(feedback.getId()); // Thêm id
+        dto.setId(feedback.getId()); // Thêm id
         dto.setSubject(feedback.getSubject());
         dto.setMessage(feedback.getComment());
         dto.setRating(feedback.getRating());
