@@ -8,8 +8,9 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 public class StaffInfoResponse {
-    private UUID id;
-    private String username;
-    private String email;
+    private String fullname;
     private String phone;
+    private String email;
+    private String img;
+    private String userType;
 }

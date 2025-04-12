@@ -101,11 +101,5 @@ public class StaffController {
         return "admin/staff/checked_out_appointments";
     }
 
-    // Endpoint để lấy thông tin cơ bản của tất cả nhân viên
-    @GetMapping
-    public ResponseEntity<ApiResponse<List<StaffInfoResponse>>> getAllStaff() {
-        List<StaffInfoResponse> staff = staffService.getAllStaff();
-        return ResponseEntity.ok(ApiResponse.success("Staff retrieved successfully", staff));
-    }
 }
 

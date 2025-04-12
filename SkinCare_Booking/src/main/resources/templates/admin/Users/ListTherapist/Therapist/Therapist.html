@@ -1,0 +1,37 @@
+<th:block th:fragment="therapist">
+    <td>
+        <div class="d-flex align-items-center justify-content-between gap-1">
+            <div class="avatar avatar-sm me-3 d-flex align-items-center">
+                <img
+                        th:src="${therapist.img}"
+                        alt="Avatar"
+                        class="rounded-circle"
+                        style="width: 40px; height: 40px"
+                />
+            </div>
+            <div>
+                <span th:text="${therapist.fullName}" class="fw-medium"></span>
+                <small th:text="${therapist.email}" class="text-muted"></small>
+            </div>
+        </div>
+    </td>
+    <td>
+        <span th:text="${therapist.userType}" class="badge bg-success"></span>
+    </td>
+    <td th:text="${therapist.phone}"></td>
+    <td th:text="${therapist.location}"></td>
+    <td th:title="${therapist.specialty}"
+        th:text="${#strings.abbreviate(therapist.specialty, 30)}"
+        data-bs-toggle="tooltip"
+        data-bs-placement="top"></td>
+    <td>
+        <div class="d-flex align-items-center gap-2">
+            <a class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal">
+                <i class="bx bx-trash"></i>
+            </a>
+            <a class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#editStaffModal" >
+                <i class="bx bx-edit"></i>
+            </a>
+        </div>
+    </td>
+</th:block>
