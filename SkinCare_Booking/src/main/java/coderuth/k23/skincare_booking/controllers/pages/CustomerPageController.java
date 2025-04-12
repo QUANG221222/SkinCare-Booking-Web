@@ -162,20 +162,10 @@ public class CustomerPageController {
         return "user/services";
     }
 
-    // Endpoint mới để hiển thị danh sách feedback
-    @GetMapping("/feedbacks")
-    public String userFeedbackListPage(Model model, Principal principal) {
-        String username = principal.getName();
-        model.addAttribute("feedbacks", feedbackService.getFeedbacksByUsername(username, username));
-        return "user/customer/Feedback-Manager";
-    }
-
     // Chỉnh sửa Contact Page để tích hợp giao diện feedback
     @GetMapping("/contact")
-    public String userContactPage(Model model, Principal principal) {
-        String username = principal.getName();
-        // Lấy danh sách Feedback của Customer và khởi tạo đối tượng FeedbackRequest cho form feedback
-        model.addAttribute("feedbacks", feedbackService.getFeedbacksByUsername(username, username));
+    public String userContactPage(Model model) {
+        //khởi tạo đối tượng FeedbackRequest cho form feedback
         model.addAttribute("feedbackRequest", new FeedbackRequest());
         return "user/customer/contact_Customer"; //File contact.html đã tích hợp giao diện feedback
     }
@@ -205,6 +195,15 @@ public class CustomerPageController {
         model.addAttribute("feedbackRequest", new FeedbackRequest());
         return "user/customer/contact_Customer";
     }
+
+    // Endpoint mới để hiển thị danh sách feedback
+    @GetMapping("/feedbacks")
+    public String userFeedbackListPage(Model model, Principal principal) {
+        String username = principal.getName();
+        model.addAttribute("feedbacks", feedbackService.getFeedbacksByUsername(username, username));
+        return "user/customer/Feedback-Manager";
+    }
+
 
     @GetMapping("/blog")
     public String userBlogPage() {
