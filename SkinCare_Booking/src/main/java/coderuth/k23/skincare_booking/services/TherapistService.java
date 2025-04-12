@@ -37,7 +37,7 @@ public class TherapistService {
         therapist.setPhone(updatedTherapist.getPhone());
         therapist.setLocation(updatedTherapist.getLocation());
         therapist.setSpecialty(updatedTherapist.getSpecialty());
-        therapist.setExperience(updatedTherapist.getExperience());
+//        therapist.setExperience(updatedTherapist.getExperience());
         return skinTherapistRepository.save(therapist);
     }
 

@@ -40,6 +40,7 @@ public class SpaServiceService {
         SpaService spaService = spaServiceRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Service not found!"));
         spaService.setName(updatedService.getName());
+        spaService.setImageUrl(updatedService.getImageUrl());
         spaService.setDescription(updatedService.getDescription());
         spaService.setPrice(updatedService.getPrice());
         spaService.setDuration(updatedService.getDuration());

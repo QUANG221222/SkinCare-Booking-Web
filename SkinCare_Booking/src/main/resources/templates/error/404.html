@@ -1,15 +1,12 @@
-<head th:fragment="head">
-    <meta charset="UTF-8">
-    <meta name="description" content="">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <!-- The above 4 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-
-    <!-- Title -->
-    <title>SkinSoothe &amp; Relax - Restore - Radiate</title>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>404 - Not Found</title>
 
     <!-- Favicon -->
-<!--    <link rel="icon" href="/user/img/core-img/favicon_1.png">-->
+    <!--    <link rel="icon" href="/user/img/core-img/favicon_1.png">-->
     <link rel="apple-touch-icon" sizes="57x57" href="/user/img/favicon/apple-icon-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="/user/img/favicon/apple-icon-60x60.png">
     <link rel="apple-touch-icon" sizes="72x72" href="/user/img/favicon/apple-icon-72x72.png">
@@ -27,17 +24,47 @@
     <meta name="msapplication-TileColor" content="#ffffff">
     <meta name="msapplication-TileImage" content="/user/img/favicon/ms-icon-144x144.png">
     <meta name="theme-color" content="#ffffff">
+    <link rel="stylesheet" href="/error/style.css">
+  </head>
+  <body>
+    <header class="top-header">
+    </header>
+
+    <!--dust particel-->
+    <div>
+      <div class="starsec"></div>
+      <div class="starthird"></div>
+      <div class="starfourth"></div>
+      <div class="starfifth"></div>
+    </div>
+    <!--Dust particle end--->
 
 
-    <!--Bootstrap-->
-    <link rel="stylesheet" href="/user/css/bootstrap.min.css">
+    <div class="lamp__wrap">
+      <div class="lamp">
+        <div class="cable"></div>
+        <div class="cover"></div>
+        <div class="in-cover">
+          <div class="bulb"></div>
+        </div>
+        <div class="light"></div>
+      </div>
+    </div>
+    <!-- END Lamp -->
+    <section class="error">
+      <!-- Content -->
+      <div class="error__content">
+        <div class="error__message message">
+          <h1 class="message__title">Page Not Found</h1>
+          <p class="message__text">We're sorry, the page you were looking for isn't found here. The link you followed may either be broken or no longer exists. Please try again, or take a look at our.</p>
+        </div>
+        <div class="error__nav e-nav">
+          <a th:href="@{/}" class="e-nav__link"></a>
+        </div>
+      </div>
+      <!-- END Content -->
 
-    <!--tempusdominus-->
-    <link href="/user/lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css" rel="stylesheet" />
+    </section>
 
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <!-- Core Stylesheet -->
-    <link rel="stylesheet" href="/user/style.css">
-
-</head>
+  </body>
+</html>

@@ -4,11 +4,15 @@ import coderuth.k23.skincare_booking.dtos.request.CustomerProfileRequest;
 import coderuth.k23.skincare_booking.dtos.request.FeedbackRequest;
 import coderuth.k23.skincare_booking.models.Appointment;
 import coderuth.k23.skincare_booking.models.Customer;
+import coderuth.k23.skincare_booking.models.SpaService;
 import coderuth.k23.skincare_booking.repositories.CustomerRepository;
+import coderuth.k23.skincare_booking.repositories.SpaServiceRepository;
 import coderuth.k23.skincare_booking.security.UserDetailsImpl;
 import coderuth.k23.skincare_booking.services.AppointmentService;
 import coderuth.k23.skincare_booking.services.CustomerService;
 import coderuth.k23.skincare_booking.services.FeedbackService;
+import coderuth.k23.skincare_booking.services.SpaServiceService;
+import coderuth.k23.skincare_booking.services.TherapistService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -41,6 +45,72 @@ public class CustomerPageController {
     @Autowired
     private FeedbackService feedbackService;
 
+    private SpaServiceService spaServiceService;
+
+    @Autowired
+    SpaServiceRepository spaServiceRepository;
+
+
+    @Autowired
+    private TherapistService therapistService;
+
+     // Lấy ID khách hàng đã đăng nhập từ SecurityContext
+     private UUID getLoggedInCustomerId() {
+        // Thay thế bằng logic thực tế để lấy ID khách hàng đã đăng nhập
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new IllegalStateException("User is not logged in!");
+        }
+
+
+        // Giả sử bạn có một lớp UserDetailsImpl chứa thông tin người dùng
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+
+
+        // Trả về ID khách hàng dưới dạng UUID
+        return userDetails.getId();
+    }
+
+
+    // Hiển thị danh sách dịch vụ và form đặt dịch vụ
+    @GetMapping("/appointment")
+    public String showAppointmentForm(Model model) {
+        model.addAttribute("appointment", new Appointment());
+        model.addAttribute("services", spaServiceService.getAllServices());
+        model.addAttribute("therapists", therapistService.getAllTherapists());
+        return "user/customer/appointment_form";
+    }
+
+
+    // Khách hàng đặt dịch vụ
+    @PostMapping("/appointment")
+    public String createAppointment(@ModelAttribute Appointment appointment, Model model) {
+        try {
+            UUID customerId = getLoggedInCustomerId(); // Lấy ID khách hàng đã đăng nhập
+            appointment.setCustomer(new Customer());
+            appointment.getCustomer().setId(customerId);
+            appointmentService.createAppointment(appointment);
+            return "redirect:/protected/customer/appointments";
+        } catch (RuntimeException ex) {
+            // Thêm thông báo lỗi vào model
+            model.addAttribute("errorMessage", ex.getMessage());
+            model.addAttribute("services", spaServiceService.getAllServices());
+            model.addAttribute("therapists", therapistService.getAllTherapists());
+            return "user/customer/appointment_form"; // Quay lại form đặt lịch
+        }
+    }
+
+
+    // Xem danh sách đặt dịch vụ của khách hàng
+    @GetMapping("/appointments")
+    public String listAppointments(Model model) {
+        UUID customerId = getLoggedInCustomerId();
+        model.addAttribute("appointments", appointmentService.getAppointmentsByCustomer(customerId));
+        return "user/customer/appointments_list";
+    }
+
     @ModelAttribute("currentURI")
     public String currentURI(HttpServletRequest request) {
         return request.getRequestURI();
@@ -57,7 +127,19 @@ public class CustomerPageController {
     }
 
     @GetMapping("/services")
-    public String userServicesPage() {
+    public String getAllServices(Model model) {
+         // Lấy tất cả dịch vụ từ DB
+        List<SpaService> services = spaServiceRepository.findAll();
+        System.out.println("services.size() = " + services.size());
+
+        // In chi tiết từng service xem có gì
+        services.forEach(s -> System.out.println(
+            "ID: " + s.getId()
+            + ", Name: " + s.getName()
+            + ", ImageURL: " + s.getImageUrl()
+        ));
+
+        model.addAttribute("services", services);
         return "user/services";
     }
 
@@ -68,8 +150,7 @@ public class CustomerPageController {
         model.addAttribute("feedbacks", feedbackService.getFeedbacksByUsername(username, username));
         return "user/customer/Feedback-Manager";
     }
-
-    // Chỉnh sửa Contact Page để tích hợp giao diện feedback
+  
     @GetMapping("/contact")
     public String userContactPage(Model model, Principal principal) {
         String username = principal.getName();
@@ -108,6 +189,12 @@ public class CustomerPageController {
     @GetMapping("/blog")
     public String userBlogPage() {
         return "user/blog";
+    }
+
+    @GetMapping("/skin-therapist")
+    public String userSkinTherapistPage(Model model) {
+        model.addAttribute("therapist", therapistService.getAllTherapists());
+        return "user/skin-therapist";
     }
 
     @GetMapping("/profile")

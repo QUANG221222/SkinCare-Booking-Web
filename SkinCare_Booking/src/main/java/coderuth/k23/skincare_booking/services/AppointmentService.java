@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,92 +24,119 @@ public class AppointmentService {
     @Autowired
     private TherapistScheduleRepository therapistScheduleRepository;
 
-    // Khách hàng đặt dịch vụ
+    // Customer books a service
     public Appointment createAppointment(Appointment appointment) {
-        // Kiểm tra lịch làm việc của chuyên viên (nếu có)
-        if (appointment.getSkinTherapist() != null) {
-            validateTherapistAvailability(appointment.getSkinTherapist(), appointment.getAppointmentTime());
+        // Check if SkinTherapist is invalid
+        if (appointment.getSkinTherapist() != null && appointment.getSkinTherapist().getId() == null) {
+            appointment.setSkinTherapist(null); // Reset to null if invalid
         }
+    
+        // Only check schedule if a therapist is assigned
+        if (appointment.getSkinTherapist() != null) {
+            validateTherapistAvailability(appointment.getSkinTherapist(), appointment.getAppointmentTime(), appointment.getSpaService());
+        }
+    
+        // Set default status for the appointment
         appointment.setStatus(Appointment.AppointmentStatus.PENDING);
+    
+        // Save the appointment to the database
         return appointmentRepository.save(appointment);
     }
 
-    // Kiểm tra lịch làm việc của chuyên viên
-    private void validateTherapistAvailability(SkinTherapist therapist, LocalDateTime bookingTime) {
+    // Check the therapist's schedule
+    private void validateTherapistAvailability(SkinTherapist therapist, LocalDateTime appointmentTime, SpaService spaService) {
+        // If no therapist is assigned or ID is invalid, skip the check
+        if (therapist == null || therapist.getId() == null) {
+            return;
+        }
+        // Get the therapist's schedule
         List<TherapistSchedule> schedules = therapistScheduleRepository.findBySkinTherapistId(therapist.getId());
-        boolean isAvailable = schedules.stream().anyMatch(schedule ->
-                schedule.getDayOfWeek().equalsIgnoreCase(bookingTime.getDayOfWeek().toString()) &&
-                bookingTime.toLocalTime().isAfter(schedule.getStartTime()) &&
-                bookingTime.toLocalTime().isBefore(schedule.getEndTime())
-        );
+        boolean isAvailable = schedules.stream().anyMatch(schedule -> {
+            // Check if the appointment day matches the therapist's schedule
+            boolean isDayMatching = schedule.getDayOfWeek().equalsIgnoreCase(appointmentTime.getDayOfWeek().toString());
+
+            // Check if the appointment time falls within the therapist's available hours
+            boolean isTimeMatching = appointmentTime.toLocalTime().isAfter(schedule.getStartTime()) &&
+                                    appointmentTime.toLocalTime().isBefore(schedule.getEndTime());
+
+            // Calculate the end time of the service based on its duration
+            LocalTime serviceEndTime = appointmentTime.toLocalTime().plusMinutes(spaService.getDuration());
+
+            // Check if the service duration fits within the available time
+            boolean isDurationValid = serviceEndTime.isBefore(schedule.getEndTime()) || serviceEndTime.equals(schedule.getEndTime());
+
+            return isDayMatching && isTimeMatching && isDurationValid;
+        });
+
+        // If no suitable schedule is found, throw an exception
         if (!isAvailable) {
-            throw new RuntimeException("Chuyên viên không có lịch làm việc vào thời điểm này!");
+            throw new RuntimeException("The therapist is not available at this time or the service duration exceeds the available time!");
         }
     }
 
-    // Nhân viên check-in cho khách hàng
+    // Staff checks in the customer
     public Appointment checkIn(Long appointmentId) {
         Appointment appointment = appointmentRepository.findById(appointmentId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy đặt dịch vụ!"));
+                .orElseThrow(() -> new RuntimeException("Appointment not found!"));
         if (appointment.getStatus() != Appointment.AppointmentStatus.PENDING) {
-            throw new RuntimeException("Đặt dịch vụ không ở trạng thái PENDING!");
+            throw new RuntimeException("Appointment is not in PENDING status!");
         }
         appointment.setStatus(Appointment.AppointmentStatus.CHECKED_IN);
         return appointmentRepository.save(appointment);
     }
 
-    // Nhân viên phân công chuyên viên (nếu khách hàng không chỉ định)
+    // Staff assigns a therapist (if the customer did not specify one)
     public Appointment assignTherapist(Long appointmentId, UUID therapistId) {
         Appointment appointment = appointmentRepository.findById(appointmentId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy đặt dịch vụ!"));
+                .orElseThrow(() -> new RuntimeException("Appointment not found!"));
         if (appointment.getStatus() != Appointment.AppointmentStatus.CHECKED_IN) {
-            throw new RuntimeException("Đặt dịch vụ không ở trạng thái CHECKED_IN!");
+            throw new RuntimeException("Appointment is not in CHECKED_IN status!");
         }
         if (appointment.getSkinTherapist() != null) {
-            throw new RuntimeException("Đặt dịch vụ đã có chuyên viên được chỉ định!");
+            throw new RuntimeException("Appointment already has an assigned therapist!");
         }
         SkinTherapist therapist = skinTherapistRepository.findById(therapistId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy chuyên viên!"));
-        validateTherapistAvailability(therapist, appointment.getAppointmentTime());
+                .orElseThrow(() -> new RuntimeException("Therapist not found!"));
+        validateTherapistAvailability(therapist, appointment.getAppointmentTime(), appointment.getSpaService());
         appointment.setSkinTherapist(therapist);
         appointment.setStatus(Appointment.AppointmentStatus.ASSIGNED);
         return appointmentRepository.save(appointment);
     }
 
-    // Chuyên viên ghi nhận kết quả thực hiện
+    // Therapist records the result of the service
     public Appointment recordResult(Long appointmentId, String result) {
         Appointment appointment = appointmentRepository.findById(appointmentId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy đặt dịch vụ!"));
+                .orElseThrow(() -> new RuntimeException("Service booking not found!"));
         if (appointment.getStatus() != Appointment.AppointmentStatus.ASSIGNED) {
-            throw new RuntimeException("Đặt dịch vụ không ở trạng thái ASSIGNED!");
+            throw new RuntimeException("Service booking is not in ASSIGNED status!");
         }
         appointment.setResult(result);
         appointment.setStatus(Appointment.AppointmentStatus.COMPLETED);
         return appointmentRepository.save(appointment);
     }
 
-    // Nhân viên check-out cho khách hàng
+    // Staff checks out the customer
     public Appointment checkOut(Long appointmentId) {
         Appointment appointment = appointmentRepository.findById(appointmentId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy đặt dịch vụ!"));
+                .orElseThrow(() -> new RuntimeException("Service booking not found!"));
         if (appointment.getStatus() != Appointment.AppointmentStatus.COMPLETED) {
-            throw new RuntimeException("Đặt dịch vụ không ở trạng thái COMPLETED!");
+            throw new RuntimeException("Service booking is not in COMPLETED status!");
         }
         appointment.setStatus(Appointment.AppointmentStatus.CHECKED_OUT);
         return appointmentRepository.save(appointment);
     }
 
-    // Lấy danh sách đặt dịch vụ theo trạng thái
+    // Get a list of appointments by status
     public List<Appointment> getAppointmentsByStatus(Appointment.AppointmentStatus status) {
         return appointmentRepository.findByStatus(status);
     }
 
-    // Lấy danh sách đặt dịch vụ của khách hàng
+    // Get a list of appointments for a customer
     public List<Appointment> getAppointmentsByCustomer(UUID customerId) {
         return appointmentRepository.findByCustomerId(customerId);
     }
 
-    // Lấy danh sách đặt dịch vụ của chuyên viên
+    // Get a list of appointments for a therapist
     public List<Appointment> getAppointmentsByTherapist(UUID therapistId) {
         return appointmentRepository.findBySkinTherapistId(therapistId);
     }

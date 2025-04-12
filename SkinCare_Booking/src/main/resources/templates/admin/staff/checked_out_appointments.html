@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Đặt dịch vụ đã check-out</title>
+    <title>Checked-out Appointments</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 <div class="container">
-    <h1>Đặt dịch vụ đã check-out</h1>
+    <h1>Checked-out Appointments</h1>
     <table class="table table-bordered">
         <thead>
         <tr>
             <th>ID</th>
-            <th>Khách hàng</th>
-            <th>Dịch vụ</th>
-            <th>Thời gian</th>
-            <th>Chuyên viên</th>
-            <th>Kết quả</th>
+            <th>Customer</th>
+            <th>Service</th>
+            <th>Time</th>
+            <th>Therapist</th>
+            <th>Result</th>
         </tr>
         </thead>
         <tbody>
@@ -29,7 +29,7 @@
         </tr>
         </tbody>
     </table>
-    <a th:href="@{/protected/staff/bookings/completed}" class="btn btn-secondary">Quay lại</a>
+    <a th:href="@{/protected/staff/appointments/completed}" class="btn btn-secondary">Go Back</a>
 </div>
 </body>
 </html>

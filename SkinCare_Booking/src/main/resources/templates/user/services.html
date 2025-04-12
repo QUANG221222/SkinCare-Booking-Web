@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
-<div th:replace="user/master/fragments/head :: head"></div>
+<head th:replace="user/master/fragments/head :: head"></head>
 
 <body>
     <!-- Preloader -->
@@ -184,41 +184,44 @@
                 </div>
             </div>
 
-            <div class="row">
-
-                <!--Lấy dữ liệu từ phía be trả về-->
-                <!--<div th:replace="/user/master/Services/service ::service('','','','/user/img/bg-img/20.jpg')"></div>-->
-
-                <!-- Single Rooms Area -->
-                <div th:replace="/user/master/Services/service ::service('600.000 VND (~24$)','Aqua Peel','Gently removes dirt and dead skin while hydrating for a smooth, radiant glow.','/user/img/bg-img/1_1.png')"></div>
-                <div th:replace="/user/master/Services/service ::service('600.000 VND (~24$)','Aqua Peel','Gently removes dirt and dead skin while hydrating for a smooth, radiant glow.','/user/img/bg-img/1_1.png')"></div>
-                <div th:replace="/user/master/Services/service ::service('600.000 VND (~24$)','Aqua Peel','Gently removes dirt and dead skin while hydrating for a smooth, radiant glow.','/user/img/bg-img/1_1.png')"></div>
-                <div th:replace="/user/master/Services/service ::service('600.000 VND (~24$)','Aqua Peel','Gently removes dirt and dead skin while hydrating for a smooth, radiant glow.','/user/img/bg-img/1_1.png')"></div>
-                <div th:replace="/user/master/Services/service ::service('600.000 VND (~24$)','Aqua Peel','Gently removes dirt and dead skin while hydrating for a smooth, radiant glow.','/user/img/bg-img/1_1.png')"></div>
-                <div th:replace="/user/master/Services/service ::service('600.000 VND (~24$)','Aqua Peel','Gently removes dirt and dead skin while hydrating for a smooth, radiant glow.','/user/img/bg-img/1_1.png')"></div>
-                <div th:replace="/user/master/Services/service ::service('600.000 VND (~24$)','Aqua Peel','Gently removes dirt and dead skin while hydrating for a smooth, radiant glow.','/user/img/bg-img/1_1.png')"></div>
-                <div th:replace="/user/master/Services/service ::service('600.000 VND (~24$)','Aqua Peel','Gently removes dirt and dead skin while hydrating for a smooth, radiant glow.','/user/img/bg-img/1_1.png')"></div>
-                <div th:replace="/user/master/Services/service ::service('600.000 VND (~24$)','Aqua Peel','Gently removes dirt and dead skin while hydrating for a smooth, radiant glow.','/user/img/bg-img/1_1.png')"></div>
-
-<!--                <div class="col-12">-->
-<!--                    &lt;!&ndash; Pagination &ndash;&gt;-->
-<!--                    <div class="pagination-area wow fadeInUp" data-wow-delay="400ms">-->
-<!--                        <nav>-->
-<!--                            <ul class="pagination">-->
-<!--                                <li class="page-item active"><a class="page-link" href="#">01.</a></li>-->
-<!--                                <li class="page-item"><a class="page-link" href="#">02.</a></li>-->
-<!--                                <li class="page-item"><a class="page-link" href="#">03.</a></li>-->
-<!--                            </ul>-->
-<!--                        </nav>-->
-<!--                    </div>-->
-<!--                </div>-->
-
+            <!-- Kiểm tra nếu serviceList không null hoặc rỗng -->
+            <div class="row" th:if="${services != null}">
+                <!-- Lặp và hiển thị mỗi service -->
+                <div class="col-12 col-md-6 col-lg-4"
+                     th:each="service : ${services}"
+                     th:with="
+                         bgimg=${(service != null and service.imageUrl != null and service.imageUrl != '') 
+                                     ? service.imageUrl 
+                                     : '/user/img/about-us-img/3.jpg'},
+                         price=${service.price},
+                         title=${service.name},
+                         desc=${service.description}">
+            
+                    <div class="single-rooms-area wow fadeInUp" data-wow-delay="200ms">
+                        <!-- Thumbnail -->
+                        <div class="bg-thumbnail bg-img" 
+                             th:style="'background-image: url(' + ${bgimg} + ');'"></div>
+                        <!-- Price -->
+                        <p class="price-from" th:text="${price}">Price Service</p>
+                        <!-- Rooms Text -->
+                        <div class="rooms-text">
+                            <div class="line"></div>
+                            <h4 th:text="${title}">Title Service</h4>
+                            <p th:text="${desc}">Desc Service</p>
+                        </div>
+                        <!-- Book Room -->
+                        <a class="book-room-btn btn palatin-btn" th:href="@{/protected/customer/appointment(serviceId=${service.id})}">
+                                Book Now
+                        </a> 
+                    </div>
+                </div>
+                <!-- Hiển thị thông báo nếu không có service -->
+                <div th:if="${serviceList == null or #lists.isEmpty(serviceList)}">
+                    <p>Không có dịch vụ nào được hiển thị.</p>
+                </div>
             </div>
-        </div>
     </section>
     <!-- ##### Rooms Area End ##### -->
-    
-    <div th:replace="user/master/Modal-Booking/modal :: modal"></div>
     <!-- ##### Footer Area Start ##### -->
     <div th:replace="user/master/fragments/footer:: footer"></div>
     <!-- ##### Footer Area End ##### -->

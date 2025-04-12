@@ -7,6 +7,9 @@
 <body>
     <div class="container">
         <h1>Đặt dịch vụ chăm sóc da</h1>
+        <div th:if="${errorMessage}" class="alert alert-danger">
+            <span th:text="${errorMessage}"></span>
+        </div>
         <!-- Thông báo lỗi hoặc thành công -->
         <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
             <span th:text="${success}"></span>
@@ -36,7 +39,7 @@
                 <input type="datetime-local" th:field="*{appointmentTime}" class="form-control" required/>
             </div>
             <button type="submit" class="btn btn-primary">Đặt dịch vụ</button>
-            <a th:href="@{protected/customer/appointments}" class="btn btn-secondary">Hủy</a>
+            <a th:href="@{/protected/customer/appointments}" class="btn btn-secondary">Hủy</a>
         </form>
     </div>
 </body>
