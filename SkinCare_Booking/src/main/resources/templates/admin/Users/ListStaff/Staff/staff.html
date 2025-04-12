@@ -1,0 +1,33 @@
+<th:block th:fragment="staff">
+  <td>
+    <div class="d-flex align-items-center justify-content-between gap-1">
+      <div class="avatar avatar-sm me-3 d-flex align-items-center">
+        <img
+                th:src="${staff.img}"
+                alt="Avatar"
+                class="rounded-circle"
+                style="width: 40px; height: 40px"
+        />
+      </div>
+      <div>
+        <span th:text="${staff.fullName}" class="fw-medium"></span>
+        <small th:text="${staff.email}" class="text-muted"></small>
+      </div>
+    </div>
+  </td>
+  <td>
+    <span th:text="${staff.userType}" class="badge bg-success"></span>
+  </td>
+  <td th:text="${staff.phone}"></td>
+  <td th:text="${staff.location}"></td>
+  <td>
+    <div class="d-flex align-items-center gap-2">
+      <a class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal">
+        <i class="bx bx-trash"></i>
+      </a>
+      <a class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#editStaffModal" >
+        <i class="bx bx-edit"></i>
+      </a>
+    </div>
+  </td>
+</th:block>

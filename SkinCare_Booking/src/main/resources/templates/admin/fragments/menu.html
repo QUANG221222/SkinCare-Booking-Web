@@ -1,0 +1,195 @@
+<aside
+  th:fragment="menu"
+  id="layout-menu"
+  class="layout-menu menu-vertical menu bg-menu-theme"
+>
+  <div class="app-brand demo">
+    <a
+      th:href="${#strings.contains(currentURI, 'staff') ? '/protected/staff/home' :
+               (#strings.contains(currentURI, 'manager') ? '/protected/manager/home' : '/protected/therapist/home')}"
+      class="app-brand-link"
+    >
+      <span class="app-brand-logo demo">
+        <img src="/user/img/core-img/logo_1.png" alt="logo" />
+      </span>
+    </a>
+
+    <a
+      href="javascript:void(0);"
+      class="layout-menu-toggle menu-link text-large ms-auto"
+    >
+      <i class="bx bx-chevron-left d-block d-xl-none align-middle"></i>
+    </a>
+  </div>
+
+  <div class="menu-divider mt-0"></div>
+
+  <div class="menu-inner-shadow"></div>
+
+  <ul class="menu-inner py-1">
+    <!-- Dashboards -->
+    <li
+      th:classappend="${#strings.contains(currentURI, '/manager/home')} ? 'active open' : ''"
+      class="menu-item"
+    >
+      <a th:href="@{/protected/manager/home}" class="menu-link menu-toggle">
+        <i class="menu-icon tf-icons bx bx-home-smile"></i>
+        <div class="text-truncate" data-i18n="Dashboards">Dashboards</div>
+      </a>
+      <ul class="menu-sub">
+        <li
+          th:classappend="${#strings.contains(currentURI, '/manager/home')} ? 'active' : ''"
+          class="menu-item"
+        >
+          <a th:href="@{/protected/manager/home}" class="menu-link">
+            <div class="text-truncate" data-i18n="Analytics">Analytics</div>
+          </a>
+        </li>
+      </ul>
+    </li>
+
+    <!-- Users (hasRole = "Manager")   -->
+    <li
+      class="menu-item"
+      th:classappend="${#strings.contains(currentURI, '/manager/list-staff') or 
+            #strings.contains(currentURI, '/manager/list-therapist')} ? 'active open' : ''"
+    >
+      <a href="javascript:void(0);" class="menu-link menu-toggle">
+        <i class="menu-icon icon-base bx bx-user"></i>
+        <div data-i18n="Users">Users</div>
+      </a>
+      <ul class="menu-sub">
+        <li
+          class="menu-item"
+          th:classappend="${#strings.contains(currentURI, '/manager/list-staff')} ? 'active' : ''"
+        >
+          <a th:href="@{/protected/manager/list-staff}" class="menu-link">
+            <div data-i18n="List">Staff</div>
+          </a>
+        </li>
+        <li
+          class="menu-item"
+          th:classappend="${#strings.contains(currentURI, '/manager/list-therapist')} ? 'active' : ''"
+        >
+          <a th:href="@{/protected/manager/list-therapist}" class="menu-link">
+            <div data-i18n="List">Skin Therapist</div>
+          </a>
+        </li>
+      </ul>
+    </li>
+    <!-- SpaService -->
+    <li class="menu-item">
+      <a href="javascript:void(0);" class="menu-link menu-toggle">
+        <i class="menu-icon tf-icons bx bx-home-smile"></i>
+        <div class="text-truncate" data-i18n="Dashboards">Spa Services</div>
+      </a>
+      <ul class="menu-sub">
+        <li class="menu-item">
+          <a
+            th:href="@{/protected/manager/spa-services}"
+            id="spaServiceLink"
+            class="menu-link"
+          >
+            <div class="text-truncate" data-i18n="CRM">List Spa Services</div>
+          </a>
+        </li>
+      </ul>
+    </li>
+    <!-- Center Schedule -->
+    <li class="menu-item">
+      <a href="javascript:void(0);" class="menu-link menu-toggle">
+        <i class="menu-icon tf-icons bx bx-home-smile"></i>
+        <div class="text-truncate" data-i18n="Dashboards">Center-Schedule</div>
+      </a>
+      <ul class="menu-sub">
+        <li class="menu-item">
+          <a
+            th:href="@{/protected/manager/spa-services/schedules}"
+            target="_blank"
+            class="menu-link"
+          >
+            <div class="text-truncate" data-i18n="eCommerce">
+              List Center Schedule
+            </div>
+          </a>
+        </li>
+      </ul>
+    </li>
+    <!-- Therapist -->
+    <li class="menu-item">
+      <a href="javascript:void(0);" class="menu-link menu-toggle">
+        <i class="menu-icon tf-icons bx bx-home-smile"></i>
+        <div class="text-truncate" data-i18n="Dashboards">Therapists</div>
+      </a>
+      <ul class="menu-sub">
+        <li class="menu-item">
+          <a
+            th:href="@{/protected/manager/therapists}"
+            target="_blank"
+            class="menu-link"
+          >
+            <div class="text-truncate" data-i18n="eCommerce">
+              List Therapists
+            </div>
+          </a>
+        </li>
+      </ul>
+    </li>
+    <!-- Appointment -->
+    <li class="menu-item">
+      <a href="javascript:void(0);" class="menu-link menu-toggle">
+        <i class="menu-icon tf-icons bx bx-home-smile"></i>
+        <div class="text-truncate" data-i18n="Dashboards">Appointment</div>
+      </a>
+      <ul class="menu-sub">
+        <li class="menu-item">
+          <a
+            th:href="@{/protected/staff/appointments/pending}"
+            target="_blank"
+            class="menu-link"
+          >
+            <div class="text-truncate" data-i18n="eCommerce">
+              List Appointments
+            </div>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a
+            th:href="@{/protected/staff/appointments/checked-in}"
+            target="_blank"
+            class="menu-link"
+          >
+            <div class="text-truncate" data-i18n="eCommerce">Checked</div>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a
+            th:href="@{/protected/staff/appointments/assigned}"
+            target="_blank"
+            class="menu-link"
+          >
+            <div class="text-truncate" data-i18n="eCommerce">Assigned</div>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a
+            th:href="@{/protected/staff/appointments/completed}"
+            target="_blank"
+            class="menu-link"
+          >
+            <div class="text-truncate" data-i18n="eCommerce">Completed</div>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a
+            th:href="@{/protected/staff/appointments/checked-out}"
+            target="_blank"
+            class="menu-link"
+          >
+            <div class="text-truncate" data-i18n="eCommerce">Checked-out</div>
+          </a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</aside>

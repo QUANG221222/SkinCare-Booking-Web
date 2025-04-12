@@ -6,8 +6,8 @@
         <!-- Menu -->
         <nav class="classy-navbar justify-content-between" id="palatinNav">
           <!-- Nav brand -->
-          <a th:href="@{/}" class="nav-brand"
-            ><img src="/user/img/core-img/logo_1.png" alt=""
+          <a th:href="${#strings.contains(currentURI, 'customer')} ? @{/protected/customer/home} : @{/}" class="nav-brand"
+          ><img src="/user/img/core-img/logo_1.png" alt=""
           /></a>
 
           <!-- Navbar Toggler -->

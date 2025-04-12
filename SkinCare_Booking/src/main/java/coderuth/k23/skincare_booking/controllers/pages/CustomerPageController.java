@@ -1,6 +1,6 @@
 package coderuth.k23.skincare_booking.controllers.pages;
 
-import coderuth.k23.skincare_booking.dtos.request.CustomerProfileRequest;
+import coderuth.k23.skincare_booking.dtos.request.EditProfileRequest;
 import coderuth.k23.skincare_booking.dtos.request.FeedbackRequest;
 import coderuth.k23.skincare_booking.models.Appointment;
 import coderuth.k23.skincare_booking.models.Customer;
@@ -73,6 +73,35 @@ public class CustomerPageController {
         return userDetails.getId();
     }
 
+    @ModelAttribute("currentURI")
+    public String currentURI(HttpServletRequest request) {
+        return request.getRequestURI();
+    }
+
+    @GetMapping("/home")
+    public String userHomePage() {
+        return "user/index"; // Load file src/main/resources/templates/user/index.html
+    }
+
+    @GetMapping("/about-us")
+    public String userAboutUsPage() {
+        return "user/about-us";
+    }
+
+    @GetMapping("/services")
+    public String getAllServices(Model model) {
+         // Lấy tất cả dịch vụ từ DB
+        List<SpaService> services = spaServiceRepository.findAll();
+        // In chi tiết từng service xem có gì
+        services.forEach(s -> System.out.println(
+            "ID: " + s.getId()
+            + ", Name: " + s.getName()
+            + ", ImageURL: " + s.getImageUrl()
+        ));
+
+        model.addAttribute("services", services);
+        return "user/services";
+    }
 
     // Hiển thị danh sách dịch vụ và form đặt dịch vụ
     @GetMapping("/appointment")
@@ -109,38 +138,6 @@ public class CustomerPageController {
         UUID customerId = getLoggedInCustomerId();
         model.addAttribute("appointments", appointmentService.getAppointmentsByCustomer(customerId));
         return "user/customer/appointments_list";
-    }
-
-    @ModelAttribute("currentURI")
-    public String currentURI(HttpServletRequest request) {
-        return request.getRequestURI();
-    }
-
-    @GetMapping("/home")
-    public String userHomePage() {
-        return "user/index"; // Load file src/main/resources/templates/user/index.html
-    }
-
-    @GetMapping("/about-us")
-    public String userAboutUsPage() {
-        return "user/about-us";
-    }
-
-    @GetMapping("/services")
-    public String getAllServices(Model model) {
-         // Lấy tất cả dịch vụ từ DB
-        List<SpaService> services = spaServiceRepository.findAll();
-        System.out.println("services.size() = " + services.size());
-
-        // In chi tiết từng service xem có gì
-        services.forEach(s -> System.out.println(
-            "ID: " + s.getId()
-            + ", Name: " + s.getName()
-            + ", ImageURL: " + s.getImageUrl()
-        ));
-
-        model.addAttribute("services", services);
-        return "user/services";
     }
 
     // Endpoint mới để hiển thị danh sách feedback
@@ -209,7 +206,7 @@ public class CustomerPageController {
 
     @PostMapping("/edit-profile")
     public String editProfile(
-            @ModelAttribute CustomerProfileRequest profileRequest,
+            @ModelAttribute EditProfileRequest profileRequest,
             Principal principal,
             RedirectAttributes redirectAttributes) {
         String username = principal.getName();
@@ -253,15 +250,8 @@ public class CustomerPageController {
     @GetMapping("/booking-history")
     public String bookingHistory(Model model) {
         // Lấy lịch sử đặt lịch từ cơ sở dữ liệu
-        List<Appointment> bookings = appointmentService.getAppointmentsByCustomer(getCurrentCustomerId());
+        List<Appointment> bookings = appointmentService.getAppointmentsByCustomer(getLoggedInCustomerId());
         model.addAttribute("bookings", bookings);
         return "user/customer/booking-history";
-    }
-
-    // Helper method để lấy ID của Customer hiện hành
-    private UUID getCurrentCustomerId() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        return userDetails.getId();
     }
 }
