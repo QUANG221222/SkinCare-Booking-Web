@@ -21,8 +21,6 @@ public class FeedbackService {
     private FeedbackRepository feedBackRepository;
     @Autowired
     private CustomerRepository customerRepository;
-    @Autowired
-    private ManagerRepository managerRepository;
 
     // Create Feedback
     public void createFeedback(FeedbackRequest feedbackRequest) {
@@ -39,6 +37,7 @@ public class FeedbackService {
         Feedback feedback = new Feedback();
         feedback.setSubject(feedbackRequest.getSubject());
         feedback.setComment(feedbackRequest.getMessage());
+        feedback.setRating(feedbackRequest.getRating());
         feedback.setCustomer(customer);
 
         feedBackRepository.save(feedback);
@@ -187,9 +186,12 @@ public class FeedbackService {
     // Chuyển đổi từ Feedback sang FeedbackRequest
     private FeedbackRequest convertToDTO(Feedback feedback) {
         FeedbackRequest dto = new FeedbackRequest();
+//        dto.setId(feedback.getId()); // Thêm id
         dto.setSubject(feedback.getSubject());
         dto.setMessage(feedback.getComment());
         dto.setRating(feedback.getRating());
+//        dto.setUsername(feedback.getCustomer().getUsername()); // Thêm username
+//        dto.setHidden(feedback.isHidden());
         return dto;
     }
 }

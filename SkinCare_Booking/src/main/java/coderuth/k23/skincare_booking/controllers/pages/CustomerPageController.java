@@ -1,6 +1,7 @@
 package coderuth.k23.skincare_booking.controllers.pages;
 
 import coderuth.k23.skincare_booking.dtos.request.CustomerProfileRequest;
+import coderuth.k23.skincare_booking.dtos.request.FeedbackRequest;
 import coderuth.k23.skincare_booking.models.Appointment;
 import coderuth.k23.skincare_booking.models.Customer;
 import coderuth.k23.skincare_booking.models.SpaService;
@@ -9,19 +10,20 @@ import coderuth.k23.skincare_booking.repositories.SpaServiceRepository;
 import coderuth.k23.skincare_booking.security.UserDetailsImpl;
 import coderuth.k23.skincare_booking.services.AppointmentService;
 import coderuth.k23.skincare_booking.services.CustomerService;
+import coderuth.k23.skincare_booking.services.FeedbackService;
 import coderuth.k23.skincare_booking.services.SpaServiceService;
 import coderuth.k23.skincare_booking.services.TherapistService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import jakarta.servlet.http.HttpServletRequest;
-
+import jakarta.validation.Valid;
 import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
@@ -30,6 +32,7 @@ import java.util.UUID;
 @PreAuthorize("hasRole('CUSTOMER')")
 @RequestMapping("/protected/customer")
 public class CustomerPageController {
+
     @Autowired
     CustomerRepository customerRepository;
 
@@ -40,6 +43,8 @@ public class CustomerPageController {
     AppointmentService appointmentService;
 
     @Autowired
+    private FeedbackService feedbackService;
+
     private SpaServiceService spaServiceService;
 
     @Autowired
@@ -106,7 +111,6 @@ public class CustomerPageController {
         return "user/customer/appointments_list";
     }
 
-
     @ModelAttribute("currentURI")
     public String currentURI(HttpServletRequest request) {
         return request.getRequestURI();
@@ -139,16 +143,47 @@ public class CustomerPageController {
         return "user/services";
     }
 
-    // @GetMapping("/services")
-    // public String userServicesPage(Model model) {
-    //     List<SpaService> services = spaServiceService.getAllServices();
-    //     model.addAttribute("services", services);
-    //     return "user/services"; // file user/services.html
-    // }
-
+    // Endpoint mới để hiển thị danh sách feedback
+    @GetMapping("/feedbacks")
+    public String userFeedbackListPage(Model model, Principal principal) {
+        String username = principal.getName();
+        model.addAttribute("feedbacks", feedbackService.getFeedbacksByUsername(username, username));
+        return "user/customer/Feedback-Manager";
+    }
+  
     @GetMapping("/contact")
-    public String userContactPage() {
-        return "user/contact";
+    public String userContactPage(Model model, Principal principal) {
+        String username = principal.getName();
+        // Lấy danh sách Feedback của Customer và khởi tạo đối tượng FeedbackRequest cho form feedback
+        model.addAttribute("feedbacks", feedbackService.getFeedbacksByUsername(username, username));
+        model.addAttribute("feedbackRequest", new FeedbackRequest());
+        return "user/customer/contact_Customer"; //File contact.html đã tích hợp giao diện feedback
+    }
+
+    // Xử lý gửi feedback từ trang contact
+    @PostMapping("/contact")
+    public String submitFeedback(
+            @Valid @ModelAttribute("feedbackRequest") FeedbackRequest feedbackRequest,
+            BindingResult result,
+            Model model,
+            Principal principal) {
+        String username = principal.getName();
+
+        if (result.hasErrors()) {
+            model.addAttribute("feedbacks", feedbackService.getFeedbacksByUsername(username, username));
+            return "user/customer/contact_Customer";
+        }
+
+        try {
+            feedbackService.createFeedback(feedbackRequest);
+            model.addAttribute("successMessage", "Feedback submitted successfully!");
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "Error submitting feedback: " + e.getMessage());
+        }
+
+        model.addAttribute("feedbacks", feedbackService.getFeedbacksByUsername(username, username));
+        model.addAttribute("feedbackRequest", new FeedbackRequest());
+        return "user/customer/contact_Customer";
     }
 
     @GetMapping("/blog")
@@ -161,7 +196,7 @@ public class CustomerPageController {
         model.addAttribute("therapist", therapistService.getAllTherapists());
         return "user/skin-therapist";
     }
-    
+
     @GetMapping("/profile")
     public String getCustomerProfile(Model model, Principal principal) {
         String username = principal.getName();
@@ -182,10 +217,10 @@ public class CustomerPageController {
             // Cập nhật thông tin hồ sơ
             customerService.updateCustomerProfile(username, profileRequest);
 
-            // Thêm thông báo thành công vào RedirectAttributes
+            // Thêm thông báo thành công
             redirectAttributes.addFlashAttribute("successMessage", "Profile updated successfully!");
         } catch (Exception e) {
-            // Thêm thông báo lỗi vào RedirectAttributes
+            // Thêm thông báo lỗi
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to update profile: " + e.getMessage());
         }
 
@@ -205,10 +240,10 @@ public class CustomerPageController {
             // Kiểm tra và thay đổi mật khẩu
             customerService.changePassword(username, currentPassword, newPassword, confirmPassword);
 
-            // Thêm thông báo thành công vào RedirectAttributes
+            // Thông báo thành công
             redirectAttributes.addFlashAttribute("successMessage", "Password changed successfully!");
         } catch (Exception e) {
-            // Thêm thông báo lỗi vào RedirectAttributes
+            // Thông báo lỗi
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to change password: " + e.getMessage());
         }
 
@@ -217,17 +252,16 @@ public class CustomerPageController {
 
     @GetMapping("/booking-history")
     public String bookingHistory(Model model) {
-        // Fetch booking history from the database
+        // Lấy lịch sử đặt lịch từ cơ sở dữ liệu
         List<Appointment> bookings = appointmentService.getAppointmentsByCustomer(getCurrentCustomerId());
         model.addAttribute("bookings", bookings);
         return "user/customer/booking-history";
     }
 
-    // Helper method to get current customer ID
+    // Helper method để lấy ID của Customer hiện hành
     private UUID getCurrentCustomerId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         return userDetails.getId();
     }
 }
-
