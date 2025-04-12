@@ -37,8 +37,8 @@ git # Java Spring Boot Web Application
   - Huỷ lịch hẹn 
   - Lựa chọn phương thức thanh toán (trả tiền mặt sau khi hoàn tất dịch vụ, thanh toán trước qua chuyển khoảng...) 
 - **Trang đánh giá (Customer)**
-  - Cho phép khách hàng viết nhận xét và đánh giá dịch vụ 
-  - Cho phép khách hàng xoá nhận xét, đánh giá 
+  - Cho phép khách hàng viết nhận xét và đánh giá dịch vụ ✅
+  - Cho phép khách hàng xoá nhận xét, đánh giá ✅
 - **Trang hồ sơ (Customer)**
   - Cho phép xem thông tin cá nhân đã đăng ký với trung tâm ✅
   - Cho phép thay đổi một số thông tin cá nhân ✅

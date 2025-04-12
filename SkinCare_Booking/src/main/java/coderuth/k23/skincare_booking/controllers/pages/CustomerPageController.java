@@ -4,11 +4,11 @@ import coderuth.k23.skincare_booking.dtos.request.EditProfileRequest;
 import coderuth.k23.skincare_booking.dtos.request.FeedbackRequest;
 import coderuth.k23.skincare_booking.models.Appointment;
 import coderuth.k23.skincare_booking.models.Customer;
+import coderuth.k23.skincare_booking.models.SpaService;
 import coderuth.k23.skincare_booking.repositories.CustomerRepository;
+import coderuth.k23.skincare_booking.repositories.SpaServiceRepository;
 import coderuth.k23.skincare_booking.security.UserDetailsImpl;
-import coderuth.k23.skincare_booking.services.AppointmentService;
-import coderuth.k23.skincare_booking.services.CustomerService;
-import coderuth.k23.skincare_booking.services.FeedbackService;
+import coderuth.k23.skincare_booking.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -99,6 +99,12 @@ public class CustomerPageController {
 
         model.addAttribute("services", services);
         return "user/services";
+    }
+
+    @GetMapping("/skin-therapist")
+    public String userSkinTherapistPage(Model model) {
+        model.addAttribute("therapist", therapistService.getAllTherapists());
+        return "user/skin-therapist";
     }
 
     // Hiển thị danh sách dịch vụ và form đặt dịch vụ
