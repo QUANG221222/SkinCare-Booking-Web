@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manager - Feedback Management</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #e0e0e0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #2a2a3e;
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+      margin-top: 50px;
+      margin-bottom: 50px;
+    }
+    h1 {
+      color: #00ddeb;
+      text-shadow: 0 0 10px rgba(0, 221, 235, 0.5);
+      font-weight: bold;
+    }
+    .table {
+      background-color: #3a3a5e;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .table th {
+      background-color: #4a4a7e;
+      color: #e0e0e0;
+      border: none;
+      padding: 15px;
+      font-weight: 600;
+    }
+    .table td {
+      background-color: #3a3a5e;
+      color: #e0e0e0;
+      border: none;
+      padding: 15px;
+      vertical-align: middle;
+    }
+    .table tr {
+      transition: background-color 0.3s ease;
+    }
+    .table tr:hover {
+      background-color: #4a4a7e;
+    }
+    .btn-custom {
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+    .btn-hide {
+      background-color: #ff6f61;
+      color: white;
+    }
+    .btn-hide:hover {
+      background-color: #ff4f41;
+      box-shadow: 0 0 15px rgba(255, 111, 97, 0.5);
+    }
+    .btn-delete {
+      background-color: #ff3e3e;
+      color: white;
+    }
+    .btn-delete:hover {
+      background-color: #e32b2b;
+      box-shadow: 0 0 15px rgba(255, 62, 62, 0.5);
+    }
+    .btn-unhide {
+      background-color: #28a745;
+      color: white;
+    }
+    .btn-unhide:hover {
+      background-color: #218838;
+      box-shadow: 0 0 15px rgba(40, 167, 69, 0.5);
+    }
+    .alert {
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+    .star-rating {
+      font-size: 1.2rem;
+    }
+    .star-rating .fas.fa-star {
+      color: #ff4d4d;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1 class="mb-4 text-center">Feedback Management</h1>
+
+  <!-- Success/Error Messages -->
+  <div th:if="${successMessage}" class="alert alert-success" role="alert">
+    <span th:text="${successMessage}"></span>
+  </div>
+  <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+    <span th:text="${errorMessage}"></span>
+  </div>
+
+  <!-- Feedback List -->
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+      <tr>
+        <th>#</th>
+        <th>Customer</th>
+        <th>Subject</th>
+        <th>Message</th>
+        <th>Rating</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="feedback, iterStat : ${feedbacks}">
+        <td th:text="${iterStat.count}"></td>
+        <td th:text="${feedback.username}"></td>
+        <td th:text="${feedback.subject}"></td>
+        <td th:text="${feedback.message}"></td>
+        <td>
+          <div class="star-rating">
+                                <span th:each="i : ${#numbers.sequence(1, 5)}"
+                                      th:classappend="${i <= feedback.rating} ? 'fas fa-star' : 'far fa-star'"
+                                      style="color: #ff4d4d;"></span>
+          </div>
+        </td>
+        <td>
+          <span th:if="${feedback.isHidden}" class="badge bg-danger">Hidden</span>
+          <span th:unless="${feedback.isHidden}" class="badge bg-success">Showing</span>
+        </td>
+        <td>
+          <form th:action="@{/manager/feedback/{id}/hide(id=${feedback.id})}" method="post" style="display:inline;">
+            <button type="submit" class="btn btn-custom btn-hide" th:disabled="${feedback.isHidden}">
+              <i class="fas fa-eye-slash"></i> Hide
+            </button>
+          </form>
+          <form th:action="@{/manager/feedback/{id}/unhide(id=${feedback.id})}" method="post" style="display:inline;">
+            <button type="submit" class="btn btn-custom btn-unhide" th:disabled="${!feedback.isHidden}">
+              <i class="fas fa-eye"></i> Unhide
+            </button>
+          </form>
+          <form th:action="@{/manager/feedback/{id}/delete(id=${feedback.id})}" method="post" style="display:inline;">
+            <button type="submit" class="btn btn-custom btn-delete"
+                    onclick="return confirm('Are you sure you want to permanently delete this feedback?');">
+              <i class="fas fa-trash-alt"></i> Delete
+            </button>
+          </form>
+        </td>
+      </tr>
+      <tr th:if="${#lists.isEmpty(feedbacks)}">
+        <td colspan="7" class="text-center">No feedbacks found.</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Bootstrap 5 JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
