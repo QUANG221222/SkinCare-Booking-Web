@@ -1,4 +1,4 @@
-# Java Spring Boot Web Application
+git # Java Spring Boot Web Application
 
 ## Context
 
@@ -8,7 +8,7 @@
 - Tích hợp các tính năng hỗ trợ như: trắc nghiệm da, đề xuất dịch vụ phù hợp.
 - Giúp trung tâm nâng cao hiệu quả quản lý và chất lượng dịch vụ.
 
-## Actors
+## Actors ✅
 
 - **Guest (Khách vãng lai):** Khách hàng tiềm năng, chưa có tài khoản, tìm hiểu thông tin.
 - **Customer (Khách hàng):** Người dùng đã đăng ký, có tài khoản, đặt lịch hẹn, quản lý thông tin cá nhân và đánh giá dịch vụ.
@@ -144,7 +144,7 @@
 
 #### 2.2 Models
 
-**User (Người dùng)**
+**User (Người dùng)** ✅
 
 - `id` (Long/UUID): ID người dùng (primary key).
 - `username` (String): Tên đăng nhập (unique).
@@ -160,26 +160,26 @@
 - `updatedAt` (Date/Timestamp): Ngày cập nhật.
   - **Table name**: `users`
 
-**Customer (Khách hàng)**
+**Customer (Khách hàng)** ✅
 
 - `userId` (Long): ID người dùng (foreign key tham chiếu đến bảng `users`).
 - Các thông tin bổ sung liên quan đến khách hàng (nếu cần).
   - **Table name**: `customers`
 
-**SkinTherapist (Chuyên viên chăm sóc da)**
+**SkinTherapist (Chuyên viên chăm sóc da)**✅
 
 - `userId` (Long): ID người dùng (foreign key tham chiếu đến bảng `users`).
 - `specialization` (String): Chuyên môn (ví dụ: trị mụn, trẻ hóa da,...).
 - `workingSchedule` (String): Lịch làm việc (có thể lưu dưới dạng JSON).
   - **Table name**: `skin_therapists`
 
-**Staff (Nhân viên)**
+**Staff (Nhân viên)**✅
 
 - `userId` (Long): ID người dùng (foreign key tham chiếu đến bảng `users`).
 - Các thông tin bổ sung liên quan đến nhân viên.
   - **Table name**: `staffs`
 
-**Service (Dịch vụ)**
+**Service (Dịch vụ)**✅
 
 - `id` (Long/UUID): ID dịch vụ (primary key).
 - `name` (String): Tên dịch vụ.
@@ -192,7 +192,7 @@
 - `updatedAt` (Date/Timestamp).
   - **Table name**: `services`
 
-**Appointment (Lịch hẹn)**
+**Appointment (Lịch hẹn)**✅
 
 - `id` (Long/UUID): ID lịch hẹn (primary key).
 - `customerId` (Long): ID khách hàng (foreign key tham chiếu đến bảng `customers`).
@@ -207,7 +207,7 @@
 - `updatedAt` (Date/Timestamp).
   - **Table name**: `appointments`
 
-**Feedback (Đánh giá)**
+**Feedback (Đánh giá)**✅
 
 - `id` (Long/UUID): ID feedback (primary key).
 - `customerId` (Long): ID khách hàng (foreign key tham chiếu đến bảng `customers`).
@@ -218,7 +218,7 @@
 - `updatedAt` (Date/Timestamp).
   - **Table name**: `feedbacks`
 
-**Blog/News (Tin tức)** (Optional - nếu cần thiết)
+**Blog/News (Tin tức)** (Optional - nếu cần thiết)✅
 
 - `id` (Long/UUID): ID bài viết (primary key).
 - `title` (String): Tiêu đề.
