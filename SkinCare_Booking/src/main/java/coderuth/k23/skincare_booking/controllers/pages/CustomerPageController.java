@@ -4,15 +4,11 @@ import coderuth.k23.skincare_booking.dtos.request.EditProfileRequest;
 import coderuth.k23.skincare_booking.dtos.request.FeedbackRequest;
 import coderuth.k23.skincare_booking.models.Appointment;
 import coderuth.k23.skincare_booking.models.Customer;
-import coderuth.k23.skincare_booking.models.SpaService;
 import coderuth.k23.skincare_booking.repositories.CustomerRepository;
-import coderuth.k23.skincare_booking.repositories.SpaServiceRepository;
 import coderuth.k23.skincare_booking.security.UserDetailsImpl;
 import coderuth.k23.skincare_booking.services.AppointmentService;
 import coderuth.k23.skincare_booking.services.CustomerService;
 import coderuth.k23.skincare_booking.services.FeedbackService;
-import coderuth.k23.skincare_booking.services.SpaServiceService;
-import coderuth.k23.skincare_booking.services.TherapistService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -72,6 +68,8 @@ public class CustomerPageController {
         // Trả về ID khách hàng dưới dạng UUID
         return userDetails.getId();
     }
+
+
 
     @ModelAttribute("currentURI")
     public String currentURI(HttpServletRequest request) {
@@ -140,6 +138,10 @@ public class CustomerPageController {
         return "user/customer/appointments_list";
     }
 
+    public String userServicesPage() {
+        return "user/services";
+    }
+
     // Endpoint mới để hiển thị danh sách feedback
     @GetMapping("/feedbacks")
     public String userFeedbackListPage(Model model, Principal principal) {
@@ -147,7 +149,8 @@ public class CustomerPageController {
         model.addAttribute("feedbacks", feedbackService.getFeedbacksByUsername(username, username));
         return "user/customer/Feedback-Manager";
     }
-  
+
+    // Chỉnh sửa Contact Page để tích hợp giao diện feedback
     @GetMapping("/contact")
     public String userContactPage(Model model, Principal principal) {
         String username = principal.getName();
@@ -186,12 +189,6 @@ public class CustomerPageController {
     @GetMapping("/blog")
     public String userBlogPage() {
         return "user/blog";
-    }
-
-    @GetMapping("/skin-therapist")
-    public String userSkinTherapistPage(Model model) {
-        model.addAttribute("therapist", therapistService.getAllTherapists());
-        return "user/skin-therapist";
     }
 
     @GetMapping("/profile")

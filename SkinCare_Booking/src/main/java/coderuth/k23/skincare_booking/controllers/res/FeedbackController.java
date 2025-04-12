@@ -74,7 +74,7 @@ public class FeedbackController {
             @RequestParam(defaultValue = "false") boolean permanent) {
         try {
             feedbackService.deleteFeedback(id, permanent);
-            String message = permanent ? "Feedback permanently deleted successfully" : "Feedback hidden successfully";
+            String message = permanent ? "Feedback permanently deleted successfully" : "Feedback delete successfully";
             return ResponseEntity.ok(ApiResponse.success(message));
         } catch (IllegalArgumentException e) {
             if (e.getMessage().contains("not found")) {
@@ -86,7 +86,7 @@ public class FeedbackController {
         }
     }
 
-    @PostMapping("/{id}/unhide")
+    @PostMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> unhideFeedback(@PathVariable Long id, @Valid @RequestBody FeedbackRequest feedbackRequest) {
         try {
             feedbackService.unhideFeedback(id);

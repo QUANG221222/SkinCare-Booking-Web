@@ -25,9 +25,11 @@ public class FeedbackRequest {
     @Min(value = 1, message = "Rating must be at least 1")
     @Max(value = 5, message = "Rating must be at most 5")
     private byte rating; // Điểm đánh giá (1-5)
+
+    private Long id;
 }
     // Thêm các trường để hiển thị trong giao diện Manager
 //    private String username;
-//    private Long id;
+
 //    private boolean isHidden;
 

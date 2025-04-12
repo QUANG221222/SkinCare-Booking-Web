@@ -6,7 +6,7 @@
 
 <body>
 <!-- Preloader -->
-<div diaphrag="user/master/fragments/preloader :: preloader"></div>
+<div th:replace="user/master/fragments/preloader :: preloader"></div>
 
 <!-- ##### Header Area Start ##### -->
 <div th:replace="user/master/fragments/header :: header"></div>
@@ -21,6 +21,27 @@
 <!-- ##### Breadcumb Area End ##### -->
 
 <!-- ##### Feedback List Area Start ##### -->
+
+
+<section class="breadcrumb-area border-none">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item">
+                    <a
+                            th:href="@{/protected/customer/home}"
+                            class="text-decoration-none"
+                    >Home</a
+                    >
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    Feedback Manager
+                </li>
+            </ol>
+        </nav>
+    </div>
+</section>
+
 <section class="feedback-list-area mb-100">
     <div class="container">
         <div class="row">
@@ -34,44 +55,82 @@
 
         <div class="row">
             <div class="col-12">
-<!--                &lt;!&ndash; Hiển thị thông báo nếu có &ndash;&gt;-->
-<!--                <div th:if="${successMessage}" class="alert alert-success" role="alert">-->
-<!--                    <span th:text="${successMessage}"></span>-->
-<!--                </div>-->
-<!--                <div th:if="${errorMessage}" class="alert alert-danger" role="alert">-->
-<!--                    <span th:text="${errorMessage}"></span>-->
-<!--                </div>-->
+                <!-- Hiển thị thông báo nếu có -->
+                <div id="successMessage" class="alert alert-success d-none" role="alert"></div>
+                <div id="errorMessage" class="alert alert-danger d-none" role="alert"></div>
 
                 <!-- Danh sách Feedback -->
-                <table class="table table-bordered">
-                    <thead>
-                    <tr>
-                        <th>Subject</th>
-                        <th>Message</th>
-                        <th>Rating</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="feedback : ${feedbacks}">
-                        <td th:text="${feedback.subject}"></td>
-                        <td th:text="${feedback.message}"></td>
-                        <td>
-                            <div class="star-rating">
-                  <span th:each="i : ${#numbers.sequence(1, 5)}"
-                        th:classappend="${i <= feedback.rating} ? 'fas fa-star' : 'far fa-star'"></span>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr th:if="${#lists.isEmpty(feedbacks)}">
-                        <td colspan="3" class="text-center">No feedbacks found.</td>
-                    </tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="feedbackTable">
+                        <thead>
+                        <tr>
+                            <th>Subject</th>
+                            <th>Message</th>
+                            <th>Rating</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="feedback : ${feedbacks}" th:data-id="${feedback.id}">
+                            <td>
+                                <span class="view-mode" th:text="${feedback.subject}"></span>
+                                <input type="text" class="form-control edit-mode d-none" th:value="${feedback.subject}">
+                            </td>
+                            <td>
+                                <span class="view-mode" th:text="${feedback.message}"></span>
+                                <textarea class="form-control edit-mode d-none" rows="2" th:text="${feedback.message}"></textarea>
+                            </td>
+                            <td>
+                                <div class="star-rating view-mode">
+                    <span th:each="i : ${#numbers.sequence(1, 5)}"
+                          th:classappend="${i <= feedback.rating} ? 'fas fa-star' : 'far fa-star'"></span>
+                                </div>
+                                <div class="star-rating edit-mode d-none">
+                                    <span class="star" data-value="1"><i class="far fa-star"></i></span>
+                                    <span class="star" data-value="2"><i class="far fa-star"></i></span>
+                                    <span class="star" data-value="3"><i class="far fa-star"></i></span>
+                                    <span class="star" data-value="4"><i class="far fa-star"></i></span>
+                                    <span class="star" data-value="5"><i class="far fa-star"></i></span>
+                                </div>
+                                <input type="hidden" class="rating-value" th:value="${feedback.rating}">
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-primary edit-btn">Edit</button>
+                                <button class="btn btn-sm btn-success save-btn d-none">Save</button>
+                                <button class="btn btn-sm btn-secondary cancel-btn d-none">Cancel</button>
+                                <button class="btn btn-sm btn-danger delete-btn">Delete</button>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(feedbacks)}">
+                            <td colspan="4" class="text-center">No feedbacks found.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
 </section>
 <!-- ##### Feedback List Area End ##### -->
+
+<!-- Modal xác nhận xóa -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this feedback?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- ##### Footer Area Start ##### -->
 <div th:replace="user/master/fragments/footer :: footer"></div>
@@ -80,15 +139,145 @@
 <!-- ##### All Javascript Script ##### -->
 <div th:replace="user/master/fragments/script"></div>
 
-<!-- CSS for Star Rating -->
+<!-- CSS for Star Rating and Inline Editing -->
 <style>
     .feedback-list-area .star-rating .fas.fa-star {
-        color: #ffd700; /* Màu vàng cho ngôi sao được chọn */
+        color: #ffd700;
     }
     .feedback-list-area .star-rating .far.fa-star {
-        color: #ccc; /* Màu xám cho ngôi sao chưa chọn */
+        color: #ccc;
     }
+    .feedback-list-area .star-rating .star {
+        cursor: pointer;
+        transition: transform 0.2s ease-in-out;
+        display: inline-block;
+    }
+    .feedback-list-area .star-rating .star:hover {
+        transform: scale(1.3);
+    }
+    .edit-mode, .view-mode {
+        transition: all 0.3s ease;
+    }
+    .d-none {
+        display: none !important;
+    }
+    .breadcumb-area {
+        margin-bottom: 20px; /* Khoảng cách 20px, bạn có thể điều chỉnh */
+    }
+
 </style>
+
+<!-- JavaScript for Inline Editing and AJAX -->
+<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Edit button click
+        $('.edit-btn').click(function () {
+            const row = $(this).closest('tr');
+            row.find('.view-mode').addClass('d-none');
+            row.find('.edit-mode').removeClass('d-none');
+            row.find('.edit-btn').addClass('d-none');
+            row.find('.save-btn, .cancel-btn').removeClass('d-none');
+
+            // Initialize stars based on current rating
+            const rating = row.find('.rating-value').val();
+            row.find('.edit-mode .star').each(function () {
+                const value = $(this).data('value');
+                $(this).find('i').toggleClass('fas', value <= rating).toggleClass('far', value > rating);
+            });
+        });
+
+        // Cancel button click
+        $('.cancel-btn').click(function () {
+            const row = $(this).closest('tr');
+            row.find('.view-mode').removeClass('d-none');
+            row.find('.edit-mode').addClass('d-none');
+            row.find('.edit-btn').removeClass('d-none');
+            row.find('.save-btn, .cancel-btn').addClass('d-none');
+        });
+
+        // Star rating click
+        $('.edit-mode .star').click(function () {
+            const value = $(this).data('value');
+            const row = $(this).closest('tr');
+            row.find('.rating-value').val(value);
+            row.find('.edit-mode .star').each(function () {
+                const starValue = $(this).data('value');
+                $(this).find('i').toggleClass('fas', starValue <= value).toggleClass('far', starValue > value);
+            });
+        });
+
+        // Save button click (AJAX update)
+        $('.save-btn').click(function () {
+            const row = $(this).closest('tr');
+            const id = row.data('id');
+            const subject = row.find('input.edit-mode').val();
+            const message = row.find('textarea.edit-mode').val();
+            const rating = row.find('.rating-value').val();
+
+            $.ajax({
+                url: '/api/feedbacks/' + id,
+                type: 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify({ subject: subject, message: message, rating: rating }),
+                success: function (response) {
+                    // Update UI
+                    row.find('.view-mode').eq(0).text(subject);
+                    row.find('.view-mode').eq(1).text(message);
+                    row.find('.view-mode .star').each(function (i) {
+                        $(this).toggleClass('fas', i < rating).toggleClass('far', i >= rating);
+                    });
+                    row.find('.view-mode').removeClass('d-none');
+                    row.find('.edit-mode').addClass('d-none');
+                    row.find('.edit-btn').removeClass('d-none');
+                    row.find('.save-btn, .cancel-btn').addClass('d-none');
+
+                    showMessage('#successMessage', response.message);
+                },
+                error: function (xhr) {
+                    const error = xhr.responseJSON ? xhr.responseJSON.message : 'Error updating feedback';
+                    showMessage('#errorMessage', error);
+                }
+            });
+        });
+
+        // Delete button click (AJAX delete)
+        $('.delete-btn').click(function () {
+            const row = $(this).closest('tr');
+            const id = row.data('id');
+            // Hiển thị modal
+            $('#deleteModal').modal('show');
+            // Xử lý khi nhấn nút "Delete" trong modal
+            $('#confirmDelete').off('click').on('click', function () {
+                $.ajax({
+                    url: '/api/feedbacks/' + id + '?permanent=false',
+                    type: 'DELETE',
+                    success: function (response) {
+                        row.remove(); // Remove row from UI
+                        showMessage('#successMessage', response.message);
+                        if ($('#feedbackTable tbody tr').length === 0) {
+                            $('#feedbackTable tbody').append('<tr><td colspan="4" class="text-center">No feedbacks found.</td></tr>');
+                        }
+                        $('#deleteModal').modal('hide'); // Đóng modal
+                    },
+                    error: function (xhr) {
+                        const error = xhr.responseJSON ? xhr.responseJSON.message : 'Error deleting feedback';
+                        showMessage('#errorMessage', error);
+                        $('#deleteModal').modal('hide'); // Đóng modal
+                    }
+                });
+            });
+        });
+
+        // Show message function
+        function showMessage(selector, message) {
+            const element = $(selector);
+            element.text(message).removeClass('d-none');
+            setTimeout(() => element.addClass('d-none'), 3000);
+        }
+    });
+</script>
 
 </body>
 </html>
