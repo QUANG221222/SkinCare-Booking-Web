@@ -161,6 +161,38 @@ public class CustomerPageController {
         model.addAttribute("services", services);
         return "user/services";
     }
+    // Hiển thị danh sách dịch vụ và form đặt dịch vụ
+    @GetMapping("/appointment")
+    public String showAppointmentForm(Model model) {
+        model.addAttribute("appointment", new Appointment());
+        model.addAttribute("services", spaServiceService.getAllServices());
+        model.addAttribute("therapists", therapistService.getAllTherapists());
+        return "user/customer/appointment_form";
+    }
+
+
+    // Khách hàng đặt dịch vụ
+    @PostMapping("/appointment")
+    public String createAppointment(@ModelAttribute Appointment appointment, Model model) {
+        try {
+            UUID customerId = getLoggedInCustomerId(); // Lấy ID khách hàng đã đăng nhập
+            appointment.setCustomer(new Customer());
+            appointment.getCustomer().setId(customerId);
+            appointmentService.createAppointment(appointment);
+            return "redirect:/protected/customer/appointments";
+        } catch (RuntimeException ex) {
+            // Thêm thông báo lỗi vào model
+            model.addAttribute("errorMessage", ex.getMessage());
+            model.addAttribute("services", spaServiceService.getAllServices());
+            model.addAttribute("therapists", therapistService.getAllTherapists());
+            return "user/customer/appointment_form"; // Quay lại form đặt lịch
+        }
+    }
+
+    public String userServicesPage() {
+        return "user/services";
+    }
+
 
     // Chỉnh sửa Contact Page để tích hợp giao diện feedback
     @GetMapping("/contact")
@@ -169,7 +201,6 @@ public class CustomerPageController {
         model.addAttribute("feedbackRequest", new FeedbackRequest());
         return "user/customer/contact_Customer"; //File contact.html đã tích hợp giao diện feedback
     }
-
     // Xử lý gửi feedback từ trang contact
     @PostMapping("/contact")
     public String submitFeedback(
