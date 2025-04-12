@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="">
 <head>
-  <title>Danh sách nhà trị liệu</title>
+  <title>Therapist List</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 <div class="container">
-  <h1>Danh sách nhà trị liệu</h1>
-  <!-- Thông báo lỗi hoặc thành công -->
+  <h1>Therapist List</h1>
+  <!-- Success or error message -->
   <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
     <span th:text="${success}"></span>
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -16,18 +16,18 @@
     <span th:text="${error}"></span>
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
   </div>
-  <a th:href="@{/therapists/new}" class="btn btn-primary mb-3">Tạo nhà trị liệu mới</a>
+  <a th:href="@{/therapists/new}" class="btn btn-primary mb-3">Create New Therapist</a>
   <table class="table table-bordered">
     <thead>
     <tr>
       <th>ID</th>
-      <th>Tên</th>
+      <th>Name</th>
       <th>Email</th>
-      <th>Số điện thoại</th>
-      <th>Địa chỉ</th>
-      <th>Chuyên môn</th>
-      <th>Kinh nghiệm</th>
-      <th>Hành động</th>
+      <th>Phone Number</th>
+      <th>Address</th>
+      <th>Specialty</th>
+      <th>Experience</th>
+      <th>Actions</th>
     </tr>
     </thead>
     <tbody>
@@ -40,9 +40,9 @@
       <td th:text="${therapist.specialty}"></td>
       <td th:text="${therapist.experience}"></td>
       <td>
-        <a th:href="@{/therapists/edit/{id}(id=${therapist.id})}" class="btn btn-warning">Sửa</a>
-        <a th:href="@{/therapists/delete/{id}(id=${therapist.id})}" class="btn btn-danger">Xóa</a>
-        <a th:href="@{/therapists/{id}/schedules(id=${therapist.id})}" class="btn btn-info">Xem lịch làm việc</a>
+        <a th:href="@{/therapists/edit/{id}(id=${therapist.id})}" class="btn btn-warning">Edit</a>
+        <a th:href="@{/therapists/delete/{id}(id=${therapist.id})}" class="btn btn-danger">Delete</a>
+        <a th:href="@{/therapists/{id}/schedules(id=${therapist.id})}" class="btn btn-info">View Schedule</a>
       </td>
     </tr>
     </tbody>

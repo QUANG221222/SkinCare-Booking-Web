@@ -176,35 +176,22 @@ public class TherapistController {
     }
 
     @GetMapping("/appointments/record/{id}")
-    public String showRecordResultForm(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
-        try {
-            Appointment appointment = appointmentService.getAppointmentsByStatus(Appointment.AppointmentStatus.ASSIGNED)
-                    .stream().filter(b -> b.getId().equals(id))
-                    .findFirst()
-                    .orElseThrow(() -> new RuntimeException("Appointment not found!"));
-            model.addAttribute("appointment", appointment);
-            redirectAttributes.addFlashAttribute("success", "The appointment record form has been loaded successfully!");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "An error occurred while retrieving the appointment: " + e.getMessage());
-            return "redirect:/therapists";
-        }
+    public String showRecordResultForm(@PathVariable Long id, Model model) {
+        Appointment appointment = appointmentService.getAppointmentsByStatus(Appointment.AppointmentStatus.ASSIGNED)
+                .stream().filter(b -> b.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Appointment not found!"));
+        model.addAttribute("appointment", appointment);
         return "admin/therapists/therapists_record_result";
     }
 
     @PostMapping("/appointments/record/{id}")
-    public String recordResult(@PathVariable Long id, @RequestParam String result, RedirectAttributes redirectAttributes) {
-        try {
-            appointmentService.recordResult(id, result);
-            redirectAttributes.addFlashAttribute("success", "Result has been recorded successfully!");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "An error occurred while recording the result: " + e.getMessage());
-            return "redirect:/therapists";
-        }
-    
+    public String recordResult(@PathVariable Long id, @RequestParam String result) {
+        appointmentService.recordResult(id, result);
         return "redirect:/therapists/" + appointmentService.getAppointmentsByStatus(Appointment.AppointmentStatus.COMPLETED)
-                .stream().filter(b -> b.getId().equals(id))
-                .findFirst()
-                .map(b -> b.getSkinTherapist().getId())
-                .orElseThrow(() -> new RuntimeException("Therapist not found!")) + "/appointments";
+            .stream().filter(b -> b.getId().equals(id))
+            .findFirst()
+            .map(b -> b.getSkinTherapist().getId())
+            .orElseThrow(() -> new RuntimeException("Therapist not found!")) + "/appointments";
     }
 }
