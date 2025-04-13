@@ -26,6 +26,9 @@ public class Staff extends User {
         }
     }
 
+    @Column(name = "img", nullable = false)
+    private String img;
+
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @JsonIgnore // Tránh vòng lặp khi gọi API

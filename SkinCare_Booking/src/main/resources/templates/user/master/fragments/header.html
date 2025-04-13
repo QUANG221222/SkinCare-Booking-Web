@@ -6,8 +6,8 @@
         <!-- Menu -->
         <nav class="classy-navbar justify-content-between" id="palatinNav">
           <!-- Nav brand -->
-          <a th:href="@{/}" class="nav-brand"
-            ><img src="/user/img/core-img/logo_1.png" alt=""
+          <a th:href="${#strings.contains(currentURI, 'customer')} ? @{/protected/customer/home} : @{/}" class="nav-brand"
+          ><img src="/user/img/core-img/logo_1.png" alt=""
           /></a>
 
           <!-- Navbar Toggler -->
@@ -45,6 +45,14 @@
                     >About Us</a
                   >
                 </li>
+                <li
+                      th:classappend="${#strings.contains(currentURI, '/customer/skin-therapist') or (currentURI == '/skin-therapist') ? 'active' : ''}"
+                >
+                <a
+                        th:href="${#strings.contains(currentURI, 'customer')} ? @{/protected/customer/skin-therapist} : @{/skin-therapist}"
+                >Skin Therapist</a
+                >
+              </li>
                 <li
                   th:classappend="${#strings.contains(currentURI, '/customer/services') or (currentURI == '/services') ? 'active' : ''}"
                 >
@@ -111,9 +119,11 @@
                       </a>
                     </li>
                     <li>
-                      <a class="dropdown-item text-dark" href="#"
-                        >Feedback Manager</a
-                      >
+                      <a class="dropdown-item text-dark"
+                         th:href="@{/protected/customer/feedbacks}"
+                        >
+                        Feedback Manager
+                      </a>
                     </li>
                     <li>
                       <a class="dropdown-item text-dark" href="#"

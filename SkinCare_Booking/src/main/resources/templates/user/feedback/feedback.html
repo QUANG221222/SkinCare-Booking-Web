@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Feedback</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e7eb 100%);
+            color: #333;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+            margin-bottom: 50px;
+        }
+        h1 {
+            color: #333;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #333;
+            font-weight: 600;
+            margin-top: 40px;
+        }
+        .form-control, .form-control:focus {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            box-shadow: none;
+        }
+        .form-control:hover {
+            border-color: #00ddeb;
+            box-shadow: 0 0 10px rgba(0, 221, 235, 0.2);
+        }
+        .form-control:focus {
+            border-color: #00ddeb;
+            box-shadow: 0 0 15px rgba(0, 221, 235, 0.4);
+            transform: scale(1.02);
+        }
+        .btn-primary {
+            background-color: #00ddeb;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 221, 235, 0.3);
+        }
+        .btn-primary:hover {
+            background-color: #00c4d3;
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0, 221, 235, 0.5);
+        }
+        .alert {
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .table {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .table th {
+            background-color: #e9ecef;
+            color: #333;
+            border: none;
+            padding: 15px;
+            font-weight: 600;
+        }
+        .table td {
+            background-color: #ffffff;
+            color: #333;
+            border: none;
+            padding: 15px;
+            vertical-align: middle;
+        }
+        .table tr {
+            transition: background-color 0.3s ease;
+        }
+        .table tr:hover {
+            background-color: #f1f3f5;
+        }
+        .star-rating {
+            font-size: 1.5rem;
+            color: #ddd;
+            cursor: pointer;
+        }
+        .star-rating .fas.fa-star {
+            color: #ff4d4d;
+        }
+        .star-rating .star:hover,
+        .star-rating .star:hover ~ .star {
+            color: #ff4d4d;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Submit Feedback</h1>
+
+    <!-- Success/Error Messages -->
+    <div th:if="${successMessage}" class="alert alert-success" role="alert">
+        <span th:text="${successMessage}"></span>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+        <span th:text="${errorMessage}"></span>
+    </div>
+
+    <!-- Feedback Form -->
+    <form th:action="@{/feedback}" th:object="${feedbackRequest}" method="post" class="mb-5">
+        <div class="mb-3">
+            <label for="subject" class="form-label">Subject</label>
+            <input type="text" class="form-control" id="subject" th:field="*{subject}" required>
+            <div th:if="${#fields.hasErrors('subject')}" class="text-danger">
+                <span th:errors="*{subject}"></span>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="message" class="form-label">Message</label>
+            <textarea class="form-control" id="message" th:field="*{message}" rows="3" required></textarea>
+            <div th:if="${#fields.hasErrors('message')}" class="text-danger">
+                <span th:errors="*{message}"></span>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Rating (1-5)</label>
+            <div class="star-rating">
+                <span class="star" data-value="1"><i class="fas fa-star"></i></span>
+                <span class="star" data-value="2"><i class="fas fa-star"></i></span>
+                <span class="star" data-value="3"><i class="fas fa-star"></i></span>
+                <span class="star" data-value="4"><i class="fas fa-star"></i></span>
+                <span class="star" data-value="5"><i class="fas fa-star"></i></span>
+            </div>
+            <input type="hidden" th:field="*{rating}" id="rating" name="rating" value="0">
+            <div th:if="${#fields.hasErrors('rating')}" class="text-danger">
+                <span th:errors="*{rating}"></span>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit Feedback</button>
+    </form>
+
+    <!-- Feedback List -->
+    <h2>Your Feedbacks</h2>
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>Subject</th>
+            <th>Message</th>
+            <th>Rating</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="feedback : ${feedbacks}">
+            <td th:text="${feedback.subject}"></td>
+            <td th:text="${feedback.message}"></td>
+            <td>
+                <div class="star-rating">
+                            <span th:each="i : ${#numbers.sequence(1, 5)}"
+                                  th:classappend="${i <= feedback.rating} ? 'fas fa-star' : 'far fa-star'"
+                                  style="color: #ff4d4d;"></span>
+                </div>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(feedbacks)}">
+            <td colspan="3" class="text-center">No feedbacks found.</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Bootstrap 5 JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- JavaScript cho star rating -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const stars = document.querySelectorAll('.star-rating .star');
+        const ratingInput = document.getElementById('rating');
+
+        stars.forEach(star => {
+            star.addEventListener('click', function () {
+                const value = this.getAttribute('data-value');
+                ratingInput.value = value;
+
+                stars.forEach(s => {
+                    const starValue = s.getAttribute('data-value');
+                    const starIcon = s.querySelector('i');
+                    if (starValue <= value) {
+                        starIcon.classList.remove('far');
+                        starIcon.classList.add('fas');
+                    } else {
+                        starIcon.classList.remove('fas');
+                        starIcon.classList.add('far');
+                    }
+                });
+            });
+
+            star.addEventListener('mouseover', function () {
+                const value = this.getAttribute('data-value');
+                stars.forEach(s => {
+                    const starValue = s.getAttribute('data-value');
+                    const starIcon = s.querySelector('i');
+                    if (starValue <= value) {
+                        starIcon.classList.remove('far');
+                        starIcon.classList.add('fas');
+                    } else {
+                        starIcon.classList.remove('fas');
+                        starIcon.classList.add('far');
+                    }
+                });
+            });
+
+            star.addEventListener('mouseout', function () {
+                const currentValue = ratingInput.value || 0;
+                stars.forEach(s => {
+                    const starValue = s.getAttribute('data-value');
+                    const starIcon = s.querySelector('i');
+                    if (starValue <= currentValue) {
+                        starIcon.classList.remove('far');
+                        starIcon.classList.add('fas');
+                    } else {
+                        starIcon.classList.remove('fas');
+                        starIcon.classList.add('far');
+                    }
+                });
+            });
+        });
+    });
+</script>
+</body>
+</html>

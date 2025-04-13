@@ -17,7 +17,7 @@ import org.springframework.ui.Model;
 
 @Controller
 @RequestMapping("/protected/staff")
-// @PreAuthorize("hasRole('STAFF')")
+@PreAuthorize("hasRole('STAFF') or hasRole('MANAGER')")
 public class StaffController {
 
     @Autowired
@@ -45,7 +45,7 @@ public class StaffController {
     @PostMapping("/appointments/check-in/{id}")
     public String checkIn(@PathVariable Long id) {
         appointmentService.checkIn(id);
-        return "redirect:protected/staff/appointments/checked-in";
+        return "redirect:/protected/staff/appointments/checked-in";
     }
 
     // Xem danh sách đặt dịch vụ đã check-in
@@ -70,7 +70,7 @@ public class StaffController {
     @PostMapping("/appointments/assign/{id}")
     public String assignTherapist(@PathVariable Long id, @RequestParam UUID therapistId) {
         appointmentService.assignTherapist(id, therapistId);
-        return "redirect:/appointments/assigned";
+        return "redirect:/protected/staff/appointments/assigned";
     }
 
     // Xem danh sách đặt dịch vụ đã phân công
@@ -91,7 +91,7 @@ public class StaffController {
     @PostMapping("/appointments/check-out/{id}")
     public String checkOut(@PathVariable Long id) {
         appointmentService.checkOut(id);
-        return "redirect:/appointments/checked-out";
+        return "redirect:/protected/staff/appointments/checked-out";
     }
 
     // Xem danh sách đặt dịch vụ đã check-out
@@ -101,11 +101,5 @@ public class StaffController {
         return "admin/staff/checked_out_appointments";
     }
 
-    // Endpoint để lấy thông tin cơ bản của tất cả nhân viên
-    @GetMapping
-    public ResponseEntity<ApiResponse<List<StaffInfoResponse>>> getAllStaff() {
-        List<StaffInfoResponse> staff = staffService.getAllStaff();
-        return ResponseEntity.ok(ApiResponse.success("Staff retrieved successfully", staff));
-    }
 }
 

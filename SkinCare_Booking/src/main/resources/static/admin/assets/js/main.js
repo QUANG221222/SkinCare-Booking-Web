@@ -127,3 +127,56 @@ document.addEventListener('DOMContentLoaded', function () {
 function isMacOS() {
   return /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
 }
+
+function logoutUser() {
+  fetch('/api/auth/logout', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+      .then((response) => {
+        if (response.ok) {
+          // Chuyển hướng về trang login sau khi logout thành công
+          window.location.href = '/login?logout';
+        } else {
+          alert('Logout failed. Please try again.');
+        }
+      })
+      .catch((error) => {
+        console.error('Error during logout:', error);
+        alert('An error occurred. Please try again.');
+      });
+}
+
+const passwordField = document.getElementById("password");
+const newPasswordField = document.getElementById("newPassword");
+const passwordConfirmField = document.getElementById("confirmPassword")
+
+showPassword(passwordField)
+showPassword(passwordConfirmField)
+showPassword(newPasswordField)
+
+function showPassword(passwordField)
+{
+  passwordField.addEventListener("mouseover", function() {
+    this.type = "text"; // Hiện mật khẩu khi hover vào
+  });
+
+  passwordField.addEventListener("mouseout", function() {
+    this.type = "password"; // Ẩn lại khi rời chuột đi
+  });
+}
+
+$(document).ready(function(){
+  $("#spaServiceLink").on("click", function(e){
+    e.preventDefault();
+    var url = $(this).attr("href");
+    $(".content-wrapper").load(url, function(response, status, xhr){
+      if(status === "error"){
+        let msg = "Error loading content: ";
+        $(".content-wrapper").html(msg + xhr.status + " " + xhr.statusText);
+      }
+    });
+  });
+});

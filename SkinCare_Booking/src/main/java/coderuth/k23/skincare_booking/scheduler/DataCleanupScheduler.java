@@ -1,8 +1,10 @@
 package coderuth.k23.skincare_booking.scheduler;
 
 import coderuth.k23.skincare_booking.models.Customer;
+import coderuth.k23.skincare_booking.models.RefreshToken;
 import coderuth.k23.skincare_booking.models.SecureToken;
 import coderuth.k23.skincare_booking.repositories.CustomerRepository;
+import coderuth.k23.skincare_booking.repositories.RefreshTokenRepository;
 import coderuth.k23.skincare_booking.repositories.SecureTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -20,6 +22,9 @@ public class DataCleanupScheduler {
 
     @Autowired
     private CustomerRepository customerRepository;
+
+    @Autowired
+    private RefreshTokenRepository refreshTokenRepository;
 
     @Scheduled(fixedRate = 21600000) // 6h
     @Transactional

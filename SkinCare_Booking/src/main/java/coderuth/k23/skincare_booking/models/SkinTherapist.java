@@ -31,8 +31,11 @@ public class SkinTherapist extends User {
     @Column(name = "specialty")
     private String specialty;
 
-    @Column(name = "experience")
-    private String experience;
+//    @Column(name = "experience")
+//    private String experience;
+
+    @Column(name = "img", nullable = false)
+    private String img;
     
     @EqualsAndHashCode.Exclude
     @ToString.Exclude

@@ -28,6 +28,9 @@ public class Manager extends User {
         }
     }
 
+    @Column(name = "img", nullable = false)
+    private String img;
+
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @OneToMany(mappedBy = "manager")

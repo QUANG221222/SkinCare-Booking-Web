@@ -66,7 +66,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/feedbacks/**").authenticated()
                         .requestMatchers("/api/auth/logout").authenticated()
 
-                        .requestMatchers("/api/auth/manager/").hasRole("MANAGER")
+                        .requestMatchers("/api/auth/manager/**").hasRole("MANAGER")
 
                         //Public
                         .requestMatchers("/api/auth/**").permitAll()
