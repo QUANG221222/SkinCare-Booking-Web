@@ -3,12 +3,9 @@ package coderuth.k23.skincare_booking.controllers.pages;
 import coderuth.k23.skincare_booking.dtos.request.EditProfileRequest;
 import coderuth.k23.skincare_booking.dtos.request.RegisterStaffRequest;
 import coderuth.k23.skincare_booking.dtos.request.RegisterTherapistRequest;
-import coderuth.k23.skincare_booking.services.AuthService;
-import coderuth.k23.skincare_booking.services.ManagerService;
+import coderuth.k23.skincare_booking.services.*;
 import coderuth.k23.skincare_booking.models.Manager;
 import coderuth.k23.skincare_booking.repositories.ManagerRepository;
-import coderuth.k23.skincare_booking.services.StaffService;
-import coderuth.k23.skincare_booking.services.TherapistService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -38,6 +35,9 @@ public class ManagerPageController {
 
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private FeedbackService feedbackService;
 
     @ModelAttribute("currentURI")
     public String currentURI(HttpServletRequest request) {
@@ -184,5 +184,17 @@ public class ManagerPageController {
     public String TherapistPage() {
         return "redirect:/therapists"; 
     }
-    
+
+    //endpoint quản lí feedback
+    @GetMapping("/feedbacks")
+    public String getFeedbackList(Model model, Principal principal) {
+        String username = principal.getName();
+        Manager manager = managerRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Manager not found"));
+
+        model.addAttribute("manager", manager);
+        model.addAttribute("feedbackList", feedbackService.getAllFeedbacks(username));
+        return "admin/Feedbacks/managerFeedback";
+    }
+
 }
