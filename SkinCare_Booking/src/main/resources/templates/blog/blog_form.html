@@ -1,10 +1,80 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="user/master/fragments/head :: head"></head>
 <body>
-$END$
+<!-- Preloader -->
+<div th:replace="user/master/fragments/preloader :: preloader"></div>
+<!-- Header -->
+<div th:replace="user/master/fragments/header :: header"></div>
+
+<!-- Breadcumb Area -->
+<section class="breadcumb-area bg-img d-flex align-items-center justify-content-center"
+         style="background-image: url('/user/img/bg-img/bg-10.jpg');">
+    <div class="bradcumbContent">
+        <h2 th:text="${blog.id == null} ? 'Create Blog' : 'Edit Blog'">
+            Blog Form
+        </h2>
+    </div>
+</section>
+
+<!-- Blog Form Area -->
+<div class="blog-area section-padding-0-100">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <!-- Có thể bọc form này trong .single-blog-post để giống style blog -->
+                <div class="single-blog-post mb-100 wow fadeInUp" data-wow-delay="100ms">
+                    <div class="post-content">
+                        <form th:action="${blog.id == null} ? @{/blogs} : @{/blogs/update/{id}(id=${blog.id})}"
+                              th:object="${blog}" method="post">
+                            <div class="mb-3">
+                                <label for="title" class="form-label">Title</label>
+                                <input type="text"
+                                       th:field="*{title}"
+                                       class="form-control"
+                                       id="title"
+                                       placeholder="Enter title">
+                                <div class="text-danger"
+                                     th:if="${#fields.hasErrors('title')}"
+                                     th:errors="*{title}"></div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="content" class="form-label">Content</label>
+                                <textarea th:field="*{content}"
+                                          class="form-control"
+                                          id="content"
+                                          rows="6"
+                                          placeholder="Enter content"></textarea>
+                                <div class="text-danger"
+                                     th:if="${#fields.hasErrors('content')}"
+                                     th:errors="*{content}"></div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="imageUrl" class="form-label">Image URL</label>
+                                <input type="text"
+                                       th:field="*{imageUrl}"
+                                       class="form-control"
+                                       id="imageUrl"
+                                       placeholder="Enter image URL">
+                                <div class="text-danger"
+                                     th:if="${#fields.hasErrors('imageUrl')}"
+                                     th:errors="*{imageUrl}"></div>
+                            </div>
+                            <div class="mt-4">
+                                <button type="submit" class="btn btn-success">Submit</button>
+                                <a th:href="@{/blogs}" class="btn btn-secondary">Cancel</a>
+                            </div>
+                        </form>
+                    </div> <!-- end post-content -->
+                </div> <!-- end single-blog-post -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<div th:replace="user/master/fragments/footer :: footer"></div>
+<!-- Script -->
+<div th:replace="user/master/fragments/script :: script"></div>
 </body>
 </html>

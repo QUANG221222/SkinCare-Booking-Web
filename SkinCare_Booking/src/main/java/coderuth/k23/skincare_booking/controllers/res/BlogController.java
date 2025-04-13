@@ -4,91 +4,80 @@ import coderuth.k23.skincare_booking.models.Blog;
 import coderuth.k23.skincare_booking.services.BlogService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequestMapping("/api/blogs")
+@RequestMapping("/blogs")
 public class BlogController {
 
     @Autowired
     private BlogService blogService;
 
-    // Hiển thị danh sách blog (Admin)
+    // List all blogs - cho phép mọi người xem
     @GetMapping
     public String listBlogs(Model model) {
         model.addAttribute("blogs", blogService.getAllBlogs());
-        return "admin/Blog/blog_list";
+        return "blog/blog_list";
     }
 
-    // Hiển thị form tạo blog mới
-    @GetMapping("/new")
-    public String showCreateBlogForm(Model model) {
-        model.addAttribute("blog", new Blog());
-        return "admin/Blog/blog_create";
-    }
-
-    // Tạo blog mới
-    @PostMapping
-    public String createBlog(@Valid @ModelAttribute("blog") Blog blog,
-                             BindingResult result,
-                             RedirectAttributes redirectAttributes) {
-        if (result.hasErrors()) {
-            return "admin/Blog/blog_create";
-        }
-        blogService.createBlog(blog);
-        redirectAttributes.addFlashAttribute("success", "Tạo bài viết thành công!");
-        return "redirect:/api/blogs";
-    }
-
-    // Hiển thị form chỉnh sửa blog
-    @GetMapping("/edit/{id}")
-    public String showEditBlogForm(@PathVariable Long id, Model model) {
-        Blog blog = blogService.getAllBlogs().stream()
-                .filter(b -> b.getId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy bài viết!"));
+    // View blog details - cho phép mọi người xem
+    @GetMapping("/{id}")
+    public String viewBlog(@PathVariable Long id, Model model) {
+        Blog blog = blogService.getBlogById(id)
+                .orElseThrow(() -> new RuntimeException("Blog not found with id: " + id));
         model.addAttribute("blog", blog);
-        return "admin/Blog/blog_edit";
+        return "blog/blog_detail";
     }
 
-    // Cập nhật blog
-    @PostMapping("/update/{id}")
-    public String updateBlog(@PathVariable Long id,
-                             @Valid @ModelAttribute("blog") Blog blog,
-                             BindingResult result,
-                             RedirectAttributes redirectAttributes) {
+    // Show form to create new blog - chỉ cho admin
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/new")
+    public String showCreateForm(Model model) {
+        model.addAttribute("blog", new Blog());
+        return "blog/blog_form";
+    }
+
+    // Process create blog - chỉ cho admin
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping
+    public String createBlog(@Valid @ModelAttribute("blog") Blog blog, BindingResult result) {
         if (result.hasErrors()) {
-            return "admin/Blog/blog_edit";
+            return "blog/blog_form";
+        }
+        blogService.saveBlog(blog);
+        return "redirect:/blogs";
+    }
+
+    // Show form to edit blog - chỉ cho admin
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/edit/{id}")
+    public String showEditForm(@PathVariable Long id, Model model) {
+        Blog blog = blogService.getBlogById(id)
+                .orElseThrow(() -> new RuntimeException("Blog not found with id: " + id));
+        model.addAttribute("blog", blog);
+        return "blog/blog_form";
+    }
+
+    // Process update blog - chỉ cho admin
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/update/{id}")
+    public String updateBlog(@PathVariable Long id, @Valid @ModelAttribute("blog") Blog blog, BindingResult result) {
+        if (result.hasErrors()) {
+            return "blog/blog_form";
         }
         blogService.updateBlog(id, blog);
-        redirectAttributes.addFlashAttribute("success", "Cập nhật bài viết thành công!");
-        return "redirect:/api/blogs";
+        return "redirect:/blogs";
     }
 
-    // Hiển thị trang xác nhận xóa blog
+    // Delete blog - chỉ cho admin
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/delete/{id}")
-    public String showDeleteBlogForm(@PathVariable Long id, Model model) {
-        Blog blog = blogService.getAllBlogs().stream()
-                .filter(b -> b.getId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy bài viết!"));
-        model.addAttribute("blog", blog);
-        return "admin/Blog/blog_delete";
-    }
-
-    // Xóa blog
-    @PostMapping("/delete/{id}")
-    public String deleteBlog(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        try {
-            blogService.deleteBlog(id, redirectAttributes);
-            redirectAttributes.addFlashAttribute("success", "Xóa bài viết thành công!");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Không thể xóa bài viết!");
-        }
-        return "redirect:/api/blogs";
+    public String deleteBlog(@PathVariable Long id) {
+        blogService.deleteBlog(id);
+        return "redirect:/blogs";
     }
 }
