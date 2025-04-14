@@ -35,6 +35,69 @@
             <div class="content-wrapper">
                 <!-- Content -->
                 <div class="container-xxl flex-grow-1 container-p-y">
+                    <!-- Feedback Statistics -->
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <div class="row">
+                                <!-- Average Rating -->
+                                <div class="col-md-4 text-center">
+                                    <h3><span id="averageRating">0</span> <i class="fas fa-star text-warning"></i></h3>
+                                    <p class="mb-2">Total <span id="totalFeedbacks">0</span> reviews</p>
+                                    <p class="text-muted">All reviews are from genuine customers</p>
+                                    <p class="text-primary">+5 This week</p>
+                                </div>
+                                <!-- Rating Distribution -->
+                                <div class="col-md-8">
+                                    <div class="row mb-2">
+                                        <div class="col-2">5 Star</div>
+                                        <div class="col-8">
+                                            <div class="progress">
+                                                <div class="progress-bar bg-primary" role="progressbar" id="fiveStarProgress" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-2" id="fiveStarCount">0</div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-2">4 Star</div>
+                                        <div class="col-8">
+                                            <div class="progress">
+                                                <div class="progress-bar bg-primary" role="progressbar" id="fourStarProgress" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-2" id="fourStarCount">0</div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-2">3 Star</div>
+                                        <div class="col-8">
+                                            <div class="progress">
+                                                <div class="progress-bar bg-primary" role="progressbar" id="threeStarProgress" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-2" id="threeStarCount">0</div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-2">2 Star</div>
+                                        <div class="col-8">
+                                            <div class="progress">
+                                                <div class="progress-bar bg-primary" role="progressbar" id="twoStarProgress" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-2" id="twoStarCount">0</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-2">1 Star</div>
+                                        <div class="col-8">
+                                            <div class="progress">
+                                                <div class="progress-bar bg-primary" role="progressbar" id="oneStarProgress" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-2" id="oneStarCount">0</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Feedback List Table -->
                     <div class="card">
                         <div class="row mx-3 my-0 justify-content-between">
@@ -45,35 +108,36 @@
                         <div class="table-responsive">
                             <div class="container mt-3">
                                 <!-- Alert for Success -->
-                                <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show position-relative" role="alert">
-                                    <span th:text="${successMessage}"></span>
+                                <div id="successMessage" class="alert alert-success alert-dismissible fade show position-relative d-none" role="alert">
+                                    <span id="successMessageText"></span>
                                 </div>
 
                                 <!-- Alert for Error -->
-                                <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show position-relative" role="alert">
-                                    <span th:text="${errorMessage}"></span>
+                                <div id="errorMessage" class="alert alert-danger alert-dismissible fade show position-relative d-none" role="alert">
+                                    <span id="errorMessageText"></span>
                                 </div>
                             </div>
                             <table class="table table-bordered table-hover">
                                 <thead class="table-light">
                                 <tr>
-                                    <th style="width: 11%;">Subject</th>
-                                    <th style="width: 27%;">Message</th>
-                                    <th style="width: 15%;">Rating</th>
-                                    <th style="width: 15%;">Customer</th>
+                                    <th style="width: 15%;">Subject</th>
+                                    <th style="width: 31%;">Message</th>
+                                    <th style="width: 10%;">Rating</th>
+                                    <th style="width: 12%;">Customer</th>
                                     <th style="width: 15%;">Date</th>
                                     <th style="width: 7%;">Status</th>
-                                    <th style="width: 10%;">Actions</th>
+                                    <th style="width: 8%;">Actions</th>
                                 </tr>
                                 </thead>
-                                <tbody>
-                                <tr th:each="feedback : ${feedbackList}">
+                                <tbody id="feedbackTable">
+                                <tr th:each="feedback : ${feedbackList}"
+                                    th:data-created-at="${#temporals.format(feedback.createdAt, 'yyyy-MM-dd HH:mm:ss')}">
                                     <td th:text="${feedback.subject}"></td>
                                     <td th:text="${feedback.message}"></td>
                                     <td>
-                                        <div class="star-rating">
-                                                <span th:each="i : ${#numbers.sequence(1, 5)}"
-                                                      th:classappend="${i <= feedback.rating} ? 'fas fa-star text-warning' : 'far fa-star text-muted'"></span>
+                                        <div class="star-rating" th:data-rating="${feedback.rating}">
+                                            <span th:each="i : ${#numbers.sequence(1, 5)}"
+                                                  th:classappend="${i <= feedback.rating} ? 'fas fa-star text-warning' : 'far fa-star text-muted'"></span>
                                         </div>
                                     </td>
                                     <td th:text="${feedback.username}"></td>
@@ -84,14 +148,14 @@
                                     </td>
                                     <td>
                                         <button class="btn btn-sm btn-danger delete-btn" th:data-id="${feedback.id}">
-                                            <i class="bx bx-trash me-1"></i> Delete
+                                            <i class="bx bx-trash me-1"></i>
                                         </button>
                                         <button class="btn btn-sm btn-warning hide-btn" th:unless="${feedback.isHidden}" th:data-id="${feedback.id}">
-                                            <i class="bx bx-hide me-1"></i> Hide
+                                            <i class="bx bx-hide me-1"></i>
                                         </button>
                                     </td>
                                 </tr>
-                                <tr th:if="${#lists.isEmpty(feedbackList)}">
+                                <tr id="noFeedbackRow" th:if="${#lists.isEmpty(feedbackList)}">
                                     <td colspan="7" class="text-center">No feedbacks found.</td>
                                 </tr>
                                 </tbody>
@@ -150,10 +214,74 @@
     <!-- Core JS -->
     <div th:replace="admin/fragments/script :: script"></div>
 
-    <!-- JavaScript for Delete and Hide Actions -->
+    <!-- JavaScript for Delete, Hide Actions, Feedback Statistics, and Sorting -->
     <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
     <script>
         $(document).ready(function () {
+            // Sắp xếp danh sách feedback theo createdAt (mới nhất trước)
+            const feedbackTable = $('#feedbackTable');
+            const feedbackRows = feedbackTable.find('tr').not('#noFeedbackRow').get(); // Lấy tất cả hàng trừ hàng "No feedbacks found"
+
+            if (feedbackRows.length > 0) {
+                feedbackRows.sort(function (a, b) {
+                    const dateA = new Date($(a).data('created-at'));
+                    const dateB = new Date($(b).data('created-at'));
+                    return dateB - dateA; // Sắp xếp giảm dần (mới nhất trước)
+                });
+
+                // Xóa các hàng hiện tại (trừ hàng "No feedbacks found")
+                feedbackTable.find('tr').not('#noFeedbackRow').remove();
+                // Thêm lại các hàng đã sắp xếp
+                $.each(feedbackRows, function (index, row) {
+                    feedbackTable.append(row);
+                });
+            }
+
+            // Tính toán thống kê feedback
+            const feedbackRowsStats = $('#feedbackTable tr').not('#noFeedbackRow'); // Lấy tất cả hàng trừ hàng "No feedbacks found"
+
+            // Tính tổng số feedback
+            const totalFeedbacks = feedbackRowsStats.length;
+            $('#totalFeedbacks').text(totalFeedbacks);
+
+            // Tính số sao trung bình và số lượng feedback theo từng mức sao
+            let totalRating = 0;
+            let fiveStarCount = 0, fourStarCount = 0, threeStarCount = 0, twoStarCount = 0, oneStarCount = 0;
+
+            feedbackRowsStats.each(function () {
+                const rating = parseInt($(this).find('.star-rating').data('rating')) || 0;
+                totalRating += rating;
+
+                if (rating === 5) fiveStarCount++;
+                else if (rating === 4) fourStarCount++;
+                else if (rating === 3) threeStarCount++;
+                else if (rating === 2) twoStarCount++;
+                else if (rating === 1) oneStarCount++;
+            });
+
+            const averageRating = totalFeedbacks > 0 ? (totalRating / totalFeedbacks).toFixed(2) : 0;
+            $('#averageRating').text(averageRating);
+
+            // Cập nhật số lượng feedback cho từng mức sao
+            $('#fiveStarCount').text(fiveStarCount);
+            $('#fourStarCount').text(fourStarCount);
+            $('#threeStarCount').text(threeStarCount);
+            $('#twoStarCount').text(twoStarCount);
+            $('#oneStarCount').text(oneStarCount);
+
+            // Tính tỉ lệ phần trăm và cập nhật thanh tiến trình
+            const fiveStarPercent = totalFeedbacks > 0 ? (fiveStarCount / totalFeedbacks) * 100 : 0;
+            const fourStarPercent = totalFeedbacks > 0 ? (fourStarCount / totalFeedbacks) * 100 : 0;
+            const threeStarPercent = totalFeedbacks > 0 ? (threeStarCount / totalFeedbacks) * 100 : 0;
+            const twoStarPercent = totalFeedbacks > 0 ? (twoStarCount / totalFeedbacks) * 100 : 0;
+            const oneStarPercent = totalFeedbacks > 0 ? (oneStarCount / totalFeedbacks) * 100 : 0;
+
+            $('#fiveStarProgress').css('width', fiveStarPercent + '%').attr('aria-valuenow', fiveStarPercent);
+            $('#fourStarProgress').css('width', fourStarPercent + '%').attr('aria-valuenow', fourStarPercent);
+            $('#threeStarProgress').css('width', threeStarPercent + '%').attr('aria-valuenow', threeStarPercent);
+            $('#twoStarProgress').css('width', twoStarPercent + '%').attr('aria-valuenow', twoStarPercent);
+            $('#oneStarProgress').css('width', oneStarPercent + '%').attr('aria-valuenow', oneStarPercent);
+
             // Delete button click
             $('.delete-btn').click(function () {
                 const id = $(this).data('id');
@@ -166,13 +294,18 @@
                         success: function (response) {
                             row.remove();
                             $('#deleteConfirmModal').modal('hide');
-                            alert('Feedback deleted successfully!');
+                            // Hiển thị thông báo thành công trong giao diện
+                            $('#successMessageText').text('Feedback deleted successfully!');
+                            $('#successMessage').removeClass('d-none');
+                            setTimeout(() => $('#successMessage').addClass('d-none'), 3000);
                             if ($('#feedbackTable tbody tr').length === 0) {
-                                $('#feedbackTable tbody').append('<tr><td colspan="7" class="text-center">No feedbacks found.</td></tr>');
+                                $('#feedbackTable tbody').append('<tr id="noFeedbackRow"><td colspan="7" class="text-center">No feedbacks found.</td></tr>');
                             }
                         },
                         error: function (xhr) {
-                            alert('Error deleting feedback: ' + (xhr.responseJSON ? xhr.responseJSON.message : 'Unknown error'));
+                            $('#errorMessageText').text('Error deleting feedback: ' + (xhr.responseJSON ? xhr.responseJSON.message : 'Unknown error'));
+                            $('#errorMessage').removeClass('d-none');
+                            setTimeout(() => $('#errorMessage').addClass('d-none'), 3000);
                             $('#deleteConfirmModal').modal('hide');
                         }
                     });
@@ -192,10 +325,15 @@
                             row.find('td:eq(5)').html('<span class="badge bg-danger">Hidden</span>');
                             row.find('.hide-btn').remove();
                             $('#hideConfirmModal').modal('hide');
-                            alert('Feedback hidden successfully!');
+                            // Hiển thị thông báo thành công trong giao diện
+                            $('#successMessageText').text('Feedback hidden successfully!');
+                            $('#successMessage').removeClass('d-none');
+                            setTimeout(() => $('#successMessage').addClass('d-none'), 3000);
                         },
                         error: function (xhr) {
-                            alert('Error hiding feedback: ' + (xhr.responseJSON ? xhr.responseJSON.message : 'Unknown error'));
+                            $('#errorMessageText').text('Error hiding feedback: ' + (xhr.responseJSON ? xhr.responseJSON.message : 'Unknown error'));
+                            $('#errorMessage').removeClass('d-none');
+                            setTimeout(() => $('#errorMessage').addClass('d-none'), 3000);
                             $('#hideConfirmModal').modal('hide');
                         }
                     });
@@ -236,5 +374,6 @@
             font-size: 12px;
         }
     </style>
+
 </body>
 </html>
