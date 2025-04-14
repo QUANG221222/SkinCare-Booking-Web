@@ -1,0 +1,23 @@
+services:
+  mysql:
+    build: .
+    container_name: mysql_server
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mysql_data_vol:/var/lib/mysql # Persistent storage
+    networks:
+      - backend
+
+volumes:
+  mysql_data_vol: # Persistent MySQL data volume
+
+networks:
+  backend:
+    driver: bridge
