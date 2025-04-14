@@ -1,37 +1,292 @@
 <th:block th:fragment="therapist">
-    <td>
-        <div class="d-flex align-items-center justify-content-between gap-1">
-            <div class="avatar avatar-sm me-3 d-flex align-items-center">
-                <img
-                        th:src="${therapist.img}"
-                        alt="Avatar"
-                        class="rounded-circle"
-                        style="width: 40px; height: 40px"
-                />
-            </div>
-            <div>
-                <span th:text="${therapist.fullName}" class="fw-medium"></span>
-                <small th:text="${therapist.email}" class="text-muted"></small>
-            </div>
+  <td>
+    <div class="d-flex align-items-center gap-1">
+      <div class="avatar avatar-sm me-3 d-flex align-items-center">
+        <img
+          th:src="${therapist.img}"
+          alt="Avatar"
+          class="rounded-circle"
+          style="width: 40px; height: 40px"
+        />
+      </div>
+      <div class="d-flex flex-column justify-content-center">
+        <span th:text="${therapist.fullName}" class="fw-medium"></span>
+        <small th:text="${therapist.email}" class="text-muted"></small>
+      </div>
+    </div>
+  </td>
+  <td>
+    <span th:text="${therapist.userType}" class="badge bg-warning"></span>
+  </td>
+  <td th:text="${therapist.phone}"></td>
+  <td
+    th:title="${therapist.location}"
+    th:text="${#strings.abbreviate(therapist.location, 10)}"
+  ></td>
+  <td
+    th:title="${therapist.specialty}"
+    th:text="${#strings.abbreviate(therapist.specialty, 30)}"
+    data-bs-toggle="tooltip"
+    data-bs-placement="top"
+  ></td>
+  <td>
+    <div class="d-flex align-items-center gap-2">
+      <a
+        class="btn btn-sm btn-danger delete-btn"
+        data-bs-toggle="modal"
+        data-bs-target="#deleteConfirmModal"
+        th:data-id="${therapist.id}"
+      >
+        <i class="bx bx-trash"></i>
+      </a>
+      <a
+        class="btn btn-sm btn-info edit-btn"
+        data-bs-toggle="modal"
+        data-bs-target="#editTherapistModal"
+        th:data-id="${therapist.id}"
+        th:data-username="${therapist.username}"
+        th:data-fullname="${therapist.fullName}"
+        th:data-img="${therapist.img}"
+        th:data-email="${therapist.email}"
+        th:data-phone="${therapist.phone}"
+        th:data-location="${therapist.location}"
+        th:data-specialty="${therapist.specialty}"
+      >
+        <i class="bx bx-edit"></i>
+      </a>
+    </div>
+  </td>
+
+  <!-- Modal Confirm Delete Therapist -->
+  <div
+    class="modal fade"
+    id="deleteConfirmModal"
+    aria-labelledby="deleteConfirmModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteConfirmModalLabel">
+            Confirm Deletion
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
         </div>
-    </td>
-    <td>
-        <span th:text="${therapist.userType}" class="badge bg-success"></span>
-    </td>
-    <td th:text="${therapist.phone}"></td>
-    <td th:text="${therapist.location}"></td>
-    <td th:title="${therapist.specialty}"
-        th:text="${#strings.abbreviate(therapist.specialty, 30)}"
-        data-bs-toggle="tooltip"
-        data-bs-placement="top"></td>
-    <td>
-        <div class="d-flex align-items-center gap-2">
-            <a class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal">
-                <i class="bx bx-trash"></i>
-            </a>
-            <a class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#editStaffModal" >
-                <i class="bx bx-edit"></i>
-            </a>
+        <div class="modal-body">
+          Are you sure you want to delete this therapist member?
         </div>
-    </td>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Cancel
+          </button>
+          <a
+            class="btn btn-danger"
+            id="confirmDeleteButton"
+            >Delete</a
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Edit Information Therapist -->
+  <div
+    class="modal fade"
+    id="editTherapistModal"
+    aria-labelledby="editTherapistModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editTherapistModalLabel">Edit Therapist</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+              <label for="edit-user-username" class="form-label"
+                >Username</label
+              >
+              <input
+                type="text"
+                class="form-control"
+                id="edit-user-username"
+                name="username"
+                placeholder="Enter username"
+                th:value="${therapist.username}"
+                required
+                pattern="^[a-zA-Z0-9]{3,20}$"
+                title="Username must be between 3 and 20 characters (letters and numbers only)"
+              />
+            </div>
+            <div class="mb-3">
+              <label for="edit-user-fullname" class="form-label"
+                >Full Name</label
+              >
+              <input
+                type="text"
+                class="form-control"
+                id="edit-user-fullname"
+                name="fullName"
+                placeholder="Enter full name"
+                th:value="${therapist.fullName}"
+                required
+                minlength="2"
+                maxlength="50"
+                title="Full name must be between 2 and 50 characters"
+              />
+            </div>
+            <div class="mb-3">
+              <label for="edit-user-img" class="form-label">Image URL</label>
+              <input
+                type="url"
+                class="form-control"
+                id="edit-user-img"
+                name="img"
+                th:value="${therapist.img}"
+                placeholder="Enter image URL"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <label for="edit-user-email" class="form-label">Email</label>
+              <input
+                type="email"
+                class="form-control"
+                id="edit-user-email"
+                name="email"
+                placeholder="Enter email"
+                th:value="${therapist.email}"
+                required
+                maxlength="50"
+                pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+                title="Please enter a valid email address"
+              />
+            </div>
+            <div class="mb-3">
+              <label for="edit-user-phone" class="form-label">Phone</label>
+              <input
+                type="text"
+                class="form-control"
+                id="edit-user-phone"
+                name="phone"
+                placeholder="Enter phone number"
+                th:value="${therapist.phone}"
+                required
+                pattern="^(\\+84|0)[1-9][0-9]{8}$"
+                title="Invalid phone number format. Ex: 0987654321 or +84987654321"
+              />
+            </div>
+            <div class="mb-3">
+              <label for="location" class="form-label">Address</label>
+              <input
+                type="text"
+                class="form-control"
+                id="location"
+                name="location"
+                th:value="${therapist.location}"
+                placeholder="Address"
+              />
+            </div>
+            <div class="mb-3">
+              <label for="edit-user-specialty" class="form-label"
+                >Specialty</label
+              >
+              <input
+                type="text"
+                class="form-control"
+                id="edit-user-specialty"
+                name="specialty"
+                placeholder="Enter specialty"
+                th:value="${therapist.specialty}"
+                required
+                maxlength="100"
+                title="Specialty must not exceed 100 characters"
+              />
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Cancel
+              </button>
+              <button type="submit" class="btn btn-primary">
+                Save Changes
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const editButtons = document.querySelectorAll(".edit-btn");
+      const deleteButtons = document.querySelectorAll(".delete-btn");
+
+      deleteButtons.forEach((button) => {
+        button.addEventListener("click", (event) => {
+          const id = event.currentTarget.getAttribute("data-id");
+
+          const confirmDeleteButton = document.getElementById(
+                  "confirmDeleteButton"
+          );
+          confirmDeleteButton.setAttribute(
+                  "href",
+                  `/protected/manager/delete-therapist/${id}`
+          );
+        });
+      });
+
+      editButtons.forEach((button) => {
+        button.addEventListener("click", function (event) {
+          // Lấy modal cụ thể bằng ID
+          const editModal = document.querySelector("#editTherapistModal");
+
+          // Lấy dữ liệu từ các thuộc tính th:data-* của nút được nhấn
+          const id = event.currentTarget.getAttribute("data-id");
+          const username = event.currentTarget.getAttribute("data-username");
+          const fullName = event.currentTarget.getAttribute("data-fullname");
+          const img = event.currentTarget.getAttribute("data-img");
+          const email = event.currentTarget.getAttribute("data-email");
+          const phone = event.currentTarget.getAttribute("data-phone");
+          const location = event.currentTarget.getAttribute("data-location");
+          const specialty = event.currentTarget.getAttribute("data-specialty")
+
+          // Gán dữ liệu vào các trường trong modal
+          editModal.querySelector("#edit-user-username").value = username;
+          editModal.querySelector("#edit-user-fullname").value = fullName;
+          editModal.querySelector("#edit-user-img").value = img;
+          editModal.querySelector("#edit-user-email").value = email;
+          editModal.querySelector("#edit-user-phone").value = phone;
+          editModal.querySelector("#location").value = location;
+          editModal.querySelector("#edit-user-specialty").value = specialty;
+
+
+          // Cập nhật action của form để gửi đúng ID nhân viên
+          const form = editModal.querySelector("form");
+          form.setAttribute("action", `/protected/manager/update-therapist/${id}`);
+          form.setAttribute("method", "post");
+        });
+      });
+    });
+  </script>
 </th:block>
