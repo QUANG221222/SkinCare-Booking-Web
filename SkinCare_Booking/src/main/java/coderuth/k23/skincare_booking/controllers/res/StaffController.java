@@ -1,16 +1,16 @@
 package coderuth.k23.skincare_booking.controllers.res;
 
-import coderuth.k23.skincare_booking.dtos.response.ApiResponse;
-import coderuth.k23.skincare_booking.dtos.response.StaffInfoResponse;
+// import coderuth.k23.skincare_booking.dtos.response.ApiResponse;
+// import coderuth.k23.skincare_booking.dtos.response.StaffInfoResponse;
 import coderuth.k23.skincare_booking.services.AppointmentService;
 import coderuth.k23.skincare_booking.services.PaymentService;
-import coderuth.k23.skincare_booking.services.StaffService;
+// import coderuth.k23.skincare_booking.services.StaffService;
 import coderuth.k23.skincare_booking.services.TherapistService;
 import coderuth.k23.skincare_booking.models.Appointment;
 import coderuth.k23.skincare_booking.models.Payment;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+// import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -23,8 +23,8 @@ import org.springframework.ui.Model;
 @PreAuthorize("hasRole('MANAGER')")
 public class StaffController {
 
-    @Autowired
-    private StaffService staffService;
+    // @Autowired
+    // private StaffService staffService;
 
     @Autowired
     private AppointmentService appointmentService;
@@ -148,10 +148,10 @@ public class StaffController {
         return "admin/staff/payment_history";
     }
     // Endpoint để lấy thông tin cơ bản của tất cả nhân viên
-    @GetMapping
-    public ResponseEntity<ApiResponse<List<StaffInfoResponse>>> getAllStaff() {
-        List<StaffInfoResponse> staff = staffService.getAllStaff();
-        return ResponseEntity.ok(ApiResponse.success("Staff retrieved successfully", staff));
-    }
+    // @GetMapping
+    // public ResponseEntity<ApiResponse<List<StaffInfoResponse>>> getAllStaff() {
+    //     List<StaffInfoResponse> staff = staffService.getAllStaff();
+    //     return ResponseEntity.ok(ApiResponse.success("Staff retrieved successfully", staff));
+    // }
 }
 

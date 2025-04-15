@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class CustomerProfileRequest {
+public class EditProfileRequest {
     @NotBlank(message = "Phone is required")
     @Pattern(regexp = "^(\\+84|0)[1-9][0-9]{8}$", message = "Invalid phone number format")
     private String phone;

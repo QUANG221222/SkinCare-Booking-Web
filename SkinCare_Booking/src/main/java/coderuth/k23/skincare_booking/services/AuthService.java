@@ -1,6 +1,6 @@
 package coderuth.k23.skincare_booking.services;
 
-import coderuth.k23.skincare_booking.dtos.request.RegisterTherapistRequest;
+import coderuth.k23.skincare_booking.dtos.request.*;
 import coderuth.k23.skincare_booking.exception.InvalidTokenException;
 import coderuth.k23.skincare_booking.mailing.AccountVerificationEmailContext;
 import coderuth.k23.skincare_booking.mailing.EmailService;
@@ -21,8 +21,6 @@ import org.springframework.stereotype.Service;
 import jakarta.servlet.http.HttpServletResponse;
 
 import coderuth.k23.skincare_booking.jwt.JwtUtil;
-import coderuth.k23.skincare_booking.dtos.request.LoginRequest;
-import coderuth.k23.skincare_booking.dtos.request.RegisterRequest;
 import coderuth.k23.skincare_booking.dtos.response.UserInfoResponse;
 
 import java.util.Objects;
@@ -152,37 +150,47 @@ public class AuthService {
         return true;
     }
 
-    public void registerManager(RegisterRequest registerRequest) {
-        if (managerRepository.existsByEmail(registerRequest.getEmail())) {
+    public void registerManager(RegisterManagerRequest registerManagerRequest) {
+        if (managerRepository.existsByEmail(registerManagerRequest.getEmail())) {
             throw new IllegalArgumentException("Email is already in use");
         }
-        if (managerRepository.existsByUsername(registerRequest.getUsername())) {
+        if (managerRepository.existsByUsername(registerManagerRequest.getUsername())) {
             throw new IllegalArgumentException("Username is already taken");
+        }
+        if (managerRepository.existsByPhone(registerManagerRequest.getPhone())) {
+            throw new IllegalArgumentException("Phone is already in use");
         }
 
         Manager manager = new Manager();
-        manager.setEmail(registerRequest.getEmail());
-        manager.setUsername(registerRequest.getUsername());
-        manager.setPhone(registerRequest.getPhone());
-        manager.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+        manager.setUsername(registerManagerRequest.getUsername());
+        manager.setFullName(registerManagerRequest.getFullname());
+        manager.setImg(registerManagerRequest.getImg());
+        manager.setEmail(registerManagerRequest.getEmail());
+        manager.setPhone(registerManagerRequest.getPhone());
+        manager.setPassword(passwordEncoder.encode(registerManagerRequest.getPassword()));
         manager.setRole(Manager.Role.ROLE_MANAGER); // ADMIN
 
         managerRepository.save(manager);
     }
 
-    public void registerStaff(RegisterRequest registerRequest) {
-        if (staffRepository.existsByEmail(registerRequest.getEmail())) {
+    public void registerStaff(RegisterStaffRequest registerStaffRequest) {
+        if (staffRepository.existsByEmail(registerStaffRequest.getEmail())) {
             throw new IllegalArgumentException("Email is already in use");
         }
-        if (staffRepository.existsByUsername(registerRequest.getUsername())) {
+        if (staffRepository.existsByUsername(registerStaffRequest.getUsername())) {
             throw new IllegalArgumentException("Username is already taken");
+        }
+        if (staffRepository.existsByPhone(registerStaffRequest.getPhone())) {
+            throw new IllegalArgumentException("Phone is already in use");
         }
 
         Staff staff = new Staff();
-        staff.setEmail(registerRequest.getEmail());
-        staff.setUsername(registerRequest.getUsername());
-        staff.setPhone(registerRequest.getPhone());
-        staff.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+        staff.setUsername(registerStaffRequest.getUsername());
+        staff.setFullName(registerStaffRequest.getFullname());
+        staff.setImg(registerStaffRequest.getImg());
+        staff.setEmail(registerStaffRequest.getEmail());
+        staff.setPhone(registerStaffRequest.getPhone());
+        staff.setPassword(passwordEncoder.encode(registerStaffRequest.getPassword()));
         staff.setRole(Staff.Role.ROLE_STAFF); // STAFF
 
         staffRepository.save(staff);

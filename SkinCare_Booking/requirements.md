@@ -72,15 +72,15 @@
 #### 1.4 Manager
 
 - **Trang hồ sơ (Manager)**
-  - Cho phép xem thông tin cá nhân đã đăng ký với trung tâm, vai trò, lịch làm việc
-  - Cho phép thay đổi một số thông tin cá nhân
-  - Cho phép thay đổi mật khẩu
+  - Cho phép xem thông tin cá nhân đã đăng ký với trung tâm, vai trò, lịch làm việc ✅
+  - Cho phép thay đổi một số thông tin cá nhân ✅
+  - Cho phép thay đổi mật khẩu ✅
 - **Trang quản lý nhân sự**
-  - Xem thông tin chi tiết các nhân viên, chuyên viên dưới sự quản lí của bản thân
-  - Thêm nhân sự mới vào danh sách quản lý
+  - Xem thông tin chi tiết các nhân viên, chuyên viên dưới sự quản lí của bản thân ✅
+  - Thêm nhân sự mới vào danh sách quản lý ✅
   - Gỡ nhân sự ra khỏi danh sách quản lý
-- **Trang quản lý lịch hen**
-  - Xem tất cả các lịch hẹn dịch vụ
+- **Trang quản lý lịch hẹn**
+  - Xem tất cả các lịch hẹn dịch vụ 
   - Xem các lịch hẹn mà bản thân quản lý
   - Hiển thị thông tin chi tiết về lịch hẹn
   - Cập nhật một số thông tin trong các lịch hẹn mà bản thân quản lý

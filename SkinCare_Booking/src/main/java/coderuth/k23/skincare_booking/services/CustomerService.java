@@ -1,6 +1,6 @@
 package coderuth.k23.skincare_booking.services;
 
-import coderuth.k23.skincare_booking.dtos.request.CustomerProfileRequest;
+import coderuth.k23.skincare_booking.dtos.request.EditProfileRequest;
 import coderuth.k23.skincare_booking.dtos.response.CustomerInfoResponse;
 import coderuth.k23.skincare_booking.models.Customer;
 import coderuth.k23.skincare_booking.repositories.CustomerRepository;
@@ -37,7 +37,7 @@ public class CustomerService {
                 .collect(Collectors.toList());
     }
 
-    public void updateCustomerProfile(String username, CustomerProfileRequest profileRequest) {
+    public void updateCustomerProfile(String username, EditProfileRequest profileRequest) {
         Customer customer = customerRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Customer not found"));
 
