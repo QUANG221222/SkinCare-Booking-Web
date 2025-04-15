@@ -78,7 +78,7 @@ git # Java Spring Boot Web Application
 - **Trang quản lý nhân sự**
   - Xem thông tin chi tiết các nhân viên, chuyên viên dưới sự quản lí của bản thân ✅
   - Thêm nhân sự mới vào danh sách quản lý ✅
-  - Gỡ nhân sự ra khỏi danh sách quản lý
+  - Gỡ nhân sự ra khỏi danh sách quản lý ✅
 - **Trang quản lý lịch hẹn**
   - Xem tất cả các lịch hẹn dịch vụ 
   - Xem các lịch hẹn mà bản thân quản lý
