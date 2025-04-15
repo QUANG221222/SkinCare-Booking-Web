@@ -34,11 +34,10 @@ public class StaffController {
 
     @Autowired
     private PaymentService paymentService;
-
-    @GetMapping("/home")
-    public String adminPage() {
-        return "admin/index"; // "user/index.html"
-    }
+//    @GetMapping("/home")
+//    public String adminPage() {
+//        return "admin/index"; // "user/index.html"
+//    }
 
     // Xem danh sách đặt dịch vụ đang chờ xử lý
     @GetMapping("/appointments/pending")
