@@ -26,6 +26,7 @@ public class ManagerService {
         manager.setPhone(profileRequest.getPhone());
         manager.setFullName(profileRequest.getFullName());
         manager.setLocation(profileRequest.getLocation());
+        manager.setImg(profileRequest.getImg());
 
         // Lưu lại thông tin
         managerRepository.save(manager);

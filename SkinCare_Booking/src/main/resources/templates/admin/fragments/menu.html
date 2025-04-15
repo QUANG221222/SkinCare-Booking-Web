@@ -51,9 +51,9 @@
     <!-- Users (hasRole = "Manager")   -->
     <li
       class="menu-item"
-      th:classappend=
-              "${#strings.contains(currentURI, '/manager/list-staff') or
-              #strings.contains(currentURI, '/manager/list-therapist')}  ? 'active open' : ''"
+      th:classappend="${#strings.contains(currentURI, '/manager/list-staff') or
+          #strings.contains(currentURI, '/manager/list-therapist') or
+          #strings.contains(currentURI, '/manager/list-customer')}  ? 'active open' : ''"
     >
       <a href="javascript:void(0);" class="menu-link menu-toggle">
         <i class="menu-icon icon-base bx bx-user"></i>
@@ -78,8 +78,8 @@
         </li>
 
         <li
-                class="menu-item"
-                th:classappend="${#strings.contains(currentURI, '/manager/list-customer')} ? 'active' : ''"
+          class="menu-item"
+          th:classappend="${#strings.contains(currentURI, '/manager/list-customer')} ? 'active' : ''"
         >
           <a th:href="@{/protected/manager/list-customer}" class="menu-link">
             <div data-i18n="List">Customer</div>
