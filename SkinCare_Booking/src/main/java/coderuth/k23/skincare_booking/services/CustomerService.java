@@ -3,6 +3,7 @@ package coderuth.k23.skincare_booking.services;
 import coderuth.k23.skincare_booking.dtos.request.EditProfileRequest;
 import coderuth.k23.skincare_booking.dtos.response.CustomerInfoResponse;
 import coderuth.k23.skincare_booking.models.Customer;
+import coderuth.k23.skincare_booking.models.Staff;
 import coderuth.k23.skincare_booking.repositories.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -11,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,18 +25,8 @@ public class CustomerService {
     private PasswordEncoder passwordEncoder;
 
     // Lấy thông tin cơ bản của tất cả khách hàng
-    public List<CustomerInfoResponse> getAllCustomers() {
-        List<Customer> customers = customerRepository.findAll();
-        if (customers.isEmpty()) {
-            return Collections.emptyList(); // Trả về danh sách rỗng nếu không có dữ liệu
-        }
-        return customers.stream()
-                .map(customer -> new CustomerInfoResponse(
-                        customer.getId(),
-                        customer.getUsername() != null ? customer.getUsername() : "",
-                        customer.getEmail() != null ? customer.getEmail() : "",
-                        customer.getPhone() != null ? customer.getPhone() : ""))
-                .collect(Collectors.toList());
+    public List<Customer> getAllCustomers() {
+        return customerRepository.findAll();
     }
 
     public void updateCustomerProfile(String username, EditProfileRequest profileRequest) {
@@ -48,6 +40,19 @@ public class CustomerService {
 
         // Lưu lại thông tin
         customerRepository.save(customer);
+    }
+
+    public Customer updateCustomer(UUID id, Customer updatedCustomer) {
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Customer not found!"));
+        customer.setFullName(updatedCustomer.getFullName());
+        customer.setPhone(updatedCustomer.getPhone());
+        customer.setLocation(updatedCustomer.getLocation());
+        return customerRepository.save(customer);
+    }
+
+    public void deleteCustomer(UUID id) {
+        customerRepository.deleteById(id);
     }
 
     public void changePassword(String username, String currentPassword, String newPassword, String confirmPassword) {

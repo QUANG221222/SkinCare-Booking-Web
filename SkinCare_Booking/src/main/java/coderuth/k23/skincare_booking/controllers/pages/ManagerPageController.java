@@ -3,6 +3,7 @@ package coderuth.k23.skincare_booking.controllers.pages;
 import coderuth.k23.skincare_booking.dtos.request.EditProfileRequest;
 import coderuth.k23.skincare_booking.dtos.request.RegisterStaffRequest;
 import coderuth.k23.skincare_booking.dtos.request.RegisterTherapistRequest;
+import coderuth.k23.skincare_booking.models.Customer;
 import coderuth.k23.skincare_booking.models.SkinTherapist;
 import coderuth.k23.skincare_booking.models.Staff;
 import coderuth.k23.skincare_booking.services.*;
@@ -228,6 +229,28 @@ public class ManagerPageController {
         model.addAttribute("manager", manager);
         model.addAttribute("customerList", customerService.getAllCustomers());
         return "admin/Users/ListCustomer/listCustomer";
+    }
+
+    @PostMapping("/update-customer/{id}")
+    public String updateCustomer(@PathVariable UUID id, @ModelAttribute Customer customer, RedirectAttributes redirectAttributes) {
+        try {
+            customerService.updateCustomer(id, customer);
+            redirectAttributes.addFlashAttribute("successMessage", "Customer has been updated successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "An error occurred while updating the customer: " + e.getMessage());
+        }
+        return "redirect:/protected/manager/list-customer";
+    }
+
+    @GetMapping("/delete-customer/{id}")
+    public String deleteCustomer(@PathVariable UUID id, RedirectAttributes redirectAttributes) {
+        try {
+            customerService.deleteCustomer(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Customer has been deleted successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "An error occurred while deleting the customer: " + e.getMessage());
+        }
+        return "redirect:/protected/manager/list-customer";
     }
 
     @GetMapping("/spa-services")
