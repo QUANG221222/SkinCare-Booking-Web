@@ -3,15 +3,15 @@
         <div class="d-flex">
             <div class="flex-shrink-0 me-3">
                 <div class="avatar avatar-online">
-                    <img th:src="${#strings.contains(currentURI, 'manager') ? manager.img : staff.img}"
+                    <img th:src="${#strings.contains(currentURI, 'manager') ? manager.img : (#strings.contains(currentURI, 'therapist') ? therapist.img : staff.img)}"
                          alt
                          class="w-px-40 h-auto rounded-circle" />
                 </div>
             </div>
             <div class="flex-grow-1">
-                <h6 th:text="${#strings.contains(currentURI, 'manager') ? manager.username : staff.username}"
+                <h6 th:text="${#strings.contains(currentURI, 'manager') ? manager.username : (#strings.contains(currentURI, 'therapist') ? therapist.username : staff.username)}"
                     class="mb-0"></h6>
-                <small th:text="${#strings.contains(currentURI, 'manager') ? manager.userType : staff.userType}"
+                <small th:text="${#strings.contains(currentURI, 'manager') ? manager.userType : (#strings.contains(currentURI, 'therapist') ? therapist.userType : staff.userType)}"
                        class="text-body-secondary"></small>
             </div>
         </div>
@@ -19,7 +19,7 @@
     <ul class="dropdown-menu dropdown-menu-end">
         <li>
             <a class="dropdown-item"
-               th:href="${#strings.contains(currentURI, 'manager') ? '/protected/manager/profile' : '/protected/staff/profile'}">
+               th:href="${#strings.contains(currentURI, 'manager') ? '/protected/manager/profile' : (#strings.contains(currentURI, 'therapist') ? '/protected/therapist/profile' : '/protected/staff/profile')}">
                 <i class="icon-base bx bx-user icon-md me-3"></i><span>My Profile</span>
             </a>
         </li>
