@@ -32,12 +32,13 @@ public class TherapistService {
     public SkinTherapist updateTherapist(UUID id, SkinTherapist updatedTherapist) {
         SkinTherapist therapist = skinTherapistRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Therapist not found!"));
+        therapist.setUsername(updatedTherapist.getUsername());
         therapist.setFullName(updatedTherapist.getFullName());
+        therapist.setImg(updatedTherapist.getImg());
         therapist.setEmail(updatedTherapist.getEmail());
         therapist.setPhone(updatedTherapist.getPhone());
         therapist.setLocation(updatedTherapist.getLocation());
         therapist.setSpecialty(updatedTherapist.getSpecialty());
-//        therapist.setExperience(updatedTherapist.getExperience());
         return skinTherapistRepository.save(therapist);
     }
 

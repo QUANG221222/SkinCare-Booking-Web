@@ -1,0 +1,105 @@
+<!doctype html>
+
+<html
+        lang="en"
+        class="layout-menu-fixed layout-compact"
+        data-assets-path="/admin/assets/"
+        data-template="vertical-menu-template-free">
+<!-- Head -->
+<div th:replace="admin/fragments/head :: head"></div>
+
+<body>
+<!-- Layout wrapper -->
+<div class="layout-wrapper layout-content-navbar">
+    <div class="layout-container">
+        <!-- Menu -->
+        <div th:replace="admin/fragments/menu :: menu"></div>
+        <!-- / Menu -->
+
+        <!-- Layout container -->
+        <div class="layout-page">
+            <!-- Navbar -->
+
+            <nav
+                    class="layout-navbar container-xxl navbar-detached navbar navbar-expand-xl align-items-center bg-navbar-theme"
+                    id="layout-navbar">
+                <div class="layout-menu-toggle navbar-nav align-items-xl-center me-4 me-xl-0 d-xl-none">
+                    <a class="nav-item nav-link px-0 me-xl-6" href="javascript:void(0)">
+                        <i class="icon-base bx bx-menu icon-md"></i>
+                    </a>
+                </div>
+
+                <div class="navbar-nav-right d-flex align-items-center justify-content-end" id="navbar-collapse">
+                    <ul class="navbar-nav flex-row align-items-center ms-md-auto">
+
+                        <!-- User -->
+                        <div th:replace="admin/fragments/user :: user"></div>
+                        <!--/ User -->
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- / Navbar -->
+
+            <!-- Content wrapper -->
+            <div class="content-wrapper">
+                <!-- Content -->
+                <div class="container-xxl flex-grow-1 container-p-y">
+
+                    <!-- Users List Table -->
+                    <div class="card">
+                        <div class="table-responsive">
+                            <div class="container mt-3">
+                                <!-- Alert for Success -->
+                                <div
+                                        th:if="${successMessage}"
+                                        class="alert alert-success alert-dismissible fade show position-relative"
+                                        role="alert"
+                                >
+                                    <span th:text="${successMessage}"></span>
+                                </div>
+
+                                <!-- Alert for Error -->
+                                <div
+                                        th:if="${errorMessage}"
+                                        class="alert alert-danger alert-dismissible fade show position-relative"
+                                        role="alert"
+                                >
+                                    <span th:text="${errorMessage}"></span>
+                                </div>
+                            </div>
+                            <table class="table table-bordered table-hover">
+                                <thead class="table-light">
+                                <tr>
+                                    <th style="width: 20%;">User</th>
+                                    <th>Role</th>
+                                    <th>Contact</th>
+                                    <th>Address</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+<!--                                <tr th:each="staff : ${staffList}">-->
+<!--                                    <div th:replace="admin/Users/ListStaff/Staff/staff :: staff"></div>-->
+<!--                                </tr>-->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- / Content -->
+        </div>
+        <!-- / Layout page -->
+    </div>
+
+    <!-- Overlay -->
+    <div class="layout-overlay layout-menu-toggle"></div>
+</div>
+<!-- / Layout wrapper -->
+
+<!-- Core JS -->
+<div th:replace="admin/fragments/script :: script"></div>
+
+</body>
+</html>
