@@ -191,5 +191,13 @@
         </li>
       </ul>
     </li>
+
+    <!-- Manager Feedback -->
+    <li class="menu-item" th:classappend="${#strings.contains(currentURI, '/manager/feedbacks') ? 'active' : ''}">
+      <a th:href="@{/protected/manager/feedbacks}" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-comment"></i>
+        <div data-i18n="Manager Feedback">Manager Feedback</div>
+      </a>
+    </li>
   </ul>
 </aside>
