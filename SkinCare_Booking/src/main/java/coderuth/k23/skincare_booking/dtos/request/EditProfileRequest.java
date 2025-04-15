@@ -19,4 +19,6 @@ public class EditProfileRequest {
     @Size(min = 3, max = 100, message = "Location must be between 3 and 100 characters")
     private String location;
 
+    private String img;
+
 }

@@ -48,26 +48,26 @@
 
                     <!-- Users List Table -->
                     <div class="card">
-                        <div class="table-responsive">
-                            <div class="container mt-3">
-                                <!-- Alert for Success -->
-                                <div
-                                        th:if="${successMessage}"
-                                        class="alert alert-success alert-dismissible fade show position-relative"
-                                        role="alert"
-                                >
-                                    <span th:text="${successMessage}"></span>
-                                </div>
-
-                                <!-- Alert for Error -->
-                                <div
-                                        th:if="${errorMessage}"
-                                        class="alert alert-danger alert-dismissible fade show position-relative"
-                                        role="alert"
-                                >
-                                    <span th:text="${errorMessage}"></span>
-                                </div>
+                        <div class="container mt-3">
+                            <!-- Alert for Success -->
+                            <div
+                                    th:if="${successMessage}"
+                                    class="alert alert-success alert-dismissible fade show position-relative"
+                                    role="alert"
+                            >
+                                <span th:text="${successMessage}"></span>
                             </div>
+
+                            <!-- Alert for Error -->
+                            <div
+                                    th:if="${errorMessage}"
+                                    class="alert alert-danger alert-dismissible fade show position-relative"
+                                    role="alert"
+                            >
+                                <span th:text="${errorMessage}"></span>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
                             <table class="table table-bordered table-hover">
                                 <thead class="table-light">
                                 <tr>
@@ -79,9 +79,9 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-<!--                                <tr th:each="staff : ${staffList}">-->
-<!--                                    <div th:replace="admin/Users/ListStaff/Staff/staff :: staff"></div>-->
-<!--                                </tr>-->
+                                <tr th:each="customer : ${customerList}">
+                                    <div th:replace="admin/Users/ListCustomer/Customer/customer :: customer"></div>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
