@@ -1,6 +1,5 @@
 package coderuth.k23.skincare_booking.security;
 
-import coderuth.k23.skincare_booking.models.Customer;
 import coderuth.k23.skincare_booking.models.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;

@@ -229,6 +229,12 @@ public class CustomerPageController {
         return "user/blog";
     }
 
+    @GetMapping("/skin-therapist")
+    public String userSkinTherapistPage(Model model) {
+        model.addAttribute("therapist", therapistService.getAllTherapists());
+        return "user/skin-therapist";
+    }
+    
     @GetMapping("/profile")
     public String getCustomerProfile(Model model, Principal principal) {
         String username = principal.getName();

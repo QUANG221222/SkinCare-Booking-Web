@@ -1,5 +1,6 @@
 package coderuth.k23.skincare_booking.controllers.authentications;
 
+import coderuth.k23.skincare_booking.dtos.request.RegisterTherapistRequest;
 import coderuth.k23.skincare_booking.models.Customer;
 import coderuth.k23.skincare_booking.repositories.CustomerRepository;
 import jakarta.servlet.http.HttpServletResponse;
@@ -64,8 +65,8 @@ public class AuthsController {
     }
 
     @PostMapping("/manager/register-therapist")
-    public ResponseEntity<ApiResponse<Void>> registerTherapist(@Valid @RequestBody RegisterRequest registerRequest) {
-        authService.registerSkinTherapist(registerRequest);
+    public ResponseEntity<ApiResponse<Void>> registerTherapist(@Valid @RequestBody RegisterTherapistRequest registerTherapistRequest) {
+        authService.registerSkinTherapist(registerTherapistRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created("Registered successfully"));
     }
 

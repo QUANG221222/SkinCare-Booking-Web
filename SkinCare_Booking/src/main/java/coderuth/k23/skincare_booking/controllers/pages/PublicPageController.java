@@ -1,6 +1,9 @@
 package coderuth.k23.skincare_booking.controllers.pages;
 
+import coderuth.k23.skincare_booking.services.TherapistService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import jakarta.servlet.http.HttpServletRequest;
@@ -8,6 +11,10 @@ import jakarta.servlet.http.HttpServletRequest;
 @Controller
 
 public class PublicPageController {
+
+    @Autowired
+    TherapistService therapistService;
+
     @ModelAttribute("currentURI")
     public String currentURI(HttpServletRequest request) {
         return request.getRequestURI();
@@ -40,10 +47,9 @@ public class PublicPageController {
         return "user/blog";
     }
 
-//    // Customer: đặt bộ lọc security với yêu cầu phải có jwt token truy cập. spring security filter
-//    @GetMapping("/customer/profile")
-//    public String customerPage(@PathVariable String id) {
-//        return "user/customer/" + id;
-//    }
-    // @GetMapping("/customer/booking")
+    @GetMapping("/skin-therapist")
+    public String userSkinTherapistPage(Model model) {
+        model.addAttribute("therapist", therapistService.getAllTherapists());
+        return "user/skin-therapist";
+    }
 }
