@@ -43,6 +43,9 @@ public class ManagerPageController {
     @Autowired
     private AuthService authService;
 
+    @Autowired
+    private FeedbackService feedbackService;
+
     @ModelAttribute("currentURI")
     public String currentURI(HttpServletRequest request) {
         return request.getRequestURI();
@@ -265,5 +268,17 @@ public class ManagerPageController {
     public String TherapistPage() {
         return "redirect:/therapists"; 
     }
-    
+
+    //endpoint quản lí feedback
+    @GetMapping("/feedbacks")
+    public String getFeedbackList(Model model, Principal principal) {
+        String username = principal.getName();
+        Manager manager = managerRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Manager not found"));
+
+        model.addAttribute("manager", manager);
+        model.addAttribute("feedbackList", feedbackService.getAllFeedbacks(username));
+        return "admin/Feedbacks/managerFeedback";
+    }
+
 }
