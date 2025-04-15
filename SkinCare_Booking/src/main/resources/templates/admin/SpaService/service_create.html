@@ -34,6 +34,10 @@
             <label>Price:</label>
             <input type="number" step="0.01" th:field="*{price}" class="form-control" required/>
         </div>
+        <div class="mb-3">
+            <label>Duration:</label>
+            <input type="number" th:field="*{duration}" class="form-control" required/>
+        </div>
         <button type="submit" class="btn btn-primary">Create</button>
         <a th:href="@{/spa-services}" class="btn btn-secondary">Cancel</a>
     </form>

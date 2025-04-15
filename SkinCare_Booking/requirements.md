@@ -29,8 +29,8 @@
   - Blog giới thiệu ✅
   - Tin tức ✅
 - **Trang đặt lịch (Customer)**
-  - Cho phép khách hàng đặt lịch chăm sóc da
-  - Chỉ định chuyên viên
+  - Cho phép khách hàng đặt lịch chăm sóc da ✅
+  - Chỉ định chuyên viên ✅
 - **Trang quản lý lịch hẹn (Customer)**
   - Xem lại các lịch hẹn đã đặt
   - Thay đổi thông tin lịch hẹn, thay đổi chuyên viên

@@ -29,5 +29,10 @@ public class ManagerPageController {
     public String TherapistPage() {
         return "redirect:/therapists"; 
     }
+
+    @GetMapping("/appointments/pending")
+    public String appointmentsPage() {
+        return "redirect:/protected/staff/appointments/pending"; 
+    }
     
 }

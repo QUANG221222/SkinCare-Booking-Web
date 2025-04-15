@@ -21,7 +21,7 @@
             <tbody>
                 <tr th:each="appointment : ${appointments}">
                     <td th:text="${appointment.id}"></td>
-                    <td th:text="${appointment.customer.fullName}"></td>
+                    <td th:text="${appointment.customer.username}"></td>
                     <td th:text="${appointment.spaService.name}"></td>
                     <td th:text="${appointment.appointmentTime}"></td>
                     <td th:text="${appointment.skinTherapist?.fullName} ?: 'Not assigned yet'"></td>

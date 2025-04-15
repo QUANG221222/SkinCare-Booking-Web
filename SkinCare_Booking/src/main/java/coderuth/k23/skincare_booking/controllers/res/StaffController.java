@@ -3,9 +3,12 @@ package coderuth.k23.skincare_booking.controllers.res;
 import coderuth.k23.skincare_booking.dtos.response.ApiResponse;
 import coderuth.k23.skincare_booking.dtos.response.StaffInfoResponse;
 import coderuth.k23.skincare_booking.services.AppointmentService;
+import coderuth.k23.skincare_booking.services.PaymentService;
 import coderuth.k23.skincare_booking.services.StaffService;
 import coderuth.k23.skincare_booking.services.TherapistService;
 import coderuth.k23.skincare_booking.models.Appointment;
+import coderuth.k23.skincare_booking.models.Payment;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,7 +20,7 @@ import org.springframework.ui.Model;
 
 @Controller
 @RequestMapping("/protected/staff")
-@PreAuthorize("hasRole('STAFF') or hasRole('MANAGER')")
+@PreAuthorize("hasRole('MANAGER')")
 public class StaffController {
 
     @Autowired
@@ -28,6 +31,9 @@ public class StaffController {
 
     @Autowired
     private TherapistService therapistService;
+
+    @Autowired
+    private PaymentService paymentService;
 
     @GetMapping("/home")
     public String adminPage() {
@@ -100,7 +106,47 @@ public class StaffController {
         model.addAttribute("appointments", appointmentService.getAppointmentsByStatus(Appointment.AppointmentStatus.CHECKED_OUT));
         return "admin/staff/checked_out_appointments";
     }
+    // Hiển thị hóa đơn
+    @GetMapping("/appointments/invoice/{id}")
+    public String showInvoice(@PathVariable Long id, Model model) {
+        Appointment appointment = appointmentService.getAppointmentsByStatus(Appointment.AppointmentStatus.CHECKED_OUT)
+                .stream().filter(a -> a.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy lịch hẹn!"));
+        boolean isUnpaid = appointment.getPayments().stream().noneMatch(p -> p.getPaymentStatus() == Payment.PaymentStatus.PAID);
+        model.addAttribute("appointment", appointment);
+        model.addAttribute("isUnpaid", isUnpaid);
+        return "admin/staff/invoice";
+    }
 
+    // Xác nhận thanh toán
+    @PostMapping("/appointments/confirm-payment/{id}")
+    public String confirmPayment(@PathVariable Long id, @RequestParam String paymentMethod) {
+        appointmentService.confirmPayment(id, paymentMethod);
+        return "redirect:/protected/staff/appointments/invoice/{id}";
+    }
+
+    // Hủy lịch hẹn
+    @PostMapping("/appointments/cancel/{id}")
+    public String cancelAppointment(@PathVariable Long id) {
+        appointmentService.cancelAppointmentByStaff(id);
+        return "redirect:/protected/staff/appointments/pending";
+    }
+    // Xem danh sách hủy lịch hẹn
+    @GetMapping("/appointments/cancelled")
+    public String listCancelledAppointments(Model model) {
+        model.addAttribute("appointments", appointmentService.getAppointmentsByStatus(Appointment.AppointmentStatus.CANCELLED));
+        return "admin/staff/cancelled_appointments";
+    }
+    
+
+    // Xem lịch sử thanh toán của tất cả khách hàng
+    @GetMapping("/payments/history")
+    public String viewPaymentHistory(Model model) {
+        List<Payment> payments = paymentService.findAllPayments();
+        model.addAttribute("payments", payments);
+        return "admin/staff/payment_history";
+    }
     // Endpoint để lấy thông tin cơ bản của tất cả nhân viên
     @GetMapping
     public ResponseEntity<ApiResponse<List<StaffInfoResponse>>> getAllStaff() {

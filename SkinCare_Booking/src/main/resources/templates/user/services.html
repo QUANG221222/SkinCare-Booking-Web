@@ -210,9 +210,10 @@
                             <p th:text="${desc}">Desc Service</p>
                         </div>
                         <!-- Book Room -->
-                        <a class="book-room-btn btn palatin-btn" th:href="@{/protected/customer/appointment(serviceId=${service.id})}">
-                                Book Now
-                        </a> 
+                        <a class="book-room-btn btn palatin-btn" th:onclick="|loadAppointmentForm(${service.id})|"
+                            href="javascript:void(0);">
+                            Book Now
+                        </a>
                     </div>
                 </div>
                 <!-- Hiển thị thông báo nếu không có service -->
@@ -221,6 +222,19 @@
                 </div> --> 
             </div>
     </section>
+        <!-- Appointment Form Modal -->
+    <div class="modal fade" id="appointmentModal" tabindex="-1" aria-labelledby="appointmentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="appointmentModalLabel">Đặt dịch vụ chăm sóc da</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <!-- Phần này sẽ được nạp nội dung từ appointment_form -->
+            <div class="modal-body" id="appointmentModalBody"></div>
+        </div>
+        </div>
+    </div>
     <!-- ##### Rooms Area End ##### -->
     <!-- ##### Footer Area Start ##### -->
     <div th:replace="user/master/fragments/footer:: footer"></div>
@@ -229,14 +243,6 @@
     <!-- ##### All Javascript Script ##### -->
     <div th:replace="user/master/fragments/script"></div>
 
-    <div id="successToast" class="toast align-items-center text-bg-success border-0 position-fixed bottom-0 start-0 m-3" role="alert" aria-live="assertive" aria-atomic="true" style="z-index: 1055; display: none;">
-        <div class="d-flex">
-          <div class="toast-body">
-            Đặt lịch thành công ^^!
-          </div>
-          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-    </div>
 </body>
 
 </html>

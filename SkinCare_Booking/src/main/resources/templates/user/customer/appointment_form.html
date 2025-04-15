@@ -6,7 +6,21 @@
 </head>
 <body>
     <div class="container">
-        <h1>Đặt dịch vụ chăm sóc da</h1>
+        <h1>Đặt dịch vụ chăm sóc da</h1> 
+          <!-- Container Toast, ví dụ đặt ở góc phải trên của trang -->
+        <div aria-live="polite" aria-atomic="true" class="position-fixed top-0 end-0 p-3" style="z-index: 1100;">
+            <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto" id="toastTitle">Thông báo</strong>
+                <small class="text-muted">vừa xong</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="toastBody">
+                Nội dung thông báo...
+            </div>
+            </div>
+        </div>
+
         <div th:if="${errorMessage}" class="alert alert-danger">
             <span th:text="${errorMessage}"></span>
         </div>
@@ -19,7 +33,8 @@
             <span th:text="${error}"></span>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-        <form th:action="@{/protected/customer/appointment}" th:object="${appointment}" method="post">
+
+        <form id="appointmentForm" th:object="${appointment}" method="post">
             <div class="mb-3">
                 <label>Dịch vụ:</label>
                 <select th:field="*{spaService.id}" class="form-control" required>
