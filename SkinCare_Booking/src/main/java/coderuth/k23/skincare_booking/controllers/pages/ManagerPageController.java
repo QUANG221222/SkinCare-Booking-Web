@@ -3,12 +3,12 @@ package coderuth.k23.skincare_booking.controllers.pages;
 import coderuth.k23.skincare_booking.dtos.request.EditProfileRequest;
 import coderuth.k23.skincare_booking.dtos.request.RegisterStaffRequest;
 import coderuth.k23.skincare_booking.dtos.request.RegisterTherapistRequest;
-import coderuth.k23.skincare_booking.services.AuthService;
-import coderuth.k23.skincare_booking.services.ManagerService;
+import coderuth.k23.skincare_booking.models.Customer;
+import coderuth.k23.skincare_booking.models.SkinTherapist;
+import coderuth.k23.skincare_booking.models.Staff;
+import coderuth.k23.skincare_booking.services.*;
 import coderuth.k23.skincare_booking.models.Manager;
 import coderuth.k23.skincare_booking.repositories.ManagerRepository;
-import coderuth.k23.skincare_booking.services.StaffService;
-import coderuth.k23.skincare_booking.services.TherapistService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
+import java.util.UUID;
 
 @Controller
 @RequestMapping("/protected/manager")
@@ -37,7 +38,13 @@ public class ManagerPageController {
     private TherapistService therapistService;
 
     @Autowired
+    private CustomerService customerService;
+
+    @Autowired
     private AuthService authService;
+
+    @Autowired
+    private FeedbackService feedbackService;
 
     @ModelAttribute("currentURI")
     public String currentURI(HttpServletRequest request) {
@@ -128,17 +135,6 @@ public class ManagerPageController {
         return "admin/Users/ListStaff/listStaff";
     }
 
-    @GetMapping("/list-therapist")
-    public String getTherapistList(Model model, Principal principal) {
-        String username = principal.getName();
-        Manager manager = managerRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Manager not found"));
-
-        model.addAttribute("manager", manager);
-        model.addAttribute("therapistList", therapistService.getAllTherapists());
-        return "admin/Users/ListTherapist/listTherapist";
-    }
-
     @PostMapping("/register-staff")
     public String registerStaff(@ModelAttribute RegisterStaffRequest registerStaffRequest, RedirectAttributes redirectAttributes) {
         try {
@@ -152,6 +148,39 @@ public class ManagerPageController {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to registered: " + e.getMessage());
         }
         return "redirect:/protected/manager/list-staff";
+    }
+
+    @GetMapping("/delete-staff/{id}")
+    public String deleteStaff(@PathVariable UUID id, RedirectAttributes redirectAttributes) {
+        try {
+            staffService.deleteStaff(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Staff has been deleted successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "An error occurred while deleting the staff: " + e.getMessage());
+        }
+        return "redirect:/protected/manager/list-staff";
+    }
+
+    @PostMapping("/update-staff/{id}")
+    public String updateStaff(@PathVariable UUID id, @ModelAttribute Staff staff, RedirectAttributes redirectAttributes) {
+        try {
+            staffService.updateStaff(id, staff);
+            redirectAttributes.addFlashAttribute("successMessage", "Staff has been updated successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "An error occurred while updating the staff: " + e.getMessage());
+        }
+        return "redirect:/protected/manager/list-staff";
+    }
+
+    @GetMapping("/list-therapist")
+    public String getTherapistList(Model model, Principal principal) {
+        String username = principal.getName();
+        Manager manager = managerRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Manager not found"));
+
+        model.addAttribute("manager", manager);
+        model.addAttribute("therapistList", therapistService.getAllTherapists());
+        return "admin/Users/ListTherapist/listTherapist";
     }
 
     @PostMapping("/register-therapist")
@@ -169,6 +198,61 @@ public class ManagerPageController {
         return "redirect:/protected/manager/list-therapist";
     }
 
+    @GetMapping("/delete-therapist/{id}")
+    public String deleteTherapist(@PathVariable UUID id, RedirectAttributes redirectAttributes) {
+        try {
+            therapistService.deleteTherapist(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Therapist has been deleted successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "An error occurred while deleting the therapist: " + e.getMessage());
+        }
+        return "redirect:/protected/manager/list-therapist";
+    }
+
+    @PostMapping("/update-therapist/{id}")
+    public String updateTherapist(@PathVariable UUID id, @ModelAttribute SkinTherapist therapist, RedirectAttributes redirectAttributes) {
+        try {
+            therapistService.updateTherapist(id, therapist);
+            redirectAttributes.addFlashAttribute("successMessage", "Therapist has been updated successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "An error occurred while updating the therapist: " + e.getMessage());
+        }
+        return "redirect:/protected/manager/list-therapist";
+    }
+
+    @GetMapping("/list-customer")
+    public String getCustomerList(Model model, Principal principal) {
+        String username = principal.getName();
+        Manager manager = managerRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Manager not found"));
+
+        model.addAttribute("manager", manager);
+        model.addAttribute("customerList", customerService.getAllCustomers());
+        return "admin/Users/ListCustomer/listCustomer";
+    }
+
+    @PostMapping("/update-customer/{id}")
+    public String updateCustomer(@PathVariable UUID id, @ModelAttribute Customer customer, RedirectAttributes redirectAttributes) {
+        try {
+            customerService.updateCustomer(id, customer);
+            redirectAttributes.addFlashAttribute("successMessage", "Customer has been updated successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "An error occurred while updating the customer: " + e.getMessage());
+        }
+        return "redirect:/protected/manager/list-customer";
+    }
+
+    @GetMapping("/delete-customer/{id}")
+    public String deleteCustomer(@PathVariable UUID id, RedirectAttributes redirectAttributes) {
+        try {
+            customerService.deleteCustomer(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Customer has been deleted successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "An error occurred while deleting the customer: " + e.getMessage());
+        }
+        return "redirect:/protected/manager/list-customer";
+    }
+
     @GetMapping("/spa-services")
     public String spaServicesPage() {
         return "redirect:/spa-services"; 
@@ -184,5 +268,17 @@ public class ManagerPageController {
     public String TherapistPage() {
         return "redirect:/therapists"; 
     }
-    
+
+    //endpoint quản lí feedback
+    @GetMapping("/feedbacks")
+    public String getFeedbackList(Model model, Principal principal) {
+        String username = principal.getName();
+        Manager manager = managerRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Manager not found"));
+
+        model.addAttribute("manager", manager);
+        model.addAttribute("feedbackList", feedbackService.getAllFeedbacks(username));
+        return "admin/Feedbacks/managerFeedback";
+    }
+
 }

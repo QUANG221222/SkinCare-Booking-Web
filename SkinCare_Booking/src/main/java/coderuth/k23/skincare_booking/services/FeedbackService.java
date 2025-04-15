@@ -235,8 +235,9 @@ public class FeedbackService {
         dto.setSubject(feedback.getSubject());
         dto.setMessage(feedback.getComment());
         dto.setRating(feedback.getRating());
-//        dto.setUsername(feedback.getCustomer().getUsername()); // Thêm username
-//        dto.setHidden(feedback.isHidden());
+        dto.setUsername(feedback.getCustomer().getUsername()); // Gán username
+        dto.setHidden(feedback.isHidden()); // Gán trạng thái ẩn/hiển thị
+        dto.setCreatedAt(feedback.getCreatedAt());
         return dto;
     }
 }

@@ -27,12 +27,13 @@
   <div class="menu-inner-shadow"></div>
 
   <ul class="menu-inner py-1">
-    <!-- Dashboards -->
+    <!-- Dashboards (Manager)-->
     <li
       th:classappend="${#strings.contains(currentURI, '/manager/home')} ? 'active open' : ''"
       class="menu-item"
     >
-      <a th:href="@{/protected/manager/home}" class="menu-link menu-toggle">
+      <a th:if="${#strings.contains(currentURI, 'manager')}"
+         th:href="@{/protected/manager/home}" class="menu-link menu-toggle">
         <i class="menu-icon tf-icons bx bx-home-smile"></i>
         <div class="text-truncate" data-i18n="Dashboards">Dashboards</div>
       </a>
@@ -48,11 +49,12 @@
       </ul>
     </li>
 
-    <!-- Users (hasRole = "Manager")   -->
+    <!-- Users ("Manager" and "Customer")   -->
     <li
       class="menu-item"
-      th:classappend="${#strings.contains(currentURI, '/manager/list-staff') or 
-            #strings.contains(currentURI, '/manager/list-therapist')} ? 'active open' : ''"
+      th:classappend="${#strings.contains(currentURI, '/manager/list-staff') or
+          #strings.contains(currentURI, '/manager/list-therapist') or
+          #strings.contains(currentURI, '/manager/list-customer')}  ? 'active open' : ''"
     >
       <a href="javascript:void(0);" class="menu-link menu-toggle">
         <i class="menu-icon icon-base bx bx-user"></i>
@@ -61,6 +63,7 @@
       <ul class="menu-sub">
         <li
           class="menu-item"
+          th:if="${#strings.contains(currentURI, 'manager')}"
           th:classappend="${#strings.contains(currentURI, '/manager/list-staff')} ? 'active' : ''"
         >
           <a th:href="@{/protected/manager/list-staff}" class="menu-link">
@@ -75,12 +78,21 @@
             <div data-i18n="List">Skin Therapist</div>
           </a>
         </li>
+
+        <li
+          class="menu-item"
+          th:classappend="${#strings.contains(currentURI, '/manager/list-customer')} ? 'active' : ''"
+        >
+          <a th:href="@{/protected/manager/list-customer}" class="menu-link">
+            <div data-i18n="List">Customer</div>
+          </a>
+        </li>
       </ul>
     </li>
     <!-- SpaService -->
     <li class="menu-item">
       <a href="javascript:void(0);" class="menu-link menu-toggle">
-        <i class="menu-icon tf-icons bx bx-home-smile"></i>
+        <i class="menu-icon tf-icons bx bx-spa"></i>
         <div class="text-truncate" data-i18n="Dashboards">Spa Services</div>
       </a>
       <ul class="menu-sub">
@@ -95,10 +107,10 @@
         </li>
       </ul>
     </li>
-    <!-- Center Schedule -->
-    <li class="menu-item">
-      <a href="javascript:void(0);" class="menu-link menu-toggle">
-        <i class="menu-icon tf-icons bx bx-home-smile"></i>
+    <!-- Center Schedule (Manager) -->
+    <li th:if="${#strings.contains(currentURI, 'manager')}" class="menu-item">
+      <a class="menu-link menu-toggle">
+        <i class="menu-icon tf-icons bx bx-calendar"></i>
         <div class="text-truncate" data-i18n="Dashboards">Center-Schedule</div>
       </a>
       <ul class="menu-sub">
@@ -115,30 +127,10 @@
         </li>
       </ul>
     </li>
-    <!-- Therapist -->
-    <li class="menu-item">
-      <a href="javascript:void(0);" class="menu-link menu-toggle">
-        <i class="menu-icon tf-icons bx bx-home-smile"></i>
-        <div class="text-truncate" data-i18n="Dashboards">Therapists</div>
-      </a>
-      <ul class="menu-sub">
-        <li class="menu-item">
-          <a
-            th:href="@{/protected/manager/therapists}"
-            target="_blank"
-            class="menu-link"
-          >
-            <div class="text-truncate" data-i18n="eCommerce">
-              List Therapists
-            </div>
-          </a>
-        </li>
-      </ul>
-    </li>
     <!-- Appointment -->
     <li class="menu-item">
       <a href="javascript:void(0);" class="menu-link menu-toggle">
-        <i class="menu-icon tf-icons bx bx-home-smile"></i>
+        <i class="menu-icon tf-icons bx bx-calendar-check"></i>
         <div class="text-truncate" data-i18n="Dashboards">Appointment</div>
       </a>
       <ul class="menu-sub">
@@ -190,6 +182,14 @@
           </a>
         </li>
       </ul>
+    </li>
+
+    <!-- Manager Feedback -->
+    <li class="menu-item" th:classappend="${#strings.contains(currentURI, '/manager/feedbacks') ? 'active' : ''}">
+      <a th:href="@{/protected/manager/feedbacks}" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-comment"></i>
+        <div data-i18n="Manager Feedback">Manager Feedback</div>
+      </a>
     </li>
   </ul>
 </aside>

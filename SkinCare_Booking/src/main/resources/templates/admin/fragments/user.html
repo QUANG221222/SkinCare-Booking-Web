@@ -1,42 +1,35 @@
-<!-- User -->
 <li th:fragment="user" class="nav-item navbar-dropdown dropdown-user dropdown">
-    <a
-            class="nav-link dropdown-toggle hide-arrow p-0"
-            href="javascript:void(0);"
-            data-bs-toggle="dropdown"
-    >
+    <a class="nav-link dropdown-toggle hide-arrow p-0" href="javascript:void(0);" data-bs-toggle="dropdown">
         <div class="d-flex">
             <div class="flex-shrink-0 me-3">
                 <div class="avatar avatar-online">
-                    <img
-                            th:src="${manager.img}"
-                            alt
-                            class="w-px-40 h-auto rounded-circle"
-                    />
+                    <img th:src="${#strings.contains(currentURI, 'manager') ? manager.img : staff.img}"
+                         alt
+                         class="w-px-40 h-auto rounded-circle" />
                 </div>
             </div>
             <div class="flex-grow-1">
-                <h6 th:text="${manager.username}" class="mb-0"></h6>
-                <small th:text="${manager.userType}" class="text-body-secondary"></small>
+                <h6 th:text="${#strings.contains(currentURI, 'manager') ? manager.username : staff.username}"
+                    class="mb-0"></h6>
+                <small th:text="${#strings.contains(currentURI, 'manager') ? manager.userType : staff.userType}"
+                       class="text-body-secondary"></small>
             </div>
         </div>
     </a>
     <ul class="dropdown-menu dropdown-menu-end">
         <li>
-            <a class="dropdown-item" th:href="@{/protected/manager/profile}">
-                <i class="icon-base bx bx-user icon-md me-3"></i
-                ><span>My Profile</span>
+            <a class="dropdown-item"
+               th:href="${#strings.contains(currentURI, 'manager') ? '/protected/manager/profile' : '/protected/staff/profile'}">
+                <i class="icon-base bx bx-user icon-md me-3"></i><span>My Profile</span>
             </a>
         </li>
         <li>
             <div class="dropdown-divider my-1"></div>
         </li>
         <li>
-            <a class="dropdown-item" onclick="logoutUser()">
-                <i class="icon-base bx bx-power-off icon-md me-3"></i
-                ><span>Log Out</span>
+            <a class="dropdown-item cursor-pointer" onclick="logoutUser()">
+                <i class="icon-base bx bx-power-off icon-md me-3"></i><span>Log Out</span>
             </a>
         </li>
     </ul>
 </li>
-<!--/ User -->
