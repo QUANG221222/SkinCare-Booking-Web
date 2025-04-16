@@ -40,17 +40,17 @@ public class SpaServiceController {
         model.addAttribute("SpaService", new SpaService());
         return "admin/SpaService/service_create";
     }
-
-    @PostMapping
-    public String createService(@ModelAttribute SpaService spaService, RedirectAttributes redirectAttributes) {
-        try {
-            spaServiceService.createService(spaService);
-            redirectAttributes.addFlashAttribute("success", "Service has been created successfully!");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "An error occurred while creating the service: " + e.getMessage());
-        }
-        return "redirect:/spa-services";
-    }
+//
+//    @PostMapping
+//    public String createService(@ModelAttribute SpaService spaService, RedirectAttributes redirectAttributes) {
+//        try {
+//            spaServiceService.createService(spaService);
+//            redirectAttributes.addFlashAttribute("success", "Service has been created successfully!");
+//        } catch (Exception e) {
+//            redirectAttributes.addFlashAttribute("error", "An error occurred while creating the service: " + e.getMessage());
+//        }
+//        return "redirect:/spa-services";
+//    }
 
     @GetMapping("/edit/{id}")
     public String showEditServiceForm(@PathVariable Long id, Model model) {

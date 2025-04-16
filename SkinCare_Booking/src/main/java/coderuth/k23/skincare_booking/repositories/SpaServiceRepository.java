@@ -23,6 +23,8 @@ public interface SpaServiceRepository extends JpaRepository<SpaService, Long> {
     // Kiểm tra sự tồn tại của dịch vụ theo tên
     boolean existsByName(String name);
 
+    boolean existsByImageUrl(String name);
+
     // Tìm kiếm dịch vụ theo tên (không phân biệt chữ hoa/thường)
     List<SpaService> findByNameContainingIgnoreCase(String name);
 }

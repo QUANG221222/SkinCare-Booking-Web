@@ -13,6 +13,13 @@ public class SpaServiceRequestDTO {
     @Size(max = 500, message = "Description cannot exceed 500 characters")
     private String description;
 
+    @NotBlank(message = "Image URL is required")
+    @Pattern(
+            regexp = "^(http(s?):)([/|.|\\w|\\s|-])*\\.(?:jpg|jpeg|png|webp)$",
+            message = "Image must be a valid URL ending with .jpg, .jpeg, or .png"
+    )
+    private String imageUrl;
+
     @NotNull(message = "Price is required")
     @Positive(message = "Price must be positive")
     private double price;
@@ -21,6 +28,4 @@ public class SpaServiceRequestDTO {
     @Positive(message = "Duration must be positive")
     @Max(value = 1440, message = "Duration cannot exceed 24 hours (1440 minutes)")
     private int duration;
-
-    public void map(Object spaServiceFound) {}
 }

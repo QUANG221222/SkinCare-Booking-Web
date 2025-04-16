@@ -93,14 +93,18 @@
         </li>
       </ul>
     </li>
+
     <!-- SpaService -->
-    <li class="menu-item">
-      <a href="javascript:void(0);" class="menu-link menu-toggle">
+    <li th:if="${#strings.contains(currentURI, 'manager')}"
+        th:classappend="${#strings.contains(currentURI, '/manager/spa-services')} ? 'active open' : ''"
+        class="menu-item cursor-pointer">
+      <a class="menu-link menu-toggle" href="javascript:void(0)">
         <i class="menu-icon tf-icons bx bx-spa"></i>
         <div class="text-truncate" data-i18n="Dashboards">Spa Services</div>
       </a>
       <ul class="menu-sub">
-        <li class="menu-item">
+        <li th:classappend="${#strings.contains(currentURI, '/manager/spa-services')} ? 'active' : ''"
+            class="menu-item">
           <a
             th:href="@{/protected/manager/spa-services}"
             id="spaServiceLink"
@@ -113,7 +117,7 @@
     </li>
     <!-- Center Schedule (Manager) -->
     <li th:if="${#strings.contains(currentURI, 'manager')}" class="menu-item">
-      <a class="menu-link menu-toggle">
+      <a class="menu-link menu-toggle" href="javascript:void(0)">
         <i class="menu-icon tf-icons bx bx-calendar"></i>
         <div class="text-truncate" data-i18n="Dashboards">Center-Schedule</div>
       </a>
