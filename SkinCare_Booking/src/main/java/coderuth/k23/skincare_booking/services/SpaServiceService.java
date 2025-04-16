@@ -4,6 +4,7 @@ import coderuth.k23.skincare_booking.dtos.request.SpaServiceRequestDTO;
 import coderuth.k23.skincare_booking.dtos.response.SpaServiceResponseDTO;
 import coderuth.k23.skincare_booking.models.CenterSchedule;
 import coderuth.k23.skincare_booking.models.SpaService;
+import coderuth.k23.skincare_booking.models.Staff;
 import coderuth.k23.skincare_booking.repositories.CenterScheduleRepository;
 import coderuth.k23.skincare_booking.repositories.SpaServiceRepository;
 import jakarta.transaction.Transactional;
@@ -26,17 +27,34 @@ public class SpaServiceService {
     public List<SpaService> getAllServices() {
         return spaServiceRepository.findAll();
     }
+
     @Transactional
     public SpaService getServiceById(Long id) {
         return spaServiceRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Service not found!"));
     }
 
-    public SpaService createService(SpaService spaService) {
-        if (spaService.getPrice() <= 0) {
-            throw new IllegalArgumentException("Giá dịch vụ phải lớn hơn 0!");
+    public void createService(SpaServiceRequestDTO spaServiceRequestDTO) {
+        if (spaServiceRequestDTO.getPrice() <= 0) {
+            throw new IllegalArgumentException("Price must be greater than zero!");
         }
-        return spaServiceRepository.save(spaService);
+
+        if (spaServiceRepository.existsByName(spaServiceRequestDTO.getName())) {
+            throw new IllegalArgumentException("Spa service name is already taken");
+        }
+
+        if (spaServiceRepository.existsByImageUrl(spaServiceRequestDTO.getImageUrl())) {
+            throw new IllegalArgumentException("Image spa service is already in use");
+        }
+
+        SpaService service = new SpaService();
+        service.setName(spaServiceRequestDTO.getName());
+        service.setImageUrl(spaServiceRequestDTO.getImageUrl());
+        service.setPrice(spaServiceRequestDTO.getPrice());
+        service.setDescription(spaServiceRequestDTO.getDescription());
+        service.setDuration(spaServiceRequestDTO.getDuration());
+
+        spaServiceRepository.save(service);
     }
 
     public SpaService updateService(Long id, SpaService updatedService) {
@@ -46,7 +64,7 @@ public class SpaServiceService {
         spaService.setImageUrl(updatedService.getImageUrl());
         spaService.setDescription(updatedService.getDescription());
         if (updatedService.getPrice() <= 0) {
-            throw new IllegalArgumentException("Giá dịch vụ phải lớn hơn 0!");
+            throw new IllegalArgumentException("Price must be greater than zero!");
         }
         spaService.setPrice(updatedService.getPrice());
         spaService.setDuration(updatedService.getDuration());
