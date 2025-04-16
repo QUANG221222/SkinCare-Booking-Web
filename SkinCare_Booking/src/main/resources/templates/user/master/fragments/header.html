@@ -6,8 +6,10 @@
         <!-- Menu -->
         <nav class="classy-navbar justify-content-between" id="palatinNav">
           <!-- Nav brand -->
-          <a th:href="${#strings.contains(currentURI, 'customer')} ? @{/protected/customer/home} : @{/}" class="nav-brand"
-          ><img src="/user/img/core-img/logo_1.png" alt=""
+          <a
+            th:href="${#strings.contains(currentURI, 'customer')} ? @{/protected/customer/home} : @{/}"
+            class="nav-brand"
+            ><img src="/user/img/core-img/logo_1.png" alt=""
           /></a>
 
           <!-- Navbar Toggler -->
@@ -46,13 +48,13 @@
                   >
                 </li>
                 <li
-                      th:classappend="${#strings.contains(currentURI, '/customer/skin-therapist') or (currentURI == '/skin-therapist') ? 'active' : ''}"
+                  th:classappend="${#strings.contains(currentURI, '/customer/skin-therapist') or (currentURI == '/skin-therapist') ? 'active' : ''}"
                 >
-                <a
-                        th:href="${#strings.contains(currentURI, 'customer')} ? @{/protected/customer/skin-therapist} : @{/skin-therapist}"
-                >Skin Therapist</a
-                >
-              </li>
+                  <a
+                    th:href="${#strings.contains(currentURI, 'customer')} ? @{/protected/customer/skin-therapist} : @{/skin-therapist}"
+                    >Skin Therapist</a
+                  >
+                </li>
                 <li
                   th:classappend="${#strings.contains(currentURI, '/customer/services') or (currentURI == '/services') ? 'active' : ''}"
                 >
@@ -98,7 +100,6 @@
                     type="button"
                     class="btn palatin-btn"
                     data-bs-toggle="dropdown"
-                    aria-expanded="false"
                   >
                     <span th:text="${#authentication.name}">User Name</span>
                   </button>
@@ -136,7 +137,7 @@
                         >Logout</a
                       >
                     </li>
-                  </div>
+                  </ul>
                 </div>
               </div>
             </div>

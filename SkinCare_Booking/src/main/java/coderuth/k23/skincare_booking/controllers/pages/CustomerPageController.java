@@ -3,11 +3,9 @@ package coderuth.k23.skincare_booking.controllers.pages;
 import coderuth.k23.skincare_booking.dtos.request.EditProfileRequest;
 import coderuth.k23.skincare_booking.dtos.request.FeedbackRequest;
 import coderuth.k23.skincare_booking.dtos.response.ApiResponse;
-import coderuth.k23.skincare_booking.models.Appointment;
-import coderuth.k23.skincare_booking.models.Customer;
-import coderuth.k23.skincare_booking.models.Payment;
-import coderuth.k23.skincare_booking.models.SpaService;
+import coderuth.k23.skincare_booking.models.*;
 import coderuth.k23.skincare_booking.repositories.CustomerRepository;
+import coderuth.k23.skincare_booking.repositories.ManagerRepository;
 import coderuth.k23.skincare_booking.repositories.SpaServiceRepository;
 import coderuth.k23.skincare_booking.security.UserDetailsImpl;
 import coderuth.k23.skincare_booking.services.*;
@@ -46,6 +44,7 @@ public class CustomerPageController {
     @Autowired
     private FeedbackService feedbackService;
 
+    @Autowired
     private SpaServiceService spaServiceService;
 
     @Autowired
@@ -155,33 +154,7 @@ public class CustomerPageController {
         model.addAttribute("services", services);
         return "user/services";
     }
-    // Hiển thị danh sách dịch vụ và form đặt dịch vụ
-    @GetMapping("/appointment")
-    public String showAppointmentForm(Model model) {
-        model.addAttribute("appointment", new Appointment());
-        model.addAttribute("services", spaServiceService.getAllServices());
-        model.addAttribute("therapists", therapistService.getAllTherapists());
-        return "user/customer/appointment_form";
-    }
 
-
-    // Khách hàng đặt dịch vụ
-    @PostMapping("/appointment")
-    public String createAppointment(@ModelAttribute Appointment appointment, Model model) {
-        try {
-            UUID customerId = getLoggedInCustomerId(); // Lấy ID khách hàng đã đăng nhập
-            appointment.setCustomer(new Customer());
-            appointment.getCustomer().setId(customerId);
-            appointmentService.createAppointment(appointment);
-            return "redirect:/protected/customer/appointments";
-        } catch (RuntimeException ex) {
-            // Thêm thông báo lỗi vào model
-            model.addAttribute("errorMessage", ex.getMessage());
-            model.addAttribute("services", spaServiceService.getAllServices());
-            model.addAttribute("therapists", therapistService.getAllTherapists());
-            return "user/customer/appointment_form"; // Quay lại form đặt lịch
-        }
-    }
     // Endpoint mới để hiển thị danh sách feedback
     @GetMapping("/feedbacks")
     public String userFeedbackListPage(Model model, Principal principal) {
