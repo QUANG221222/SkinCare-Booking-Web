@@ -271,4 +271,9 @@ public class CustomerPageController {
         model.addAttribute("bookings", bookings);
         return "user/customer/booking-history";
     }
+
+    @GetMapping("/quiz")
+    public String showQuiz() {
+        return "user/customer/quiz";
+    }
 }
