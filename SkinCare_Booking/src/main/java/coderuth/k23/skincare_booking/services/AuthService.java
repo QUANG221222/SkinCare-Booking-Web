@@ -239,14 +239,38 @@ public class AuthService {
         // Mark current refresh token as used
         refreshTokenService.markTokenAsUsed(refreshToken);
 
-        // Generate new access token
-        Customer customer = (Customer) customerRepository.findById(UUID.fromString(userId))
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        // Determine user type and fetch the corresponding user
+        Object user;
+        if (customerRepository.findById(UUID.fromString(userId)).isPresent()) {
+            user = customerRepository.findById(UUID.fromString(userId)).get();
+        } else if (managerRepository.findById(UUID.fromString(userId)).isPresent()) {
+            user = managerRepository.findById(UUID.fromString(userId)).get();
+        } else if (staffRepository.findById(UUID.fromString(userId)).isPresent()) {
+            user = staffRepository.findById(UUID.fromString(userId)).get();
+        } else if (skinTherapistRepository.findById(UUID.fromString(userId)).isPresent()) {
+            user = skinTherapistRepository.findById(UUID.fromString(userId)).get();
+        } else {
+            throw new RuntimeException("User not found");
+        }
 
-        UserDetailsImpl userDetails = UserDetailsImpl.build(customer);
+        // Build UserDetails based on the user type
+        UserDetailsImpl userDetails;
+        if (user instanceof Customer) {
+            userDetails = UserDetailsImpl.build((Customer) user);
+        } else if (user instanceof Manager) {
+            userDetails = UserDetailsImpl.build((Manager) user);
+        } else if (user instanceof Staff) {
+            userDetails = UserDetailsImpl.build((Staff) user);
+        } else if (user instanceof SkinTherapist) {
+            userDetails = UserDetailsImpl.build((SkinTherapist) user);
+        } else {
+            throw new RuntimeException("Unsupported user type");
+        }
+
         Authentication authentication = new UsernamePasswordAuthenticationToken(
                 userDetails, null, userDetails.getAuthorities());
 
+        // Generate new access token
         String newAccessToken = jwtUtil.generateAccessToken(authentication);
 
         // Add the new access token as HTTP-only cookie

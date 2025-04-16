@@ -4,7 +4,9 @@ import coderuth.k23.skincare_booking.dtos.request.EditProfileRequest;
 import coderuth.k23.skincare_booking.models.Manager;
 import coderuth.k23.skincare_booking.models.Staff;
 import coderuth.k23.skincare_booking.repositories.StaffRepository;
+import coderuth.k23.skincare_booking.services.CustomerService;
 import coderuth.k23.skincare_booking.services.StaffService;
+import coderuth.k23.skincare_booking.services.TherapistService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,6 +27,12 @@ public class StaffPageController {
 
     @Autowired
     StaffRepository staffRepository;
+
+    @Autowired
+    TherapistService therapistService;
+
+    @Autowired
+    CustomerService customerService;
 
     @ModelAttribute("currentURI")
     public String currentURI(HttpServletRequest request) {
@@ -104,4 +112,25 @@ public class StaffPageController {
         return "redirect:/protected/staff/security";
     }
 
+    @GetMapping("/list-therapist")
+    public String getTherapistList(Model model, Principal principal) {
+        String username = principal.getName();
+        Staff staff = staffRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Staff not found"));
+
+        model.addAttribute("staff", staff);
+        model.addAttribute("therapistList", therapistService.getAllTherapists());
+        return "admin/Users/ListTherapist/listTherapist";
+    }
+
+    @GetMapping("/list-customer")
+    public String getCustomerList(Model model, Principal principal) {
+        String username = principal.getName();
+        Staff staff = staffRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Staff not found"));
+
+        model.addAttribute("staff", staff);
+        model.addAttribute("customerList", customerService.getAllCustomers());
+        return "admin/Users/ListCustomer/listCustomer";
+    }
 }

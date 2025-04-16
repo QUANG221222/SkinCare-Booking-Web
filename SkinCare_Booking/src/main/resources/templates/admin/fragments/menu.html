@@ -49,12 +49,14 @@
       </ul>
     </li>
 
-    <!-- Users ("Manager" and "Customer")   -->
+    <!-- Users ("Manager" and "Staff")   -->
     <li
       class="menu-item"
       th:classappend="${#strings.contains(currentURI, '/manager/list-staff') or
           #strings.contains(currentURI, '/manager/list-therapist') or
-          #strings.contains(currentURI, '/manager/list-customer')}  ? 'active open' : ''"
+          #strings.contains(currentURI, '/manager/list-customer') or
+          #strings.contains(currentURI, '/staff/list-therapist') or
+          #strings.contains(currentURI, '/staff/list-customer')}  ? 'active open' : ''"
     >
       <a href="javascript:void(0);" class="menu-link menu-toggle">
         <i class="menu-icon icon-base bx bx-user"></i>
@@ -72,18 +74,20 @@
         </li>
         <li
           class="menu-item"
-          th:classappend="${#strings.contains(currentURI, '/manager/list-therapist')} ? 'active' : ''"
+          th:classappend="${#strings.contains(currentURI, '/manager/list-therapist') or
+                            #strings.contains(currentURI, '/staff/list-therapist')} ? 'active' : ''"
         >
-          <a th:href="@{/protected/manager/list-therapist}" class="menu-link">
+          <a th:href="${#strings.contains(currentURI, 'manager') ? '/protected/manager/list-therapist' : '/protected/staff/list-therapist'}" class="menu-link">
             <div data-i18n="List">Skin Therapist</div>
           </a>
         </li>
 
         <li
           class="menu-item"
-          th:classappend="${#strings.contains(currentURI, '/manager/list-customer')} ? 'active' : ''"
+          th:classappend="${#strings.contains(currentURI, '/manager/list-customer')or
+                            #strings.contains(currentURI, '/staff/list-customer')} ? 'active' : ''"
         >
-          <a th:href="@{/protected/manager/list-customer}" class="menu-link">
+          <a th:href="${#strings.contains(currentURI, 'manager') ? '/protected/manager/list-customer' : '/protected/staff/list-customer'}" class="menu-link">
             <div data-i18n="List">Customer</div>
           </a>
         </li>

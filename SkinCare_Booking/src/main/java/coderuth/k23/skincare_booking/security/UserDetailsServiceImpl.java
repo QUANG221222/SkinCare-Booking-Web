@@ -31,9 +31,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private StaffRepository staffRepository;
 
     @Autowired
-    private TherapistService therapistService;
-
-    @Autowired
     private SkinTherapistRepository skinTherapistRepository;
 
     // Add other repositories as needed

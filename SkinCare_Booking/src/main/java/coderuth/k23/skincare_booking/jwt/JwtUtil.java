@@ -4,7 +4,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 import coderuth.k23.skincare_booking.security.UserDetailsImpl;
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -72,7 +71,7 @@ public class JwtUtil {
         cookie.setHttpOnly(true);
         cookie.setSecure(false); // Set to true in production with HTTPS
         cookie.setMaxAge(refreshTokenExpirationMs / 1000);
-        cookie.setPath("/api/auth/refresh");
+        cookie.setPath("/");
         response.addCookie(cookie);
     }
 
@@ -142,5 +141,17 @@ public class JwtUtil {
         return false;
     }
 
+    public boolean isTokenExpired(String token) {
+        try {
+            Date expiration = Jwts.parser()
+                    .setSigningKey(jwtSecret)
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .getExpiration();
+            return expiration.before(new Date(System.currentTimeMillis() + 30000));
+        } catch (Exception e) {
+            return true; // Nếu có lỗi khi lấy thời gian, coi như token đã hết hạn
+        }
+    }
 
 }

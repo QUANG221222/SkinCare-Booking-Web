@@ -58,15 +58,15 @@ git # Java Spring Boot Web Application
 #### 1.3 Staff
 
 - **Trang hồ sơ (Staff)**
-  - Cho phép xem thông tin cá nhân đã đăng ký với trung tâm, vai trò, lịch làm việc
-  - Cho phép thay đổi một số thông tin cá nhân
-  - Cho phép thay đổi mật khẩu
+  - Cho phép xem thông tin cá nhân đã đăng ký với trung tâm, vai trò, lịch làm việc ✅
+  - Cho phép thay đổi một số thông tin cá nhân ✅
+  - Cho phép thay đổi mật khẩu ✅
 - **Trang quản lý dịch vụ/lịch hẹn**
   - Cho phép xem tất cả các lịch hẹn đã được khách hàng đặt
   - Hiển thị thông tin chi tiết về lịch hẹn
   - Cập nhật trạng thái lịch hẹn (Đã đặt/Chưa thanh toán/Đã thanh toán/Đã hoàn tất)
 - **Trang thông tin khách hàng**
-  - Cho phép xem thông tin cá nhân của khách hàng
+  - Cho phép xem thông tin cá nhân của khách hàng ✅
   - Xem lịch sử đặt dịch vụ của khách hàng
 
 #### 1.4 Manager
