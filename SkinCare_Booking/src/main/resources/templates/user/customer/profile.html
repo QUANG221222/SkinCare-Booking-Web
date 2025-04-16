@@ -1,354 +1,354 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-  <div th:replace="user/master/fragments/head :: head"></div>
+<div th:replace="user/master/fragments/head :: head"></div>
 
-  <body>
-    <!-- Preloader -->
-    <div class="preloader d-flex align-items-center justify-content-center">
-      <div class="cssload-container">
-        <div class="cssload-loading"><i></i><i></i><i></i><i></i></div>
-      </div>
-    </div>
+<body>
+<!-- Preloader -->
+<div class="preloader d-flex align-items-center justify-content-center">
+  <div class="cssload-container">
+    <div class="cssload-loading"><i></i><i></i><i></i><i></i></div>
+  </div>
+</div>
 
-    <!-- ##### Header Area Start ##### -->
-    <div th:replace="user/master/fragments/header :: header"></div>
-    <!-- ##### Header Area End ##### -->
+<!-- ##### Header Area Start ##### -->
+<div th:replace="user/master/fragments/header :: header"></div>
+<!-- ##### Header Area End ##### -->
 
-    <!-- ##### Breadcumb Area Start ##### -->
-    <section
-      class="breadcumb-area bg-img d-flex align-items-center justify-content-center"
-      style="background-image: url(/user/img/bg-img/bg-10.jpg)"
-    >
-      <div class="bradcumbContent">
-        <h2>Customer Profile</h2>
-      </div>
-    </section>
-    <!-- ##### Breadcumb Area End ##### -->
+<!-- ##### Breadcumb Area Start ##### -->
+<section
+        class="breadcumb-area bg-img d-flex align-items-center justify-content-center"
+        style="background-image: url(/user/img/bg-img/bg-10.jpg)"
+>
+  <div class="bradcumbContent">
+    <h2>Customer Profile</h2>
+  </div>
+</section>
+<!-- ##### Breadcumb Area End ##### -->
 
-    <!-- ##### Book Now Area Start ##### -->
-    <div th:replace="user/master/fragments/book-now:: book-now"></div>
-    <!-- ##### Book Now Area End ##### -->
+<!-- ##### Book Now Area Start ##### -->
+<div th:replace="user/master/fragments/book-now:: book-now"></div>
+<!-- ##### Book Now Area End ##### -->
 
-    <section class="breadcrumb-area border-none">
-      <div class="container">
-        <nav aria-label="breadcrumb">
-          <ol class="breadcrumb mb-0">
-            <li class="breadcrumb-item">
-              <a
-                th:href="@{/protected/customer/home}"
-                class="text-decoration-none"
-                >Home</a
-              >
-            </li>
-            <li class="breadcrumb-item active" aria-current="page">
-              Customer Profile
-            </li>
-          </ol>
-        </nav>
-      </div>
-    </section>
+<section class="breadcrumb-area border-none">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item">
+          <a
+                  th:href="@{/protected/customer/home}"
+                  class="text-decoration-none"
+          >Home</a
+          >
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">
+          Customer Profile
+        </li>
+      </ol>
+    </nav>
+  </div>
+</section>
 
-    <div class="container my-4">
-      <div class="row justify-content-center">
-        <div class="col-md-8">
-          <div class="container mt-3">
-            <!-- Alert for Success -->
-            <div
-              th:if="${successMessage}"
-              class="alert alert-success alert-dismissible fade show position-relative"
-              role="alert"
-            >
-              <span th:text="${successMessage}"></span>
-            </div>
+<div class="container my-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="container mt-3">
+        <!-- Alert for Success -->
+        <div
+                th:if="${successMessage}"
+                class="alert alert-success alert-dismissible fade show position-relative"
+                role="alert"
+        >
+          <span th:text="${successMessage}"></span>
+        </div>
 
-            <!-- Alert for Error -->
-            <div
-              th:if="${errorMessage}"
-              class="alert alert-danger alert-dismissible fade show position-relative"
-              role="alert"
-            >
-              <span th:text="${errorMessage}"></span>
-            </div>
-          </div>
-          <div class="card shadow-lg">
-            <div class="card-header text-white text-center">
-              <h3>Customer Profile</h3>
-            </div>
-            <div class="card-body">
-              <div class="mb-3">
-                <label class="form-label"><strong>Username:</strong></label>
-                <p class="form-control" th:text="${customer.username}"></p>
-              </div>
-              <div class="mb-3">
-                <label class="form-label"><strong>Full Name:</strong></label>
-                <p class="form-control" th:text="${customer.fullName}"></p>
-              </div>
-              <div class="mb-3">
-                <label class="form-label"><strong>Email:</strong></label>
-                <p class="form-control" th:text="${customer.email}"></p>
-              </div>
-              <div class="mb-3">
-                <label class="form-label"><strong>Phone:</strong></label>
-                <p class="form-control" th:text="${customer.phone}"></p>
-              </div>
-              <div class="mb-3">
-                <label class="form-label"><strong>Location:</strong></label>
-                <p class="form-control" th:text="${customer.location}"></p>
-              </div>
-            </div>
-            <div class="card-footer text-center">
-              <button
-                type="button"
-                class="btn btn-primary"
-                data-bs-toggle="modal"
-                data-bs-target="#editProfileModal"
-              >
-                Edit Profile
-              </button>
-              <button
-                type="button"
-                class="btn btn-warning"
-                data-bs-toggle="modal"
-                data-bs-target="#changePasswordModal"
-              >
-                Change Password
-              </button>
-            </div>
-          </div>
+        <!-- Alert for Error -->
+        <div
+                th:if="${errorMessage}"
+                class="alert alert-danger alert-dismissible fade show position-relative"
+                role="alert"
+        >
+          <span th:text="${errorMessage}"></span>
         </div>
       </div>
-    </div>
-
-    <!-- Bootstrap Modal for Edit Profile -->
-    <div
-      class="modal fade"
-      id="editProfileModal"
-      tabindex="-1"
-      aria-labelledby="editProfileModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header bg-primary text-white">
-            <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
+      <div class="card shadow-lg">
+        <div class="card-header text-white text-center">
+          <h3>Customer Profile</h3>
+        </div>
+        <div class="card-body">
+          <div class="mb-3">
+            <label class="form-label"><strong>Username:</strong></label>
+            <p class="form-control" th:text="${customer.username}"></p>
           </div>
-          <div class="modal-body">
-            <form th:action="@{/protected/customer/edit-profile}" method="post">
-              <div class="mb-3">
-                <label for="username" class="form-label"
-                  ><strong>Username:</strong></label
-                >
-                <input
-                  type="text"
-                  class="form-control"
-                  id="username"
-                  name="username"
-                  th:value="${customer.username}"
-                  readonly
-                />
-              </div>
-
-              <div class="mb-3">
-                <label for="fullName" class="form-label"
-                  ><strong>Full Name:</strong></label
-                >
-                <input
-                  type="text"
-                  class="form-control"
-                  id="fullName"
-                  name="fullName"
-                  th:value="${customer.fullName}"
-                  placeholder="Enter your full name"
-                  required
-                />
-              </div>
-
-              <div class="mb-3">
-                <label for="email" class="form-label"
-                  ><strong>Email:</strong></label
-                >
-                <input
-                  type="email"
-                  class="form-control"
-                  id="email"
-                  name="email"
-                  th:value="${customer.email}"
-                  placeholder="Enter your email"
-                  readonly
-                  required
-                />
-              </div>
-
-              <div class="mb-3">
-                <label for="phone" class="form-label"
-                  ><strong>Phone:</strong></label
-                >
-                <input
-                  type="text"
-                  class="form-control"
-                  id="phone"
-                  name="phone"
-                  th:value="${customer.phone}"
-                  pattern="^(\\+84|0)[1-9][0-9]{8}$"
-                  title="Invalid phone number format. Ex: 0987654321 or +84987654321"
-                  placeholder="Enter your phone number"
-                />
-              </div>
-
-              <div class="mb-3">
-                <label for="location" class="form-label"
-                  ><strong>Location:</strong></label
-                >
-                <input
-                  type="text"
-                  class="form-control"
-                  id="location"
-                  name="location"
-                  th:value="${customer.location}"
-                  placeholder="Enter your location"
-                  required
-                />
-              </div>
-              <div class="text-center">
-                <button type="submit" class="btn btn-success">
-                  Save Changes
-                </button>
-                <button
+          <div class="mb-3">
+            <label class="form-label"><strong>Full Name:</strong></label>
+            <p class="form-control" th:text="${customer.fullName}"></p>
+          </div>
+          <div class="mb-3">
+            <label class="form-label"><strong>Email:</strong></label>
+            <p class="form-control" th:text="${customer.email}"></p>
+          </div>
+          <div class="mb-3">
+            <label class="form-label"><strong>Phone:</strong></label>
+            <p class="form-control" th:text="${customer.phone}"></p>
+          </div>
+          <div class="mb-3">
+            <label class="form-label"><strong>Location:</strong></label>
+            <p class="form-control" th:text="${customer.location}"></p>
+          </div>
+        </div>
+        <div class="card-footer text-center">
+          <button
                   type="button"
-                  class="btn btn-secondary"
-                  data-bs-dismiss="modal"
-                >
-                  Close
-                </button>
-              </div>
-            </form>
-          </div>
+                  class="btn btn-primary"
+                  data-bs-toggle="modal"
+                  data-bs-target="#editProfileModal"
+          >
+            Edit Profile
+          </button>
+          <button
+                  type="button"
+                  class="btn btn-warning"
+                  data-bs-toggle="modal"
+                  data-bs-target="#changePasswordModal"
+          >
+            Change Password
+          </button>
         </div>
       </div>
     </div>
+  </div>
+</div>
 
-    <!-- Bootstrap Modal for Change Password -->
-    <div
-      class="modal fade"
-      id="changePasswordModal"
-      tabindex="-1"
-      aria-labelledby="changePasswordModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header bg-warning text-white">
-            <h5 class="modal-title" id="changePasswordModalLabel">
+<!-- Bootstrap Modal for Edit Profile -->
+<div
+        class="modal fade"
+        id="editProfileModal"
+        tabindex="-1"
+        aria-labelledby="editProfileModalLabel"
+        aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
+      </div>
+      <div class="modal-body">
+        <form th:action="@{/protected/customer/edit-profile}" method="post">
+          <div class="mb-3">
+            <label for="username" class="form-label"
+            ><strong>Username:</strong></label
+            >
+            <input
+                    type="text"
+                    class="form-control"
+                    id="username"
+                    name="username"
+                    th:value="${customer.username}"
+                    readonly
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="fullName" class="form-label"
+            ><strong>Full Name:</strong></label
+            >
+            <input
+                    type="text"
+                    class="form-control"
+                    id="fullName"
+                    name="fullName"
+                    th:value="${customer.fullName}"
+                    placeholder="Enter your full name"
+                    required
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="email" class="form-label"
+            ><strong>Email:</strong></label
+            >
+            <input
+                    type="email"
+                    class="form-control"
+                    id="email"
+                    name="email"
+                    th:value="${customer.email}"
+                    placeholder="Enter your email"
+                    readonly
+                    required
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="phone" class="form-label"
+            ><strong>Phone:</strong></label
+            >
+            <input
+                    type="text"
+                    class="form-control"
+                    id="phone"
+                    name="phone"
+                    th:value="${customer.phone}"
+                    pattern="^(\\+84|0)[1-9][0-9]{8}$"
+                    title="Invalid phone number format. Ex: 0987654321 or +84987654321"
+                    placeholder="Enter your phone number"
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="location" class="form-label"
+            ><strong>Location:</strong></label
+            >
+            <input
+                    type="text"
+                    class="form-control"
+                    id="location"
+                    name="location"
+                    th:value="${customer.location}"
+                    placeholder="Enter your location"
+                    required
+            />
+          </div>
+          <div class="text-center">
+            <button type="submit" class="btn btn-success">
+              Save Changes
+            </button>
+            <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap Modal for Change Password -->
+<div
+        class="modal fade"
+        id="changePasswordModal"
+        tabindex="-1"
+        aria-labelledby="changePasswordModalLabel"
+        aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-warning text-white">
+        <h5 class="modal-title" id="changePasswordModalLabel">
+          Change Password
+        </h5>
+      </div>
+      <div class="modal-body">
+        <form
+                th:action="@{/protected/customer/change-password}"
+                method="post"
+        >
+          <div class="mb-3">
+            <label for="currentPassword" class="form-label"
+            ><strong>Current Password:</strong></label
+            >
+            <input
+                    type="password"
+                    class="form-control"
+                    id="currentPassword"
+                    name="currentPassword"
+                    pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,40}$"
+                    title="Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character. Ex: Abc@123"
+                    placeholder="Enter your current password"
+                    required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="newPassword" class="form-label"
+            ><strong>New Password:</strong></label
+            >
+            <input
+                    type="password"
+                    class="form-control"
+                    id="newPassword"
+                    name="newPassword"
+                    pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,40}$"
+                    title="Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character. Ex: Abc@123"
+                    oninput="onChange()"
+                    placeholder="Enter your new password"
+                    required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="confirmPassword" class="form-label"
+            ><strong>Confirm New Password:</strong></label
+            >
+            <input
+                    type="password"
+                    class="form-control"
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,40}$"
+                    title="Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character. Ex: Abc@123"
+                    oninput="onChange()"
+                    placeholder="Confirm your new password"
+                    required
+            />
+          </div>
+          <div class="text-center">
+            <button type="submit" class="btn btn-success">
               Change Password
-            </h5>
-          </div>
-          <div class="modal-body">
-            <form
-              th:action="@{/protected/customer/change-password}"
-              method="post"
+            </button>
+            <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal"
             >
-              <div class="mb-3">
-                <label for="currentPassword" class="form-label"
-                  ><strong>Current Password:</strong></label
-                >
-                <input
-                  type="password"
-                  class="form-control"
-                  id="currentPassword"
-                  name="currentPassword"
-                  pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,40}$"
-                  title="Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character. Ex: Abc@123"
-                  placeholder="Enter your current password"
-                  required
-                />
-              </div>
-              <div class="mb-3">
-                <label for="newPassword" class="form-label"
-                  ><strong>New Password:</strong></label
-                >
-                <input
-                  type="password"
-                  class="form-control"
-                  id="newPassword"
-                  name="newPassword"
-                  pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,40}$"
-                  title="Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character. Ex: Abc@123"
-                  oninput="onChange()"
-                  placeholder="Enter your new password"
-                  required
-                />
-              </div>
-              <div class="mb-3">
-                <label for="confirmPassword" class="form-label"
-                  ><strong>Confirm New Password:</strong></label
-                >
-                <input
-                  type="password"
-                  class="form-control"
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,40}$"
-                  title="Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character. Ex: Abc@123"
-                  oninput="onChange()"
-                  placeholder="Confirm your new password"
-                  required
-                />
-              </div>
-              <div class="text-center">
-                <button type="submit" class="btn btn-success">
-                  Change Password
-                </button>
-                <button
-                  type="button"
-                  class="btn btn-secondary"
-                  data-bs-dismiss="modal"
-                >
-                  Close
-                </button>
-              </div>
-            </form>
+              Close
+            </button>
           </div>
-        </div>
+        </form>
       </div>
     </div>
+  </div>
+</div>
 
-    <!-- ##### Footer Area Start ##### -->
-    <div th:replace="user/master/fragments/footer:: footer"></div>
-    <!-- ##### Footer Area End ##### -->
+<!-- ##### Footer Area Start ##### -->
+<div th:replace="user/master/fragments/footer:: footer"></div>
+<!-- ##### Footer Area End ##### -->
 
-    <!-- ##### All Javascript Script ##### -->
-    <div th:replace="user/master/fragments/script"></div>
+<!-- ##### All Javascript Script ##### -->
+<div th:replace="user/master/fragments/script"></div>
 
-    <script>
-      const passwordField = document.getElementById("currentPassword");
-      const passwordNewField = document.getElementById("newPassword");
-      const passwordConfirmField = document.getElementById("confirmPassword");
+<script>
+  const passwordField = document.getElementById("currentPassword");
+  const passwordNewField = document.getElementById("newPassword");
+  const passwordConfirmField = document.getElementById("confirmPassword");
 
-      showPassword(passwordField);
-      showPassword(passwordConfirmField);
-      showPassword(passwordNewField);
+  showPassword(passwordField);
+  showPassword(passwordConfirmField);
+  showPassword(passwordNewField);
 
-      function showPassword(passwordField)
-      {
-        passwordField.addEventListener("mouseover", function() {
-          this.type = "text"; // Hiện mật khẩu khi hover vào
-        });
+  function showPassword(passwordField)
+  {
+    passwordField.addEventListener("mouseover", function() {
+      this.type = "text"; // Hiện mật khẩu khi hover vào
+    });
 
-        passwordField.addEventListener("mouseout", function() {
-          this.type = "password"; // Ẩn lại khi rời chuột đi
-        });
-      }
+    passwordField.addEventListener("mouseout", function() {
+      this.type = "password"; // Ẩn lại khi rời chuột đi
+    });
+  }
 
-      function onChange() {
-        const password = document.querySelector("input[name='newPassword']");
-        const confirm = document.querySelector("input[name='confirmPassword']");
+  function onChange() {
+    const password = document.querySelector("input[name='newPassword']");
+    const confirm = document.querySelector("input[name='confirmPassword']");
 
-        if (confirm.value === password.value) {
-          confirm.setCustomValidity("");
-        } else {
-          confirm.setCustomValidity("Passwords do not match");
-        }
-      }
-    </script>
-  </body>
+    if (confirm.value === password.value) {
+      confirm.setCustomValidity("");
+    } else {
+      confirm.setCustomValidity("Passwords do not match");
+    }
+  }
+</script>
+</body>
 </html>

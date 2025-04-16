@@ -23,4 +23,5 @@ public class AuthController {
     public String LoginUser() {
         return "auth/login";
     }
+
 }
