@@ -21,6 +21,7 @@
                     class="btn btn-sm btn-danger delete-btn"
                     data-bs-toggle="modal"
                     data-bs-target="#deleteConfirmModal"
+                    th:if="${#strings.contains(currentURI, 'manager')}"
                     th:data-id="${customer.id}"
             >
                 <i class="bx bx-trash"></i>
@@ -29,6 +30,7 @@
                     class="btn btn-sm btn-info edit-btn"
                     data-bs-toggle="modal"
                     data-bs-target="#editCustomerModal"
+                    th:if="${#strings.contains(currentURI, 'manager')}"
                     th:data-id="${customer.id}"
                     th:data-username="${customer.username}"
                     th:data-fullname="${customer.fullName}"
@@ -37,6 +39,10 @@
                     th:data-location="${customer.location}"
             >
                 <i class="bx bx-edit"></i>
+            </a>
+
+            <a class="btn btn-success btn-sm">
+                <i class="bx bx-calendar-check"></i>
             </a>
         </div>
     </td>

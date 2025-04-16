@@ -1,17 +1,24 @@
 package coderuth.k23.skincare_booking.services;
 
 import coderuth.k23.skincare_booking.exception.TokenRefreshException;
-import coderuth.k23.skincare_booking.models.RefreshToken;
-import coderuth.k23.skincare_booking.repositories.RefreshTokenRepository;
+import coderuth.k23.skincare_booking.models.*;
+import coderuth.k23.skincare_booking.repositories.*;
 import coderuth.k23.skincare_booking.jwt.JwtUtil;
+import coderuth.k23.skincare_booking.security.UserDetailsImpl;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class RefreshTokenService {
@@ -27,6 +34,18 @@ public class RefreshTokenService {
 
     @Autowired
     private JwtUtil jwtUtil;
+
+    @Autowired
+    private CustomerRepository customerRepository;
+
+    @Autowired
+    private ManagerRepository managerRepository;
+
+    @Autowired
+    private StaffRepository staffRepository;
+
+    @Autowired
+    private SkinTherapistRepository skinTherapistRepository;
 
     public Optional<RefreshToken> findByToken(String token) {
         return refreshTokenRepository.findByToken(token);
@@ -105,5 +124,68 @@ public class RefreshTokenService {
     @Transactional
     public void deleteUsedTokens() {
         refreshTokenRepository.deleteByUsed(true);
+    }
+
+    public String refreshToken(HttpServletRequest request, HttpServletResponse response) {
+        String refreshToken = jwtUtil.getTokenFromCookies(request, "refreshToken");
+
+        if (refreshToken == null) {
+            throw new IllegalArgumentException("Refresh token is required");
+        }
+
+        // Validate refresh token and extract user ID
+        String userId = jwtUtil.getUserIdFromToken(refreshToken);
+        RefreshToken token = findByToken(refreshToken)
+                .orElseThrow(() -> new RuntimeException("Refresh token not found"));
+
+        verifyExpiration(token);
+
+        // Mark current refresh token as used
+        markTokenAsUsed(refreshToken);
+
+        // Determine user type and fetch the corresponding user
+        Object user;
+        if (customerRepository.findById(UUID.fromString(userId)).isPresent()) {
+            user = customerRepository.findById(UUID.fromString(userId)).get();
+        } else if (managerRepository.findById(UUID.fromString(userId)).isPresent()) {
+            user = managerRepository.findById(UUID.fromString(userId)).get();
+        } else if (staffRepository.findById(UUID.fromString(userId)).isPresent()) {
+            user = staffRepository.findById(UUID.fromString(userId)).get();
+        } else if (skinTherapistRepository.findById(UUID.fromString(userId)).isPresent()) {
+            user = skinTherapistRepository.findById(UUID.fromString(userId)).get();
+        } else {
+            throw new RuntimeException("User not found");
+        }
+
+        // Build UserDetails based on the user type
+        UserDetailsImpl userDetails;
+        if (user instanceof Customer) {
+            userDetails = UserDetailsImpl.build((Customer) user);
+        } else if (user instanceof Manager) {
+            userDetails = UserDetailsImpl.build((Manager) user);
+        } else if (user instanceof Staff) {
+            userDetails = UserDetailsImpl.build((Staff) user);
+        } else if (user instanceof SkinTherapist) {
+            userDetails = UserDetailsImpl.build((SkinTherapist) user);
+        } else {
+            throw new RuntimeException("Unsupported user type");
+        }
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                userDetails, null, userDetails.getAuthorities());
+
+        // Generate new access token
+        String newAccessToken = jwtUtil.generateAccessToken(authentication);
+
+        // Add the new access token as HTTP-only cookie
+        jwtUtil.addAccessTokenCookie(response, newAccessToken);
+
+        // Generate new refresh token
+        RefreshToken newRefreshToken = createRefreshToken(userId);
+
+        // Add the new refresh token as HTTP-only cookie
+        jwtUtil.addRefreshTokenCookie(response, newRefreshToken.getToken());
+
+        return newAccessToken;
     }
 }

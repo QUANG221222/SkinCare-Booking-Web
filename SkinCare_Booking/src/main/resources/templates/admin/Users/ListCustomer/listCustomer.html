@@ -37,7 +37,7 @@
                 <div class="container-xxl flex-grow-1 container-p-y">
                     <!-- Users List Table -->
                     <div class="card">
-                        <div class="container mt-3">
+                        <div th:if="${#strings.contains(currentURI, 'manager')}" class="container mt-3">
                             <!-- Alert for Success -->
                             <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show position-relative" role="alert">
                                 <span th:text="${successMessage}"></span>
