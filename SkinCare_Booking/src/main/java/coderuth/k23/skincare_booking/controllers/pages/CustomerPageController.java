@@ -2,14 +2,18 @@ package coderuth.k23.skincare_booking.controllers.pages;
 
 import coderuth.k23.skincare_booking.dtos.request.EditProfileRequest;
 import coderuth.k23.skincare_booking.dtos.request.FeedbackRequest;
+import coderuth.k23.skincare_booking.dtos.response.ApiResponse;
 import coderuth.k23.skincare_booking.models.Appointment;
 import coderuth.k23.skincare_booking.models.Customer;
+import coderuth.k23.skincare_booking.models.Payment;
 import coderuth.k23.skincare_booking.models.SpaService;
 import coderuth.k23.skincare_booking.repositories.CustomerRepository;
 import coderuth.k23.skincare_booking.repositories.SpaServiceRepository;
 import coderuth.k23.skincare_booking.security.UserDetailsImpl;
 import coderuth.k23.skincare_booking.services.*;
+import coderuth.k23.skincare_booking.services.FeedbackService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,6 +26,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Controller
@@ -69,8 +74,63 @@ public class CustomerPageController {
         return userDetails.getId();
     }
 
+    // Hiển thị danh sách dịch vụ và form đặt dịch vụ
+    @GetMapping("/appointment")
+    public String showAppointmentForm(@RequestParam(value = "serviceId", required = false) Long serviceId, Model model) {
+        Appointment appointment = new Appointment();
+        if (serviceId != null) {
+            // Lấy thông tin service đã chọn (bạn có thể thay bằng phương thức tìm theo id)
+            SpaService service = spaServiceService.getServiceById(serviceId);
+            appointment.setSpaService(service);
+        }
+        model.addAttribute("appointment", appointment);
+        // Nạp thêm danh sách dịch vụ và chuyên viên nếu cần cho form lựa chọn thay đổi (hoặc chỉ nạp nếu chưa có service chọn trước)
+        model.addAttribute("services", spaServiceService.getAllServices());
+        model.addAttribute("therapists", therapistService.getAllTherapists());
+        return "user/customer/appointment_form";  
+    }
+    // Khách hàng đặt dịch vụ
+    @PostMapping("/appointment")
+    @ResponseBody
+    public ResponseEntity<?> createAppointment(@ModelAttribute Appointment appointment) {
+        try {
+            UUID customerId = getLoggedInCustomerId(); // Lấy ID khách hàng đã đăng nhập
+            appointment.setCustomer(new Customer());
+            appointment.getCustomer().setId(customerId);
+            appointmentService.createAppointment(appointment);
+            
+            // Trả về JSON khi thành công
+            return ResponseEntity.ok(Map.of("status", "success", "message", "Đặt dịch vụ thành công!"));
+        } catch (RuntimeException ex) {
+            // Nếu có lỗi, trả về JSON thông báo lỗi
+            return ResponseEntity.badRequest().body(Map.of("status", "error", "message", ex.getMessage()));
+        }
+    }
 
 
+    // Xem danh sách đặt dịch vụ của khách hàng
+    @GetMapping("/appointments")
+    public String listAppointments(Model model) {
+        UUID customerId = getLoggedInCustomerId();
+        model.addAttribute("appointments", appointmentService.getAppointmentsByCustomer(customerId));
+        return "user/customer/appointments_list";
+    }
+
+     // Hủy lịch hẹn
+     @PostMapping("/appointments/cancel/{id}")
+     public String cancelAppointment(@PathVariable Long id) {
+         UUID customerId = getLoggedInCustomerId();
+         appointmentService.cancelAppointmentByCustomer(id, customerId);
+         return "redirect:/protected/customer/appointments";
+     }
+
+    // Xem lịch sử thanh toán của customer
+    @GetMapping("/payments/history")
+    public ResponseEntity<ApiResponse<List<Payment>>> getPaymentHistory() {
+        UUID customerId = getLoggedInCustomerId(); // Giả sử có phương thức lấy ID của customer đang đăng nhập
+        List<Payment> payments = appointmentService.getPaymentHistoryByCustomer(customerId);
+        return ResponseEntity.ok(ApiResponse.success("Payment history retrieved successfully", payments));
+    }
     @ModelAttribute("currentURI")
     public String currentURI(HttpServletRequest request) {
         return request.getRequestURI();
@@ -90,23 +150,11 @@ public class CustomerPageController {
     public String getAllServices(Model model) {
          // Lấy tất cả dịch vụ từ DB
         List<SpaService> services = spaServiceRepository.findAll();
-        // In chi tiết từng service xem có gì
-        services.forEach(s -> System.out.println(
-            "ID: " + s.getId()
-            + ", Name: " + s.getName()
-            + ", ImageURL: " + s.getImageUrl()
-        ));
+        System.out.println("services.size() = " + services.size());
 
         model.addAttribute("services", services);
         return "user/services";
     }
-
-    @GetMapping("/skin-therapist")
-    public String userSkinTherapistPage(Model model) {
-        model.addAttribute("therapist", therapistService.getAllTherapists());
-        return "user/skin-therapist";
-    }
-
     // Hiển thị danh sách dịch vụ và form đặt dịch vụ
     @GetMapping("/appointment")
     public String showAppointmentForm(Model model) {
@@ -134,20 +182,6 @@ public class CustomerPageController {
             return "user/customer/appointment_form"; // Quay lại form đặt lịch
         }
     }
-
-
-    // Xem danh sách đặt dịch vụ của khách hàng
-    @GetMapping("/appointments")
-    public String listAppointments(Model model) {
-        UUID customerId = getLoggedInCustomerId();
-        model.addAttribute("appointments", appointmentService.getAppointmentsByCustomer(customerId));
-        return "user/customer/appointments_list";
-    }
-
-    public String userServicesPage() {
-        return "user/services";
-    }
-
     // Endpoint mới để hiển thị danh sách feedback
     @GetMapping("/feedbacks")
     public String userFeedbackListPage(Model model, Principal principal) {
@@ -192,11 +226,18 @@ public class CustomerPageController {
         return "user/customer/contact_Customer";
     }
 
+
     @GetMapping("/blog")
     public String userBlogPage() {
         return "user/blog";
     }
 
+    @GetMapping("/skin-therapist")
+    public String userSkinTherapistPage(Model model) {
+        model.addAttribute("therapist", therapistService.getAllTherapists());
+        return "user/skin-therapist";
+    }
+    
     @GetMapping("/profile")
     public String getCustomerProfile(Model model, Principal principal) {
         String username = principal.getName();

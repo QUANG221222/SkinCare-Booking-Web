@@ -6,14 +6,13 @@ import coderuth.k23.skincare_booking.models.CenterSchedule;
 import coderuth.k23.skincare_booking.models.SpaService;
 import coderuth.k23.skincare_booking.repositories.CenterScheduleRepository;
 import coderuth.k23.skincare_booking.repositories.SpaServiceRepository;
+import jakarta.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 @Service
 public class SpaServiceService {
 
@@ -27,12 +26,16 @@ public class SpaServiceService {
     public List<SpaService> getAllServices() {
         return spaServiceRepository.findAll();
     }
+    @Transactional
     public SpaService getServiceById(Long id) {
         return spaServiceRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Service not found!"));
     }
 
     public SpaService createService(SpaService spaService) {
+        if (spaService.getPrice() <= 0) {
+            throw new IllegalArgumentException("Giá dịch vụ phải lớn hơn 0!");
+        }
         return spaServiceRepository.save(spaService);
     }
 
@@ -42,6 +45,9 @@ public class SpaServiceService {
         spaService.setName(updatedService.getName());
         spaService.setImageUrl(updatedService.getImageUrl());
         spaService.setDescription(updatedService.getDescription());
+        if (updatedService.getPrice() <= 0) {
+            throw new IllegalArgumentException("Giá dịch vụ phải lớn hơn 0!");
+        }
         spaService.setPrice(updatedService.getPrice());
         spaService.setDuration(updatedService.getDuration());
         return spaServiceRepository.save(spaService);

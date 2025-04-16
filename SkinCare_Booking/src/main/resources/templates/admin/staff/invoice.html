@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Hóa đơn đặt dịch vụ</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .invoice-box {
+            max-width: 800px;
+            margin: auto;
+            padding: 30px;
+            border: 1px solid #eee;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+            font-size: 16px;
+            line-height: 24px;
+            font-family: 'Helvetica Neue', 'Helvetica', Arial, sans-serif;
+            color: #555;
+        }
+        .invoice-box table {
+            width: 100%;
+            line-height: inherit;
+            text-align: left;
+        }
+        .invoice-box table td {
+            padding: 5px;
+            vertical-align: top;
+        }
+        .invoice-box table tr td:nth-child(2) {
+            text-align: right;
+        }
+        .invoice-box table tr.top table td {
+            padding-bottom: 20px;
+        }
+        .invoice-box table tr.top table td.title {
+            font-size: 45px;
+            line-height: 45px;
+            color: #333;
+        }
+        .invoice-box table tr.information table td {
+            padding-bottom: 40px;
+        }
+        .invoice-box table tr.heading td {
+            background: #eee;
+            border-bottom: 1px solid #ddd;
+            font-weight: bold;
+        }
+        .invoice-box table tr.details td {
+            padding-bottom: 20px;
+        }
+        .invoice-box table tr.item td {
+            border-bottom: 1px solid #eee;
+        }
+        .invoice-box table tr.item.last td {
+            border-bottom: none;
+        }
+        .invoice-box table tr.total td:nth-child(2) {
+            border-top: 2px solid #eee;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div class="invoice-box">
+    <table cellpadding="0" cellspacing="0">
+        <tr class="top">
+            <td colspan="2">
+                <table>
+                    <tr>
+                        <td class="title">
+                            Hóa đơn
+                        </td>
+                        <td>
+                            Mã lịch hẹn: <span th:text="${appointment.id}"></span><br>
+                            Ngày tạo: <span th:text="${#temporals.format(appointment.createdAt, 'dd/MM/yyyy HH:mm')}"></span><br>
+                            Ngày cập nhật: <span th:text="${appointment.updatedAt != null} ? ${#temporals.format(appointment.updatedAt, 'dd/MM/yyyy HH:mm')} : 'N/A'"></span>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+
+        <tr class="information">
+            <td colspan="2">
+                <table>
+                    <tr>
+                        <td>
+                            <h5>Thông tin khách hàng</h5>
+                            Tên: <span th:text="${appointment.customer.fullName}"></span><br>
+                            Email: <span th:text="${appointment.customer.email} ?: 'N/A'"></span><br>
+                            Số điện thoại: <span th:text="${appointment.customer.phone} ?: 'N/A'"></span>
+                        </td>
+                        <td>
+                            <h5>Thông tin dịch vụ</h5>
+                            Dịch vụ: <span th:text="${appointment.spaService.name}"></span><br>
+                            Chuyên viên: <span th:text="${appointment.skinTherapist?.fullName} ?: 'Không chỉ định'"></span><br>
+                            Thời gian: <span th:text="${#temporals.format(appointment.appointmentTime, 'dd/MM/yyyy HH:mm')}"></span><br>
+                            Kết quả: <span th:text="${appointment.result} ?: 'N/A'"></span>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+
+        <tr class="information">
+            <td colspan="2">
+                <table>
+                    <tr>
+                        <td>
+                            <h5>Thông tin thanh toán</h5>
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>Số tiền</th>
+                                    <th>Phương thức</th>
+                                    <th>Trạng thái</th>
+                                    <th>Thời gian</th>
+                                    <th>Mã giao dịch</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="payment : ${appointment.payments}">
+                                    <td th:text="${payment.amount}"></td>
+                                    <td th:text="${payment.paymentMethod}"></td>
+                                    <td th:class="${payment.paymentStatus == 'PAID'} ? 'text-success' : (${payment.paymentStatus == 'UNPAID'} ? 'text-danger' : 'text-warning')"
+                                        th:text="${payment.paymentStatus}"></td>
+                                    <td th:text="${#temporals.format(payment.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+                                    <td th:text="${payment.transactionId} ?: 'N/A'"></td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(appointment.payments)}">
+                                    <td colspan="5" class="text-center">Chưa có giao dịch nào.</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                        <td>
+                            <!-- Form xác nhận thanh toán -->
+                            <div th:if="${isUnpaid}">
+                                <form th:action="@{/protected/staff/appointments/confirm-payment/{id}(id=${appointment.id})}" method="post">
+                                    <div class="mb-3">
+                                        <label for="paymentMethod" class="form-label">Phương thức thanh toán</label>
+                                        <select name="paymentMethod" id="paymentMethod" class="form-control" required>
+                                            <option value="CASH">Tiền mặt</option>
+                                            <option value="CARD">Thẻ tín dụng</option>
+                                            <option value="TRANSFER">Chuyển khoản</option>
+                                            <option value="QR">Mã QR</option>
+                                        </select>
+                                    </div>
+                                        <button type="submit" class="btn btn-success">Xác nhận thanh toán</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+    <a th:href="@{/protected/staff/appointments/checked-out}" class="btn btn-secondary mt-3">Quay lại</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

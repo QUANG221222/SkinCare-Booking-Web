@@ -1,13 +1,13 @@
-// Show Title Of Service When Click Button
-let bookButtons = document.querySelectorAll(".book-room-btn")
-let bookingModalLable = document.querySelector("#bookingModalLable")
+// // Show Title Of Service When Click Button
+// let bookButtons = document.querySelectorAll(".book-room-btn")
+// let bookingModalLable = document.querySelector("#bookingModalLable")
 
-bookButtons.forEach(button => {
-    button.addEventListener("click", () =>{
-        let serviceTitle = button.getAttribute("data-title")
-        bookingModalLable.innerText = serviceTitle;
-    })
-})
+// bookButtons.forEach(button => {
+//     button.addEventListener("click", () =>{
+//         let serviceTitle = button.getAttribute("data-title")
+//         bookingModalLable.innerText = serviceTitle;
+//     })
+// })
 
 function logoutUser() {
     fetch('/api/auth/logout', {

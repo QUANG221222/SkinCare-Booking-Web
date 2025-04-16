@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Lịch sử thanh toán</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h1>Lịch sử thanh toán</h1>
+
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>ID Thanh toán</th>
+            <th>Mã lịch hẹn</th>
+            <th>Khách hàng</th>
+            <th>Dịch vụ</th>
+            <th>Số tiền</th>
+            <th>Phương thức</th>
+            <th>Trạng thái</th>
+            <th>Thời gian</th>
+            <th>Mã giao dịch</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="payment : ${payments}">
+            <td th:text="${payment.id}"></td>
+            <td th:text="${payment.appointment.id}"></td>
+            <td th:text="${payment.appointment.customer.fullName}"></td>
+            <td th:text="${payment.appointment.spaService.name}"></td>
+            <td th:text="${payment.amount}"></td>
+            <td th:text="${payment.paymentMethod}"></td>
+            <td th:text="${payment.paymentStatus}"></td>
+            <td th:text="${#temporals.format(payment.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+            <td th:text="${payment.transactionId} ?: 'N/A'"></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(payments)}">
+            <td colspan="9" class="text-center">Chưa có giao dịch nào.</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <a th:href="@{/protected/staff/home}" class="btn btn-secondary">Quay lại</a>
+</div>
+</body>
+</html>
