@@ -68,7 +68,7 @@
                 </tr>
                 </thead>
                 <tbody id="staffTable">
-                <tr th:each="staff : ${staffList}" style="display: none;">
+                <tr th:each="staff : ${staffList}">
                   <div th:replace="admin/Users/ListStaff/Staff/staff :: staff"></div>
                 </tr>
                 <tr id="noStaffRow" th:if="${#lists.isEmpty(staffList)}">

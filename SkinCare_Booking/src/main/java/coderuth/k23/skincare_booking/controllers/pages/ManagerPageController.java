@@ -276,9 +276,9 @@ public class ManagerPageController {
             //Add new
             spaServiceService.createService(spaServiceRequestDTO);
 
-            redirectAttributes.addFlashAttribute("successMessage", "Registered successfully!");
+            redirectAttributes.addFlashAttribute("successMessage", "Service has been created successfully!");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Failed to registered: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "An error occurred while creating the service: " + e.getMessage());
         }
         return "redirect:/protected/manager/spa-services";
     }

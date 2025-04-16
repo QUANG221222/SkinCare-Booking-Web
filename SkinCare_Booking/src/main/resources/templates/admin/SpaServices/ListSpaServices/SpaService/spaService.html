@@ -1,7 +1,10 @@
-<th:block th:fragment="spaServices">
+<th:block th:fragment="spaService">
     <td th:text="${spaService.Id}"></td>
     <td th:text="${spaService.name}"></td>
-    <td th:text="${spaService.description}"></td>
+    <td th:title="${spaService.description}"
+        th:text="${#strings.abbreviate(spaService.description, 45)}"
+        data-bs-toggle="tooltip"
+        data-bs-placement="top"></td>
     <td th:text="${spaService.price}"></td>
     <td th:text="${spaService.duration}"></td>
     <td>
@@ -29,47 +32,47 @@
         </div>
     </td>
 
-    <!-- Modal Confirm Delete Staff -->
-<!--    <div-->
-<!--            class="modal fade"-->
-<!--            id="deleteConfirmModal"-->
-<!--            tabindex="-1"-->
-<!--            aria-labelledby="deleteConfirmModalLabel"-->
-<!--            aria-hidden="true"-->
-<!--    >-->
-<!--        <div class="modal-dialog modal-dialog-centered">-->
-<!--            <div class="modal-content">-->
-<!--                <div class="modal-header">-->
-<!--                    <h5 class="modal-title" id="deleteConfirmModalLabel">-->
-<!--                        Confirm Deletion-->
-<!--                    </h5>-->
-<!--                    <button-->
-<!--                            type="button"-->
-<!--                            class="btn-close"-->
-<!--                            data-bs-dismiss="modal"-->
-<!--                            aria-label="Close"-->
-<!--                    ></button>-->
-<!--                </div>-->
-<!--                <div class="modal-body">-->
-<!--                    Are you sure you want to delete this spa service?-->
-<!--                </div>-->
-<!--                <div class="modal-footer">-->
-<!--                    <button-->
-<!--                            type="button"-->
-<!--                            class="btn btn-secondary"-->
-<!--                            data-bs-dismiss="modal"-->
-<!--                    >-->
-<!--                        Cancel-->
-<!--                    </button>-->
-<!--                    <a-->
-<!--                            class="btn btn-danger"-->
-<!--                            id="confirmDeleteButton"-->
-<!--                    >Delete</a-->
-<!--                    >-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
+    <!-- Modal Confirm Delete Spa Service -->
+    <div
+            class="modal fade"
+            id="deleteConfirmModal"
+            tabindex="-1"
+            aria-labelledby="deleteConfirmModalLabel"
+            aria-hidden="true"
+    >
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteConfirmModalLabel">
+                        Confirm Deletion
+                    </h5>
+                    <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"
+                    ></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this spa service?
+                </div>
+                <div class="modal-footer">
+                    <button
+                            type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal"
+                    >
+                        Cancel
+                    </button>
+                    <a
+                            class="btn btn-danger"
+                            id="confirmDeleteButton"
+                    >Delete</a
+                    >
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Modal Edit Information Spa Service -->
 <!--    <div-->
@@ -197,52 +200,52 @@
 <!--    </div>-->
 
     <script>
-        // document.addEventListener("DOMContentLoaded", function () {
-        //     const editButtons = document.querySelectorAll(".edit-btn");
-        //     const deleteButtons = document.querySelectorAll(".delete-btn");
-        //
-        //     deleteButtons.forEach((button) => {
-        //         button.addEventListener("click", (event) => {
-        //             const id = event.currentTarget.getAttribute("data-id");
-        //
-        //             const confirmDeleteButton = document.getElementById(
-        //                 "confirmDeleteButton"
-        //             );
-        //             confirmDeleteButton.setAttribute(
-        //                 "href",
-        //                 `/protected/manager/delete-staff/${id}`
-        //             );
-        //         });
-        //     });
-        //
-        //     editButtons.forEach((button) => {
-        //         button.addEventListener("click", function (event) {
-        //             // Lấy modal cụ thể bằng ID
-        //             const editModal = document.querySelector("#editSpaServiceModal");
-        //
-        //             // Lấy dữ liệu từ các thuộc tính th:data-* của nút được nhấn
-        //             const id = event.currentTarget.getAttribute("data-id");
-        //             const username = event.currentTarget.getAttribute("data-username");
-        //             const fullName = event.currentTarget.getAttribute("data-fullname");
-        //             const img = event.currentTarget.getAttribute("data-img");
-        //             const email = event.currentTarget.getAttribute("data-email");
-        //             const phone = event.currentTarget.getAttribute("data-phone");
-        //             const location = event.currentTarget.getAttribute("data-location");
-        //
-        //             // Gán dữ liệu vào các trường trong modal
-        //             editModal.querySelector("#edit-user-username").value = username;
-        //             editModal.querySelector("#edit-user-fullname").value = fullName;
-        //             editModal.querySelector("#edit-user-img").value = img;
-        //             editModal.querySelector("#edit-user-email").value = email;
-        //             editModal.querySelector("#edit-user-phone").value = phone;
-        //             editModal.querySelector("#location").value = location;
-        //
-        //             // Cập nhật action của form để gửi đúng ID nhân viên
-        //             const form = editModal.querySelector("form");
-        //             form.setAttribute("action", `/protected/manager/update-staff/${id}`);
-        //             form.setAttribute("method", "post");
-        //         });
-        //     });
-        // });
+        document.addEventListener("DOMContentLoaded", function () {
+            const editButtons = document.querySelectorAll(".edit-btn");
+            const deleteButtons = document.querySelectorAll(".delete-btn");
+
+            deleteButtons.forEach((button) => {
+                button.addEventListener("click", (event) => {
+                    const id = event.currentTarget.getAttribute("data-id");
+
+                    const confirmDeleteButton = document.getElementById(
+                        "confirmDeleteButton"
+                    );
+                    confirmDeleteButton.setAttribute(
+                        "href",
+                        `/protected/manager/delete-staff/${id}`
+                    );
+                });
+            });
+
+            editButtons.forEach((button) => {
+                button.addEventListener("click", function (event) {
+                    // Lấy modal cụ thể bằng ID
+                    const editModal = document.querySelector("#editSpaServiceModal");
+
+                    // Lấy dữ liệu từ các thuộc tính th:data-* của nút được nhấn
+                    const id = event.currentTarget.getAttribute("data-id");
+                    const username = event.currentTarget.getAttribute("data-username");
+                    const fullName = event.currentTarget.getAttribute("data-fullname");
+                    const img = event.currentTarget.getAttribute("data-img");
+                    const email = event.currentTarget.getAttribute("data-email");
+                    const phone = event.currentTarget.getAttribute("data-phone");
+                    const location = event.currentTarget.getAttribute("data-location");
+
+                    // Gán dữ liệu vào các trường trong modal
+                    editModal.querySelector("#edit-user-username").value = username;
+                    editModal.querySelector("#edit-user-fullname").value = fullName;
+                    editModal.querySelector("#edit-user-img").value = img;
+                    editModal.querySelector("#edit-user-email").value = email;
+                    editModal.querySelector("#edit-user-phone").value = phone;
+                    editModal.querySelector("#location").value = location;
+
+                    // Cập nhật action của form để gửi đúng ID nhân viên
+                    const form = editModal.querySelector("form");
+                    form.setAttribute("action", `/protected/manager/update-staff/${id}`);
+                    form.setAttribute("method", "post");
+                });
+            });
+        });
     </script>
 </th:block>

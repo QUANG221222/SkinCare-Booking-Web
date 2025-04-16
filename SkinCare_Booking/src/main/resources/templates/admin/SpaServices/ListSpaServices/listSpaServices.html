@@ -68,9 +68,9 @@
                                     <th>Actions</th>
                                 </tr>
                                 </thead>
-                                <tbody id="spaServicesTable">
-                                <tr th:each="spaService : ${spaServicesList}" style="display: none;">
-                                    <div th:replace="admin/SpaServices/ListSpaServices/SpaService/spaService :: spaServices"></div>
+                                <tbody>
+                                <tr th:each="spaService : ${spaServicesList}">
+                                    <div th:replace="admin/SpaServices/ListSpaServices/SpaService/spaService :: spaService"></div>
                                 </tr>
                                 <tr id="noTherapistRow" th:if="${#lists.isEmpty(spaServicesList)}">
                                     <td colspan="6" class="text-center">No spa services found.</td>
