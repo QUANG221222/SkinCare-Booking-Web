@@ -324,6 +324,8 @@ public class ManagerPageController {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to delete schedule: " + e.getMessage());
         }
         return "redirect:/protected/manager/center-schedule";
+    }
+    
     @GetMapping("/delete-service/{id}")
     public String deleteService(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
