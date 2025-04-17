@@ -32,8 +32,11 @@
       th:classappend="${#strings.contains(currentURI, '/manager/home')} ? 'active open' : ''"
       class="menu-item"
     >
-      <a th:if="${#strings.contains(currentURI, 'manager')}"
-         th:href="@{/protected/manager/home}" class="menu-link menu-toggle">
+      <a
+        th:if="${#strings.contains(currentURI, 'manager')}"
+        th:href="@{/protected/manager/home}"
+        class="menu-link menu-toggle"
+      >
         <i class="menu-icon tf-icons bx bx-home-smile"></i>
         <div class="text-truncate" data-i18n="Dashboards">Dashboards</div>
       </a>
@@ -51,6 +54,7 @@
 
     <!-- Users ("Manager" and "Staff")   -->
     <li
+      th:if="${#strings.contains(currentURI, 'manager')} or ${#strings.contains(currentURI, 'staff')}"
       class="menu-item"
       th:classappend="${#strings.contains(currentURI, '/manager/list-staff') or
           #strings.contains(currentURI, '/manager/list-therapist') or
@@ -77,7 +81,10 @@
           th:classappend="${#strings.contains(currentURI, '/manager/list-therapist') or
                             #strings.contains(currentURI, '/staff/list-therapist')} ? 'active' : ''"
         >
-          <a th:href="${#strings.contains(currentURI, 'manager') ? '/protected/manager/list-therapist' : '/protected/staff/list-therapist'}" class="menu-link">
+          <a
+            th:href="${#strings.contains(currentURI, 'manager') ? '/protected/manager/list-therapist' : '/protected/staff/list-therapist'}"
+            class="menu-link"
+          >
             <div data-i18n="List">Skin Therapist</div>
           </a>
         </li>
@@ -87,7 +94,10 @@
           th:classappend="${#strings.contains(currentURI, '/manager/list-customer')or
                             #strings.contains(currentURI, '/staff/list-customer')} ? 'active' : ''"
         >
-          <a th:href="${#strings.contains(currentURI, 'manager') ? '/protected/manager/list-customer' : '/protected/staff/list-customer'}" class="menu-link">
+          <a
+            th:href="${#strings.contains(currentURI, 'manager') ? '/protected/manager/list-customer' : '/protected/staff/list-customer'}"
+            class="menu-link"
+          >
             <div data-i18n="List">Customer</div>
           </a>
         </li>
@@ -95,18 +105,26 @@
     </li>
 
     <!-- SpaService -->
-    <li th:if="${#strings.contains(currentURI, 'manager')}"
-        th:classappend="${#strings.contains(currentURI, '/manager/spa-services')} ? 'active open' : ''"
-        class="menu-item cursor-pointer">
+    <li
+      th:classappend="${#strings.contains(currentURI, '/manager/spa-services') or
+          #strings.contains(currentURI, '/staff/spa-services') or
+          #strings.contains(currentURI, '/therapist/spa-services')}  ? 'active open' : ''"
+      class="menu-item cursor-pointer"
+    >
       <a class="menu-link menu-toggle" href="javascript:void(0)">
         <i class="menu-icon tf-icons bx bx-spa"></i>
         <div class="text-truncate" data-i18n="Dashboards">Spa Services</div>
       </a>
       <ul class="menu-sub">
-        <li th:classappend="${#strings.contains(currentURI, '/manager/spa-services')} ? 'active' : ''"
-            class="menu-item">
+        <li
+          th:classappend="${#strings.contains(currentURI, '/manager/spa-services') or
+                            #strings.contains(currentURI, '/staff/spa-services') or
+                            #strings.contains(currentURI, '/therapist/spa-services')}? 'active' : ''"
+          class="menu-item"
+        >
           <a
-            th:href="@{/protected/manager/spa-services}"
+            th:href="${#strings.contains(currentURI, 'manager') ? '/protected/manager/spa-services' :
+                      (#strings.contains(currentURI, 'staff') ? '/protected/staff/spa-services' : '/protected/therapist/spa-services')}"
             id="spaServiceLink"
             class="menu-link"
           >
@@ -193,7 +211,10 @@
     </li>
 
     <!-- Manager Feedback -->
-    <li class="menu-item" th:classappend="${#strings.contains(currentURI, '/manager/feedbacks') ? 'active' : ''}">
+    <li th:if="${#strings.contains(currentURI, 'manager')}"
+      class="menu-item"
+      th:classappend="${#strings.contains(currentURI, '/manager/feedbacks') ? 'active' : ''}"
+    >
       <a th:href="@{/protected/manager/feedbacks}" class="menu-link">
         <i class="menu-icon tf-icons bx bx-comment"></i>
         <div data-i18n="Manager Feedback">Manager Feedback</div>

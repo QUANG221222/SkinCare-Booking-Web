@@ -35,7 +35,7 @@
             <div class="content-wrapper">
                 <!-- Content -->
                 <div class="container-xxl flex-grow-1 container-p-y">
-                    <!-- Users List Table -->
+                    <!-- Spa Service List Table -->
                     <div class="card">
                         <div th:if="${#strings.contains(currentURI, 'manager')}" class="row mx-3 my-0 justify-content-between">
                             <div class="py-3 d-flex align-items-center justify-content-between flex-wrap gap-3">
@@ -62,10 +62,11 @@
                                 <tr>
                                     <th>ID</th>
                                     <th>Service Name</th>
+                                    <th style="width: 30%;">Imagine Url</th>
                                     <th style="width: 30%;">Description</th>
                                     <th>Price</th>
-                                    <th style="width: 20%;">Duration (minutes)</th>
-                                    <th>Actions</th>
+                                    <th>Duration (minutes)</th>
+                                    <th th:if="${#strings.contains(currentURI, 'manager')}">Actions</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -99,7 +100,7 @@
                         </div>
                     </div>
 
-                    <!-- Offcanvas to add new user -->
+                    <!-- Offcanvas to add new spa service -->
                     <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasAddService" aria-labelledby="offcanvasAddServiceLabel">
                         <div class="offcanvas-header">
                             <h5 id="offcanvasAddServiceLabel" class="offcanvas-title">Add New Therapist</h5>
@@ -203,22 +204,12 @@
 
     <!-- Core JS -->
     <div th:replace="admin/fragments/script :: script"></div>
+</div>
 
     <!-- JavaScript for Pagination -->
     <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
     <script>
         let exchangeRate = 25000; // Default value in case API fails
-
-        // Get live exchange rate from API
-        fetch("https://api.exchangerate.host/latest?base=USD&symbols=VND")
-            .then(response => response.json())
-            .then(data => {
-                exchangeRate = data.rates.VND;
-                console.log("Live exchange rate (USD→VND):", exchangeRate);
-            })
-            .catch(error => {
-                console.error("Failed to fetch exchange rate. Using default:", error);
-            });
 
         function convertToVND() {
             const usdValue = document.getElementById("service-price-usd").value;

@@ -60,18 +60,20 @@ public class SpaServiceService {
     public SpaService updateService(Long id, SpaService updatedService) {
         SpaService spaService = spaServiceRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Service not found!"));
-        spaService.setName(updatedService.getName());
-        spaService.setImageUrl(updatedService.getImageUrl());
-        spaService.setDescription(updatedService.getDescription());
+
         if (updatedService.getPrice() <= 0) {
             throw new IllegalArgumentException("Price must be greater than zero!");
         }
+
+        spaService.setName(updatedService.getName());
+        spaService.setImageUrl(updatedService.getImageUrl());
+        spaService.setDescription(updatedService.getDescription());
         spaService.setPrice(updatedService.getPrice());
         spaService.setDuration(updatedService.getDuration());
         return spaServiceRepository.save(spaService);
     }
 
-    public void deleteService(Long id,  RedirectAttributes redirectAttributes) {
+    public void deleteService(Long id) {
         spaServiceRepository.deleteById(id);
     }
 

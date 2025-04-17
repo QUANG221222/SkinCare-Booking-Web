@@ -5,6 +5,7 @@ import coderuth.k23.skincare_booking.models.Manager;
 import coderuth.k23.skincare_booking.models.Staff;
 import coderuth.k23.skincare_booking.repositories.StaffRepository;
 import coderuth.k23.skincare_booking.services.CustomerService;
+import coderuth.k23.skincare_booking.services.SpaServiceService;
 import coderuth.k23.skincare_booking.services.StaffService;
 import coderuth.k23.skincare_booking.services.TherapistService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,6 +34,9 @@ public class StaffPageController {
 
     @Autowired
     CustomerService customerService;
+
+    @Autowired
+    SpaServiceService spaServiceService;
 
     @ModelAttribute("currentURI")
     public String currentURI(HttpServletRequest request) {
@@ -132,5 +136,16 @@ public class StaffPageController {
         model.addAttribute("staff", staff);
         model.addAttribute("customerList", customerService.getAllCustomers());
         return "admin/Users/ListCustomer/listCustomer";
+    }
+
+    @GetMapping("/spa-services")
+    public String spaServicesPage(Model model, Principal principal) {
+        String username = principal.getName();
+        Staff staff = staffRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Staff not found"));
+
+        model.addAttribute("staff", staff);
+        model.addAttribute("spaServicesList", spaServiceService.getAllServices());
+        return "/admin/SpaServices/ListSpaServices/listSpaServices";
     }
 }
