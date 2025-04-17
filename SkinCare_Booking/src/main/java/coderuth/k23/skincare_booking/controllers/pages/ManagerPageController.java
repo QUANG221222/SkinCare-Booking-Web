@@ -3,11 +3,8 @@ package coderuth.k23.skincare_booking.controllers.pages;
 import coderuth.k23.skincare_booking.dtos.request.EditProfileRequest;
 import coderuth.k23.skincare_booking.dtos.request.RegisterStaffRequest;
 import coderuth.k23.skincare_booking.dtos.request.RegisterTherapistRequest;
-import coderuth.k23.skincare_booking.models.Customer;
-import coderuth.k23.skincare_booking.models.SkinTherapist;
-import coderuth.k23.skincare_booking.models.Staff;
+import coderuth.k23.skincare_booking.models.*;
 import coderuth.k23.skincare_booking.services.*;
-import coderuth.k23.skincare_booking.models.Manager;
 import coderuth.k23.skincare_booking.repositories.ManagerRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +42,8 @@ public class ManagerPageController {
 
     @Autowired
     private FeedbackService feedbackService;
+    @Autowired
+    private CenterScheduleService centerScheduleService;
 
     @ModelAttribute("currentURI")
     public String currentURI(HttpServletRequest request) {
@@ -258,9 +257,48 @@ public class ManagerPageController {
         return "redirect:/spa-services"; 
     }
 
-    @GetMapping("/spa-services/schedules")
-    public String centerSchedulesPage() {
-        return "redirect:/spa-services/schedules"; 
+    @GetMapping("/center-schedule")
+    public String getCenterSchedule(Model model, Principal principal) {
+        String username = principal.getName();
+        Manager manager = managerRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Manager not found"));
+
+        model.addAttribute("manager", manager);
+        model.addAttribute("scheduleList", centerScheduleService.getAllSchedules());
+        return "admin/Schedules/centerSchedule";
+    }
+
+    @PostMapping("/center-schedule/add")
+    public String addCenterSchedule(@ModelAttribute CenterSchedule schedule, RedirectAttributes redirectAttributes) {
+        try {
+            centerScheduleService.createSchedule(schedule);
+            redirectAttributes.addFlashAttribute("successMessage", "Schedule added successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to add schedule: " + e.getMessage());
+        }
+        return "redirect:/protected/manager/center-schedule";
+    }
+
+    @PostMapping("/center-schedule/update/{id}")
+    public String updateCenterSchedule(@PathVariable Long id, @ModelAttribute CenterSchedule schedule, RedirectAttributes redirectAttributes) {
+        try {
+            centerScheduleService.updateSchedule(id, schedule);
+            redirectAttributes.addFlashAttribute("successMessage", "Schedule updated successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to update schedule: " + e.getMessage());
+        }
+        return "redirect:/protected/manager/center-schedule";
+    }
+
+    @GetMapping("/center-schedule/delete/{id}")
+    public String deleteCenterSchedule(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            centerScheduleService.deleteSchedule(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Schedule deleted successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to delete schedule: " + e.getMessage());
+        }
+        return "redirect:/protected/manager/center-schedule";
     }
 
 
