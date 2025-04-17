@@ -2,6 +2,7 @@ package coderuth.k23.skincare_booking.controllers.pages;
 
 import coderuth.k23.skincare_booking.models.SpaService;
 import coderuth.k23.skincare_booking.repositories.SpaServiceRepository;
+import coderuth.k23.skincare_booking.services.CenterScheduleService;
 import coderuth.k23.skincare_booking.services.TherapistService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -62,5 +63,14 @@ public class PublicPageController {
     public String userSkinTherapistPage(Model model) {
         model.addAttribute("therapist", therapistService.getAllTherapists());
         return "user/skin-therapist";
+    }
+
+    //hiển thị lịch làm việc của trung tâm
+    @Autowired
+    private CenterScheduleService centerScheduleService;
+
+    @ModelAttribute
+    public void addCenterSchedules(Model model) {
+        model.addAttribute("centerSchedules", centerScheduleService.getAllSchedules());
     }
 }
