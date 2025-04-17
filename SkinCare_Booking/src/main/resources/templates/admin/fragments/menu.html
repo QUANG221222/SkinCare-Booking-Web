@@ -134,25 +134,15 @@
       </ul>
     </li>
     <!-- Center Schedule (Manager) -->
-    <li th:if="${#strings.contains(currentURI, 'manager')}" class="menu-item">
-      <a class="menu-link menu-toggle" href="javascript:void(0)">
+    <li th:if="${#strings.contains(currentURI, 'manager')}"
+        class="menu-item"
+        th:classappend="${#strings.contains(currentURI, '/manager/center-schedule')} ? 'active' : ''">
+      <a th:href="@{/protected/manager/center-schedule}" class="menu-link">
         <i class="menu-icon tf-icons bx bx-calendar"></i>
-        <div class="text-truncate" data-i18n="Dashboards">Center-Schedule</div>
+        <div class="text-truncate" data-i18n="Dashboards">Center Schedule</div>
       </a>
-      <ul class="menu-sub">
-        <li class="menu-item">
-          <a
-            th:href="@{/protected/manager/spa-services/schedules}"
-            target="_blank"
-            class="menu-link"
-          >
-            <div class="text-truncate" data-i18n="eCommerce">
-              List Center Schedule
-            </div>
-          </a>
-        </li>
-      </ul>
     </li>
+
     <!-- Appointment -->
     <li class="menu-item">
       <a href="javascript:void(0);" class="menu-link menu-toggle">
