@@ -39,9 +39,9 @@
                     <div class="card">
                         <div th:if="${#strings.contains(currentURI, 'manager')}" class="row mx-3 my-0 justify-content-between">
                             <div class="py-3 d-flex align-items-center justify-content-between flex-wrap gap-3">
-                                <button class="btn add-new btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasAddUser">
+                                <button class="btn add-new btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasAddService">
                                     <i class="icon-base bx bx-plus icon-sm me-2"></i>
-                                    <span>Add New User</span>
+                                    <span>Add New Service</span>
                                 </button>
                             </div>
                         </div>
@@ -60,20 +60,20 @@
                             <table class="table table-bordered table-hover">
                                 <thead class="table-light">
                                 <tr>
-                                    <th style="width: 20%;">User</th>
-                                    <th>Role</th>
-                                    <th>Contact</th>
-                                    <th>Address</th>
-                                    <th>Specialty</th>
+                                    <th>ID</th>
+                                    <th>Service Name</th>
+                                    <th style="width: 30%;">Description</th>
+                                    <th>Price</th>
+                                    <th style="width: 20%;">Duration (minutes)</th>
                                     <th>Actions</th>
                                 </tr>
                                 </thead>
-                                <tbody id="therapistTable">
-                                <tr th:each="therapist : ${therapistList}">
-                                    <div th:replace="admin/Users/ListTherapist/Therapist/Therapist :: therapist"></div>
+                                <tbody>
+                                <tr th:each="spaService : ${spaServicesList}">
+                                    <div th:replace="admin/SpaServices/ListSpaServices/SpaService/spaService :: spaService"></div>
                                 </tr>
-                                <tr id="noTherapistRow" th:if="${#lists.isEmpty(therapistList)}">
-                                    <td colspan="6" class="text-center">No therapists found.</td>
+                                <tr id="noTherapistRow" th:if="${#lists.isEmpty(spaServicesList)}">
+                                    <td colspan="6" class="text-center">No spa services found.</td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -100,105 +100,92 @@
                     </div>
 
                     <!-- Offcanvas to add new user -->
-                    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasAddUser" aria-labelledby="offcanvasAddUserLabel">
+                    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasAddService" aria-labelledby="offcanvasAddServiceLabel">
                         <div class="offcanvas-header">
-                            <h5 id="offcanvasAddUserLabel" class="offcanvas-title">Add New Therapist</h5>
+                            <h5 id="offcanvasAddServiceLabel" class="offcanvas-title">Add New Therapist</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
                         </div>
                         <div class="offcanvas-body">
-                            <form th:action="@{/protected/manager/register-therapist}" method="post">
+                            <form th:action="@{/protected/manager/add-services}" method="post">
+                                <!-- Service Name -->
                                 <div class="mb-3">
-                                    <label for="add-user-username" class="form-label">Username</label>
+                                    <label for="service-name" class="form-label">Service Name</label>
                                     <input
                                             type="text"
                                             class="form-control"
-                                            id="add-user-username"
-                                            name="username"
-                                            placeholder="Enter username"
-                                            required
-                                            pattern="^[a-zA-Z0-9]{3,20}$"
-                                            title="Username must be between 3 and 20 characters (letters and numbers only)"
-                                    />
-                                </div>
-                                <div class="mb-3">
-                                    <label for="add-user-fullname" class="form-label">Full Name</label>
-                                    <input
-                                            type="text"
-                                            class="form-control"
-                                            id="add-user-fullname"
-                                            name="fullname"
-                                            placeholder="Enter full name"
+                                            id="service-name"
+                                            name="name"
+                                            placeholder="Enter service name"
                                             required
                                             minlength="2"
-                                            maxlength="50"
-                                            title="Full name must be between 2 and 50 characters"
+                                            maxlength="100"
+                                            title="Service name must be between 2 and 100 characters"
                                     />
                                 </div>
+
+                                <!-- Description -->
                                 <div class="mb-3">
-                                    <label for="add-user-img" class="form-label">Image URL</label>
+                                    <label for="service-description" class="form-label">Description</label>
+                                    <textarea
+                                            class="form-control"
+                                            id="service-description"
+                                            name="description"
+                                            placeholder="Enter description"
+                                            required
+                                            maxlength="500"
+                                            title="Description cannot exceed 500 characters"
+                                    ></textarea>
+                                </div>
+
+                                <!-- Image URL -->
+                                <div class="mb-3">
+                                    <label for="service-image" class="form-label">Image URL</label>
                                     <input
                                             type="url"
                                             class="form-control"
-                                            id="add-user-img"
-                                            name="img"
+                                            id="service-image"
+                                            name="imageUrl"
                                             placeholder="Enter image URL"
                                             required
-                                            pattern="^(http(s?):)([/|.|\\w|\\s|-])*\\.(?:jpg|jpeg|png|webp)$"
-                                            title="Image must be a valid URL ending with .jpg, .jpeg, or .png"
+                                            pattern="^(http(s?):)([/|.|\\w|\\s|-])*\\.(jpg|jpeg|png|webp)$"
+                                            title="Image must be a valid URL ending with .jpg, .jpeg, .png or .webp"
                                     />
                                 </div>
+
+                                <!-- Price -->
                                 <div class="mb-3">
-                                    <label for="add-user-specialty" class="form-label">Specialty</label>
+                                    <label for="service-price-usd" class="form-label">Price (USD)</label>
                                     <input
-                                            type="text"
+                                            type="number"
                                             class="form-control"
-                                            id="add-user-specialty"
-                                            name="specialty"
-                                            placeholder="Enter specialty"
+                                            id="service-price-usd"
+                                            name="price"
+                                            placeholder="Enter price in USD"
                                             required
-                                            maxlength="100"
-                                            title="Specialty must not exceed 100 characters"
+                                            min="0.00"
+                                            step="1"
+                                            oninput="convertToVND()"
                                     />
+                                    <div class="form-text" id="vnd-display">Equivalent: 0 VND</div>
                                 </div>
+
+                                    <!-- Duration -->
                                 <div class="mb-3">
-                                    <label for="add-user-email" class="form-label">Email</label>
+                                    <label for="service-duration" class="form-label">Duration (minutes)</label>
                                     <input
-                                            type="email"
+                                            type="number"
                                             class="form-control"
-                                            id="add-user-email"
-                                            name="email"
-                                            placeholder="Enter email"
+                                            id="service-duration"
+                                            name="duration"
+                                            placeholder="Enter duration in minutes"
                                             required
-                                            maxlength="50"
-                                            pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
-                                            title="Please enter a valid email address"
+                                            min="1"
+                                            max="1440"
+                                            title="Duration must be positive and cannot exceed 1440 minutes"
                                     />
                                 </div>
-                                <div class="mb-3">
-                                    <label for="add-user-phone" class="form-label">Phone</label>
-                                    <input
-                                            type="text"
-                                            class="form-control"
-                                            id="add-user-phone"
-                                            name="phone"
-                                            placeholder="Enter phone number"
-                                            required
-                                            pattern="^(\\+84|0)[1-9][0-9]{8}$"
-                                            title="Invalid phone number format. Ex: 0987654321 or +84987654321"
-                                    />
-                                </div>
-                                <div class="mb-3">
-                                    <label for="password" class="form-label">Password</label>
-                                    <input
-                                            type="password"
-                                            class="form-control"
-                                            id="password"
-                                            name="password"
-                                            placeholder="Enter password"
-                                            required
-                                    />
-                                </div>
-                                <button type="submit" class="btn btn-primary">Submit</button>
+
+                                <button type="submit" class="btn btn-primary">Add Service</button>
                                 <button type="reset" class="btn btn-secondary" data-bs-dismiss="offcanvas">Cancel</button>
                             </form>
                         </div>
@@ -220,6 +207,26 @@
     <!-- JavaScript for Pagination -->
     <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
     <script>
+        let exchangeRate = 25000; // Default value in case API fails
+
+        // Get live exchange rate from API
+        fetch("https://api.exchangerate.host/latest?base=USD&symbols=VND")
+            .then(response => response.json())
+            .then(data => {
+                exchangeRate = data.rates.VND;
+                console.log("Live exchange rate (USD→VND):", exchangeRate);
+            })
+            .catch(error => {
+                console.error("Failed to fetch exchange rate. Using default:", error);
+            });
+
+        function convertToVND() {
+            const usdValue = document.getElementById("service-price-usd").value;
+            const vndDisplay = document.getElementById("vnd-display");
+            const vnd = usdValue ? (usdValue * exchangeRate).toLocaleString('vi-VN') : 0;
+            vndDisplay.textContent = `Equivalent: ${vnd} VND`;
+        }
+
         $(document).ready(function () {
             // Phân trang
             const therapistTable = $('#therapistTable');

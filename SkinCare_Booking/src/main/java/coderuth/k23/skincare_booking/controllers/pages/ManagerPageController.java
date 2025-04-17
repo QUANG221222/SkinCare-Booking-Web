@@ -4,6 +4,7 @@ import coderuth.k23.skincare_booking.dtos.request.EditProfileRequest;
 import coderuth.k23.skincare_booking.dtos.request.RegisterStaffRequest;
 import coderuth.k23.skincare_booking.dtos.request.RegisterTherapistRequest;
 import coderuth.k23.skincare_booking.models.*;
+import coderuth.k23.skincare_booking.dtos.request.SpaServiceRequestDTO;
 import coderuth.k23.skincare_booking.services.*;
 import coderuth.k23.skincare_booking.repositories.ManagerRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -44,6 +45,9 @@ public class ManagerPageController {
     private FeedbackService feedbackService;
     @Autowired
     private CenterScheduleService centerScheduleService;
+
+    @Autowired
+    private SpaServiceService spaServiceService;
 
     @ModelAttribute("currentURI")
     public String currentURI(HttpServletRequest request) {
@@ -253,8 +257,29 @@ public class ManagerPageController {
     }
 
     @GetMapping("/spa-services")
-    public String spaServicesPage() {
-        return "redirect:/spa-services"; 
+    public String spaServicesPage(Model model, Principal principal) {
+        String username = principal.getName();
+        Manager manager = managerRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Manager not found"));
+
+        model.addAttribute("manager", manager);
+        model.addAttribute("spaServicesList", spaServiceService.getAllServices());
+        System.out.println(spaServiceService.getAllServices());
+        return "/admin/SpaServices/ListSpaServices/listSpaServices";
+    }
+
+    @PostMapping("/add-services")
+    public String addNewServices(@ModelAttribute SpaServiceRequestDTO spaServiceRequestDTO, RedirectAttributes redirectAttributes) {
+        try {
+
+            //Add new
+            spaServiceService.createService(spaServiceRequestDTO);
+
+            redirectAttributes.addFlashAttribute("successMessage", "Service has been created successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "An error occurred while creating the service: " + e.getMessage());
+        }
+        return "redirect:/protected/manager/spa-services";
     }
 
     @GetMapping("/center-schedule")

@@ -79,5 +79,4 @@ public class AuthsController {
         authService.logoutUser(request, response);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("You've been signed out!"));
     }
-
 }

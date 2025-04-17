@@ -60,7 +60,7 @@
                                 </tr>
                                 </thead>
                                 <tbody id="customerTable">
-                                <tr th:each="customer : ${customerList}" style="display: none;">
+                                <tr th:each="customer : ${customerList}">
                                     <div th:replace="admin/Users/ListCustomer/Customer/customer :: customer"></div>
                                 </tr>
                                 <tr id="noCustomerRow" th:if="${#lists.isEmpty(customerList)}">
