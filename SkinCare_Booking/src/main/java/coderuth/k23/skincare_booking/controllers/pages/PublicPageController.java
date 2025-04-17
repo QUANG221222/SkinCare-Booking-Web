@@ -1,5 +1,7 @@
 package coderuth.k23.skincare_booking.controllers.pages;
 
+import coderuth.k23.skincare_booking.models.SpaService;
+import coderuth.k23.skincare_booking.repositories.SpaServiceRepository;
 import coderuth.k23.skincare_booking.services.TherapistService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -8,12 +10,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import jakarta.servlet.http.HttpServletRequest;
 
+import java.util.List;
+
 @Controller
 
 public class PublicPageController {
 
     @Autowired
     TherapistService therapistService;
+
+    @Autowired
+    SpaServiceRepository spaServiceRepository;
 
     @ModelAttribute("currentURI")
     public String currentURI(HttpServletRequest request) {
@@ -33,7 +40,11 @@ public class PublicPageController {
     }
 
     @GetMapping("/services")
-    public String userServicesPage() {
+    public String userServicesPage(Model model) {
+        // Lấy tất cả dịch vụ từ DB
+        List<SpaService> services = spaServiceRepository.findAll();
+
+        model.addAttribute("services", services);
         return "user/services";
     }
 

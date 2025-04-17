@@ -149,7 +149,6 @@ public class CustomerPageController {
     public String getAllServices(Model model) {
          // Lấy tất cả dịch vụ từ DB
         List<SpaService> services = spaServiceRepository.findAll();
-        System.out.println("services.size() = " + services.size());
 
         model.addAttribute("services", services);
         return "user/services";

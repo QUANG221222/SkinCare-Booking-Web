@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
+import java.util.Optional;
 import java.util.UUID;
 
 @Controller
@@ -264,7 +265,6 @@ public class ManagerPageController {
 
         model.addAttribute("manager", manager);
         model.addAttribute("spaServicesList", spaServiceService.getAllServices());
-        System.out.println(spaServiceService.getAllServices());
         return "/admin/SpaServices/ListSpaServices/listSpaServices";
     }
 
@@ -324,6 +324,43 @@ public class ManagerPageController {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to delete schedule: " + e.getMessage());
         }
         return "redirect:/protected/manager/center-schedule";
+    @GetMapping("/delete-service/{id}")
+    public String deleteService(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            // Kiểm tra xem dịch vụ có đang được sử dụng trong lịch hẹn không
+            Optional<SpaService> spaServiceOptional = spaServiceService.getAllServices().stream()
+                    .filter(s -> s.getId().equals(id))
+                    .findFirst();
+
+            if (spaServiceOptional.isEmpty()) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Service not found to delete.");
+                return "redirect:/protected/manager/spa-services";
+            }
+
+            spaServiceService.deleteService(id);
+
+            redirectAttributes.addFlashAttribute("successMessage", "Spa Service has been deleted successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "An error occurred while deleting the spa service: " + e.getMessage());
+        }
+        return "redirect:/protected/manager/spa-services";
+    }
+
+    @PostMapping("/update-service/{id}")
+    public String updateService(@PathVariable Long id, @ModelAttribute SpaService spaService, RedirectAttributes redirectAttributes) {
+        try {
+            spaServiceService.updateService(id, spaService);
+
+            redirectAttributes.addFlashAttribute("successMessage", "Service has been updated successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "An error occurred while updating the service: " + e.getMessage());
+        }
+        return "redirect:/protected/manager/spa-services";
+    }
+
+    @GetMapping("/spa-services/schedules")
+    public String centerSchedulesPage() {
+        return "redirect:/spa-services/schedules"; 
     }
 
 

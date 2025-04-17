@@ -86,7 +86,7 @@ public class SpaServiceController {
                 return "redirect:/spa-services";
             }
     
-            spaServiceService.deleteService(id, redirectAttributes);
+            spaServiceService.deleteService(id);
             redirectAttributes.addFlashAttribute("success", "Service has been deleted successfully!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "An error occurred while deleting the service: " + e.getMessage());
