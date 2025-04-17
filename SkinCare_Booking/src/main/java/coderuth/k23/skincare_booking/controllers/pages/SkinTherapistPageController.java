@@ -2,7 +2,9 @@ package coderuth.k23.skincare_booking.controllers.pages;
 
 import coderuth.k23.skincare_booking.dtos.request.EditProfileRequest;
 import coderuth.k23.skincare_booking.models.SkinTherapist;
+import coderuth.k23.skincare_booking.models.Staff;
 import coderuth.k23.skincare_booking.repositories.SkinTherapistRepository;
+import coderuth.k23.skincare_booking.services.SpaServiceService;
 import coderuth.k23.skincare_booking.services.TherapistService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,9 @@ public class SkinTherapistPageController {
 
     @Autowired
     SkinTherapistRepository skinTherapistRepository;
+
+    @Autowired
+    SpaServiceService spaServiceService;
 
     @ModelAttribute("currentURI")
     public String currentURI(HttpServletRequest request) {
@@ -108,4 +113,15 @@ public class SkinTherapistPageController {
 //
 //        return "redirect:/protected/therapist/security";
 //    }
+
+    @GetMapping("/spa-services")
+    public String spaServicesPage(Model model, Principal principal) {
+        String username = principal.getName();
+        SkinTherapist therapist = skinTherapistRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Therapist not found"));
+
+        model.addAttribute("therapist", therapist);
+        model.addAttribute("spaServicesList", spaServiceService.getAllServices());
+        return "/admin/SpaServices/ListSpaServices/listSpaServices";
+    }
 }
