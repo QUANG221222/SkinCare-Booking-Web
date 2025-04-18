@@ -134,10 +134,13 @@
       </ul>
     </li>
     <!-- Center Schedule (Manager) -->
-    <li th:if="${#strings.contains(currentURI, 'manager')}"
+    <li
         class="menu-item"
-        th:classappend="${#strings.contains(currentURI, '/manager/center-schedule')} ? 'active' : ''">
-      <a th:href="@{/protected/manager/center-schedule}" class="menu-link">
+        th:classappend="${#strings.contains(currentURI, '/manager/center-schedule') or
+                          #strings.contains(currentURI, '/staff/center-schedule') or
+                          #strings.contains(currentURI, '/therapist/center-schedule')} ? 'active' : ''">
+      <a th:href="${#strings.contains(currentURI, 'manager') ? '/protected/manager/center-schedule' :
+                      (#strings.contains(currentURI, 'staff') ? '/protected/staff/center-schedule' : '/protected/therapist/center-schedule')}" class="menu-link">
         <i class="menu-icon tf-icons bx bx-calendar"></i>
         <div class="text-truncate" data-i18n="Dashboards">Center Schedule</div>
       </a>

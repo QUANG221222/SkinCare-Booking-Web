@@ -51,10 +51,10 @@
               <div class="nav-align-top">
                 <ul class="nav nav-pills flex-column flex-md-row mb-6 gap-md-0 gap-2">
                   <li class="nav-item">
-                    <a class="nav-link" th:href="${#strings.contains(currentURI, 'manager') ? '/protected/manager/profile' : '/protected/staff/profile'}"><i class="icon-base bx bx-user icon-sm me-1_5"></i> Account</a>
+                    <a class="nav-link" th:href="${#strings.contains(currentURI, 'manager') ? '/protected/manager/profile' : (#strings.contains(currentURI, 'staff') ? '/protected/staff/profile' : '/protected/therapist/profile')}"><i class="icon-base bx bx-user icon-sm me-1_5"></i> Account</a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link active" th:href="${#strings.contains(currentURI, 'manager') ? '/protected/manager/security' : '/protected/staff/security'}"><i class="icon-base bx bx-lock-alt icon-sm me-1_5"></i> Security</a>
+                    <a class="nav-link active" th:href="${#strings.contains(currentURI, 'manager') ? '/protected/manager/security' : (#strings.contains(currentURI, 'staff') ? '/protected/staff/security' : '/protected/therapist/security')}"><i class="icon-base bx bx-lock-alt icon-sm me-1_5"></i> Security</a>
                   </li>
                 </ul>
               </div>
@@ -84,7 +84,7 @@
                   <h5 class="card-header">Change Password</h5>
                   <div class="card-body pt-1">
                     <form id="formAccountSettings"
-                          th:action="${#strings.contains(currentURI, 'manager') ? '/protected/manager/change-password' : '/protected/staff/change-password'}"
+                          th:action="${#strings.contains(currentURI, 'manager') ? '/protected/manager/change-password' : (#strings.contains(currentURI, 'staff') ? '/protected/staff/change-password' : '/protected/therapist/change-password')}"
                           method="post">
                       <div class="row">
                         <div class="mb-6 col-md-6 form-password-toggle form-control-validation">

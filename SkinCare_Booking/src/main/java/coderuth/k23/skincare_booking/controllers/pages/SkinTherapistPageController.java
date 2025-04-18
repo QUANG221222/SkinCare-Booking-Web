@@ -4,6 +4,7 @@ import coderuth.k23.skincare_booking.dtos.request.EditProfileRequest;
 import coderuth.k23.skincare_booking.models.SkinTherapist;
 import coderuth.k23.skincare_booking.models.Staff;
 import coderuth.k23.skincare_booking.repositories.SkinTherapistRepository;
+import coderuth.k23.skincare_booking.services.CenterScheduleService;
 import coderuth.k23.skincare_booking.services.SpaServiceService;
 import coderuth.k23.skincare_booking.services.TherapistService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,6 +30,9 @@ public class SkinTherapistPageController {
 
     @Autowired
     SpaServiceService spaServiceService;
+
+    @Autowired
+    private CenterScheduleService centerScheduleService;
 
     @ModelAttribute("currentURI")
     public String currentURI(HttpServletRequest request) {
@@ -92,27 +96,27 @@ public class SkinTherapistPageController {
         return "admin/Security/security";
     }
 
-//    @PostMapping("/change-password")
-//    public String changePassword(
-//            @RequestParam("currentPassword") String currentPassword,
-//            @RequestParam("newPassword") String newPassword,
-//            @RequestParam("confirmPassword") String confirmPassword,
-//            Principal principal,
-//            RedirectAttributes redirectAttributes) {
-//        String username = principal.getName();
-//        try {
-//            // Kiểm tra và thay đổi mật khẩu
-//            therapistService.changePassword(username, currentPassword, newPassword, confirmPassword);
-//
-//            // Thông báo thành công
-//            redirectAttributes.addFlashAttribute("successMessage", "Password changed successfully!");
-//        } catch (Exception e) {
-//            // Thông báo lỗi
-//            redirectAttributes.addFlashAttribute("errorMessage", "Failed to change password: " + e.getMessage());
-//        }
-//
-//        return "redirect:/protected/therapist/security";
-//    }
+    @PostMapping("/change-password")
+    public String changePassword(
+            @RequestParam("currentPassword") String currentPassword,
+            @RequestParam("newPassword") String newPassword,
+            @RequestParam("confirmPassword") String confirmPassword,
+            Principal principal,
+            RedirectAttributes redirectAttributes) {
+        String username = principal.getName();
+        try {
+            // Kiểm tra và thay đổi mật khẩu
+            therapistService.changePassword(username, currentPassword, newPassword, confirmPassword);
+
+            // Thông báo thành công
+            redirectAttributes.addFlashAttribute("successMessage", "Password changed successfully!");
+        } catch (Exception e) {
+            // Thông báo lỗi
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to change password: " + e.getMessage());
+        }
+
+        return "redirect:/protected/therapist/security";
+    }
 
     @GetMapping("/spa-services")
     public String spaServicesPage(Model model, Principal principal) {
@@ -123,5 +127,16 @@ public class SkinTherapistPageController {
         model.addAttribute("therapist", therapist);
         model.addAttribute("spaServicesList", spaServiceService.getAllServices());
         return "/admin/SpaServices/ListSpaServices/listSpaServices";
+    }
+
+    @GetMapping("/center-schedule")
+    public String getCenterSchedule(Model model, Principal principal) {
+        String username = principal.getName();
+        SkinTherapist therapist = skinTherapistRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Therapist not found"));
+
+        model.addAttribute("therapist", therapist);
+        model.addAttribute("scheduleList", centerScheduleService.getAllSchedules());
+        return "admin/Schedules/centerSchedule";
     }
 }
