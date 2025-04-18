@@ -1,4 +1,4 @@
-package coderuth.k23.skincare_booking.until;
+package coderuth.k23.skincare_booking.util;
 
 import coderuth.k23.skincare_booking.dtos.response.BlogResponseDTO;
 import coderuth.k23.skincare_booking.models.Blog;

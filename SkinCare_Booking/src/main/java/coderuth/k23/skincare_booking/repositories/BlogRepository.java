@@ -6,5 +6,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BlogRepository extends JpaRepository<Blog, Long> {
-    // No additional method is needed as JpaRepository provides basic CRUD operations.
 }

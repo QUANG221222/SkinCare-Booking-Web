@@ -1,13 +1,88 @@
 package coderuth.k23.skincare_booking.services;
 
+import coderuth.k23.skincare_booking.dtos.request.BlogRequestDTO;
+import coderuth.k23.skincare_booking.dtos.response.BlogResponseDTO;
 import coderuth.k23.skincare_booking.models.Blog;
-import java.util.List;
-import java.util.Optional;
+import coderuth.k23.skincare_booking.repositories.BlogRepository;
+import coderuth.k23.skincare_booking.util.BlogMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
-public abstract class BlogService {
-    public abstract List<Blog> getAllBlogs();
-    public abstract Optional<Blog> getBlogById(Long id);
-    public abstract Blog saveBlog(Blog blog);
-    public abstract Blog updateBlog(Long id, Blog blog);
-    public abstract void deleteBlog(Long id);
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class BlogService {
+
+    private final BlogRepository blogRepository;
+
+    public BlogService(BlogRepository blogRepository) {
+        this.blogRepository = blogRepository;
+    }
+
+    public Page<BlogResponseDTO> getAllBlogs(Pageable pageable) {
+        return blogRepository.findAll(pageable)
+                .map(BlogMapper::toDto);
+    }
+
+
+    public List<BlogResponseDTO> getAllBlogs() {
+        return blogRepository.findAll()
+                .stream()
+                .map(BlogMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+
+    public BlogResponseDTO getBlogById(Long id) {
+        return blogRepository.findById(id)
+                .map(BlogMapper::toDto)
+                .orElseThrow(() -> new RuntimeException("Blog not found with id = " + id));
+    }
+
+
+    public BlogResponseDTO createBlog(BlogRequestDTO dto) {
+        Blog blog = new Blog();
+        blog.setTitle(dto.getTitle());
+        blog.setContent(dto.getContent());
+        blog.setAuthor(dto.getAuthor());
+        blog.setCategory(dto.getCategory());
+        blog.setDate(dto.getDate());
+        blog.setExcerpt(dto.getExcerpt());
+        blog.setImageUrl(dto.getImageUrl());
+        LocalDateTime now = LocalDateTime.now();
+        blog.setCreatedAt(now);
+        blog.setUpdatedAt(now);
+
+        Blog saved = blogRepository.save(blog);
+        return BlogMapper.toDto(saved);
+    }
+
+
+    public BlogResponseDTO updateBlog(Long id, BlogRequestDTO dto) {
+        Blog blog = blogRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Blog not found with id = " + id));
+
+        blog.setTitle(dto.getTitle());
+        blog.setContent(dto.getContent());
+        blog.setAuthor(dto.getAuthor());
+        blog.setCategory(dto.getCategory());
+        blog.setDate(dto.getDate());
+        blog.setExcerpt(dto.getExcerpt());
+        blog.setImageUrl(dto.getImageUrl());
+        blog.setUpdatedAt(LocalDateTime.now());
+
+        Blog updated = blogRepository.save(blog);
+        return BlogMapper.toDto(updated);
+    }
+
+
+    public void deleteBlog(Long id) {
+        if (!blogRepository.existsById(id)) {
+            throw new RuntimeException("Blog not found with id = " + id);
+        }
+        blogRepository.deleteById(id);
+    }
 }

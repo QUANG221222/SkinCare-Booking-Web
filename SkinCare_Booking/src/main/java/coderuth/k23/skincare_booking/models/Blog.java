@@ -1,65 +1,32 @@
-package coderuth.k23.skincare_booking.models;
+    package coderuth.k23.skincare_booking.models;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import java.time.LocalDateTime;
+    import jakarta.persistence.*;
+    import lombok.Data;
+    import java.time.LocalDate;
+    import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "blogs")
-public class Blog {
+    @Data
+    @Entity
+    @Table(name = "blog")
+    public class Blog {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
 
-    @NotBlank(message = "Title cannot be blank")
-    @Size(min = 3, max = 255, message = "Title must be between 3 and 255 characters")
-    private String title;
+        private String title;
 
-    @NotBlank(message = "Content cannot be blank")
-    @Column(length = 10000)
-    private String content;
+        @Column(length = 10000)
+        private String content;
 
-    // Field lưu trữ URL của ảnh (hoặc đường dẫn file)
-    private String imageUrl;
+        private String author;
 
-    private LocalDateTime createdDate;
+        // Các trường bổ sung
+        private String category;      // Danh mục của bài blog
+        private LocalDate date;       // Ngày liên quan (ví dụ: ngày công bố)
+        private String excerpt;       // Tóm tắt nội dung của bài blog
+        private String imageUrl;      // Đường dẫn ảnh đại diện
 
-    public Blog() {
-        this.createdDate = LocalDateTime.now();
+        private LocalDateTime createdAt;
+        private LocalDateTime updatedAt;
     }
-
-    // Getters and Setters
-
-    public Long getId() {
-        return id;
-    }
-    public void setId(Long id) {
-        this.id = id;
-    }
-    public String getTitle() {
-        return title;
-    }
-    public void setTitle(String title) {
-        this.title = title;
-    }
-    public String getContent() {
-        return content;
-    }
-    public void setContent(String content) {
-        this.content = content;
-    }
-    public String getImageUrl() {
-        return imageUrl;
-    }
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
-    }
-    public void setCreatedDate(LocalDateTime createdDate) {
-        this.createdDate = createdDate;
-    }
-}
