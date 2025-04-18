@@ -33,8 +33,8 @@
                             <div class="line-"></div>
                             <h2>A place to remember</h2>
                         </div>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec malesuada lorem maximus mauris sceleri sque, at rutrum nulla dictum. Ut ac ligula sapien. Suspendisse cursus faucibus finibus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec malesuada lorem maximus mauris sceleri sque, at rutrum nulla dictum. Ut ac ligula sapien. Suspendisse cursus faucibus finibus.</p>
-                        <a th:href="${#strings.contains(currentURI, 'customer')} ? @{/protected/customer/services} : @{/services}" class="btn palatin-btn mt-50">Read More</a>
+                        <p>We offer an exclusive skincare experience with treatments designed to rejuvenate, relax, and enhance the health of your skin. Performed by experienced professionals, each treatment is personalized to meet your skin’s unique needs.</p>
+                        <a th:href="${#strings.contains(currentURI, 'customer')} ? '/protected/customer/services' : '/services'" class="btn palatin-btn mt-50">Read More</a>
                     </div>
                 </div>
 
@@ -49,14 +49,14 @@
     <!-- ##### About Us Area End ##### -->
 
     <!-- ##### Milestones Area Start ##### -->
-    <section class="our-milestones section-padding-100-0 bg-img bg-overlay bg-fixed" style="background-image: url(/user/img/about-us-img/8.jpg);">
+    <section class="our-milestones section-padding-100-0 bg-img bg-fixed" style="background-image: url(/user/img/about-us-img/8.jpg);">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-12 col-lg-8">
-                    <div class="section-heading text-center white">
+                    <div class="section-heading text-center text-dark">
                         <div class="line-"></div>
                         <h2>Our Milestones</h2>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec malesuada lorem maximus mauris sceleri sque, at rutrum nulla dictum. Ut ac ligula sapien. Suspendisse cursus faucibus finibus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec malesuada lorem maximus mauris sceleri sque, at rutrum nulla dictum.</p>
+                        <p class="font-bold text-dark">We are proud of the key achievements that have marked our journey. From humble beginnings to impactful growth, each milestone reflects our dedication, innovation, and unwavering commitment to excellence.</p>
                     </div>
                 </div>
             </div>
@@ -78,7 +78,7 @@
                 <div class="col-12 col-sm-6 col-lg-3">
                     <div class="single-cool-fact mb-100 wow fadeInUp" data-wow-delay="500ms">
                         <div class="scf-text">
-                            <!--                            <i class="icon-swimming-pool"></i>-->
+                            <!--<i class="icon-swimming-pool"></i>-->
 
                             <i class="icon-sunset"></i>
                             <h2><span class="counter">10</span></h2>
@@ -88,32 +88,31 @@
                     </div>
                 </div>
 
-                                            <!-- Single Cool Facts -->
-                            <div class="col-12 col-sm-6 col-lg-3">
-                                <div class="single-cool-fact mb-100 wow fadeInUp" data-wow-delay="700ms">
-                                    <div class="scf-text">
-                                        <i class="icon-resort"></i>
-                                        <h2><span class="counter">9</span></h2>
-                                        <p>Services</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Single Cool Facts -->
-                            <div class="col-12 col-sm-6 col-lg-3">
-                                <div class="single-cool-fact mb-100 wow fadeInUp" data-wow-delay="900ms">
-                                    <div class="scf-text">
-                                        <i class="icon-restaurant"></i>
-                                        <!--<img class="skin-therapist-1" src="/user/icon/5729681_doctor_flu_mask_protection_wearing_icon.ico" alt="">&ndash;&gt;-->
-                                        <h2><span class="counter">15</span></h2>
-                                        <p>Rooms</p>
-                                    </div>
-                                </div>
-                            </div>
-
+                                <!-- Single Cool Facts -->
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <div class="single-cool-fact mb-100 wow fadeInUp" data-wow-delay="700ms">
+                        <div class="scf-text">
+                            <i class="icon-resort"></i>
+                            <h2><span class="counter">9</span></h2>
+                            <p>Services</p>
                         </div>
                     </div>
-                </div></section>
+                </div>
+
+                <!-- Single Cool Facts -->
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <div class="single-cool-fact mb-100 wow fadeInUp" data-wow-delay="900ms">
+                        <div class="scf-text">
+                            <i class="icon-restaurant"></i>
+                            <!--<img class="skin-therapist-1" src="/user/icon/5729681_doctor_flu_mask_protection_wearing_icon.ico" alt="">&ndash;&gt;-->
+                            <h2><span class="counter">15</span></h2>
+                            <p>Rooms</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
     <!-- ##### Milestones Area End ##### -->
 
     <!-- ##### Hotels Area Start ##### -->
