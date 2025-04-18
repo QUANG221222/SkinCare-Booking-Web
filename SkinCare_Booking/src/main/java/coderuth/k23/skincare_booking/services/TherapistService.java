@@ -1,6 +1,8 @@
 package coderuth.k23.skincare_booking.services;
 
+import coderuth.k23.skincare_booking.models.Manager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import coderuth.k23.skincare_booking.models.SkinTherapist;
@@ -19,6 +21,9 @@ public class TherapistService {
 
     @Autowired
     private TherapistScheduleRepository therapistScheduleRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     // Quản lý thông tin nhà trị liệu
     public List<SkinTherapist> getAllTherapists() {
@@ -66,5 +71,24 @@ public class TherapistService {
 
     public void deleteSchedule(UUID id) {
         therapistScheduleRepository.deleteById(id);
+    }
+
+    public void changePassword(String username, String currentPassword, String newPassword, String confirmPassword) {
+        SkinTherapist skinTherapist = skinTherapistRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Skin Therapist not found"));
+
+        // Kiểm tra mật khẩu hiện tại
+        if (!passwordEncoder.matches(currentPassword, skinTherapist.getPassword())) {
+            throw new RuntimeException("Current password is incorrect");
+        }
+
+        // Kiểm tra mật khẩu mới và xác nhận mật khẩu
+        if (!newPassword.equals(confirmPassword)) {
+            throw new RuntimeException("New password and confirm password do not match");
+        }
+
+        // Cập nhật mật khẩu
+        skinTherapist.setPassword(passwordEncoder.encode(newPassword));
+        skinTherapistRepository.save(skinTherapist);
     }
 }

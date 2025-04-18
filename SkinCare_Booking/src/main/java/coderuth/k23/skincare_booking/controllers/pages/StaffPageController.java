@@ -4,10 +4,7 @@ import coderuth.k23.skincare_booking.dtos.request.EditProfileRequest;
 import coderuth.k23.skincare_booking.models.Manager;
 import coderuth.k23.skincare_booking.models.Staff;
 import coderuth.k23.skincare_booking.repositories.StaffRepository;
-import coderuth.k23.skincare_booking.services.CustomerService;
-import coderuth.k23.skincare_booking.services.SpaServiceService;
-import coderuth.k23.skincare_booking.services.StaffService;
-import coderuth.k23.skincare_booking.services.TherapistService;
+import coderuth.k23.skincare_booking.services.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -37,6 +34,9 @@ public class StaffPageController {
 
     @Autowired
     SpaServiceService spaServiceService;
+
+    @Autowired
+    private CenterScheduleService centerScheduleService;
 
     @ModelAttribute("currentURI")
     public String currentURI(HttpServletRequest request) {
@@ -147,5 +147,16 @@ public class StaffPageController {
         model.addAttribute("staff", staff);
         model.addAttribute("spaServicesList", spaServiceService.getAllServices());
         return "/admin/SpaServices/ListSpaServices/listSpaServices";
+    }
+
+    @GetMapping("/center-schedule")
+    public String getCenterSchedule(Model model, Principal principal) {
+        String username = principal.getName();
+        Staff staff = staffRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Staff not found"));
+
+        model.addAttribute("staff", staff);
+        model.addAttribute("scheduleList", centerScheduleService.getAllSchedules());
+        return "admin/Schedules/centerSchedule";
     }
 }

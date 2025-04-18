@@ -51,10 +51,12 @@
                             <div class="nav-align-top">
                                 <ul class="nav nav-pills flex-column flex-md-row mb-6 gap-md-0 gap-2">
                                     <li class="nav-item">
-                                        <a class="nav-link active" th:href="${#strings.contains(currentURI, 'manager') ? '/protected/manager/profile' : '/protected/staff/profile'}"><i class="icon-base bx bx-user icon-sm me-1_5"></i> Account</a>
+                                        <a class="nav-link active" th:href="${#strings.contains(currentURI, 'manager') ? '/protected/manager/profile' :
+                                                                            (#strings.contains(currentURI, 'staff') ? '/protected/staff/profile' : '/protected/therapist/profile')}"><i class="icon-base bx bx-user icon-sm me-1_5"></i> Account</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" th:href="${#strings.contains(currentURI, 'manager') ? '/protected/manager/security' : '/protected/staff/security'}"><i class="icon-base bx bx-lock-alt icon-sm me-1_5"></i> Security</a>
+                                        <a class="nav-link" th:href="${#strings.contains(currentURI, 'manager') ? '/protected/manager/security' :
+                                                                        (#strings.contains(currentURI, 'staff') ? '/protected/staff/security' : '/protected/therapist/security')}"><i class="icon-base bx bx-lock-alt icon-sm me-1_5"></i> Security</a>
                                     </li>
                                 </ul>
                             </div>
@@ -80,19 +82,20 @@
                                     </div>
                                 </div>
                                 <div class="card-body pt-4">
-                                    <form th:action="${#strings.contains(currentURI, 'manager') ? '/protected/manager/edit-profile' : '/protected/staff/edit-profile'}" method="post">
+                                    <form th:action="${#strings.contains(currentURI, 'manager') ? '/protected/manager/edit-profile' :
+                                                       (#strings.contains(currentURI, 'staff') ? '/protected/staff/edit-profile' : '/protected/therapist/edit-profile')}" method="post">
                                         <div class="row g-6">
                                             <div class="col-md-6 form-control-validation">
                                                 <label for="username" class="form-label">User Name</label>
-                                                <input class="form-control" type="text" id="username" name="username" th:value="${#strings.contains(currentURI, 'manager') ? manager.username : staff.username}" readonly/>
+                                                <input class="form-control" type="text" id="username" name="username" th:value="${#strings.contains(currentURI, 'manager') ? manager.username : (#strings.contains(currentURI, 'staff') ? staff.username : therapist.username)}" readonly/>
                                             </div>
                                             <div class="col-md-6 form-control-validation">
                                                 <label for="fullName" class="form-label">Full Name</label>
-                                                <input class="form-control" type="text" name="fullName" id="fullName" th:value="${#strings.contains(currentURI, 'manager') ? manager.fullName : staff.fullName}" />
+                                                <input class="form-control" type="text" name="fullName" id="fullName" th:value="${#strings.contains(currentURI, 'manager') ? manager.fullName : (#strings.contains(currentURI, 'staff') ? staff.fullName : therapist.fullName)}" />
                                             </div>
                                             <div class="col-md-6">
                                                 <label for="email" class="form-label">E-mail</label>
-                                                <input class="form-control" type="text" id="email" name="email" th:value="${#strings.contains(currentURI, 'manager') ? manager.email : staff.email}" placeholder="user@example.com" readonly/>
+                                                <input class="form-control" type="text" id="email" name="email" th:value="${#strings.contains(currentURI, 'manager') ? manager.email : (#strings.contains(currentURI, 'staff') ? staff.email : therapist.email)}" placeholder="user@example.com" readonly/>
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label" for="phone">Phone Number</label>
@@ -103,16 +106,16 @@
                                                            class="form-control"
                                                            pattern="^(\\+84|0)[1-9][0-9]{8}$"
                                                            title="Invalid phone number format. Ex: 0987654321 or +84987654321"
-                                                           th:value="${#strings.contains(currentURI, 'manager') ? manager.phone : staff.phone}" placeholder="0853902934" />
+                                                           th:value="${#strings.contains(currentURI, 'manager') ? manager.phone : (#strings.contains(currentURI, 'staff') ? staff.phone : therapist.phone)}" placeholder="0853902934" />
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <label for="location" class="form-label">Address</label>
-                                                <input type="text" class="form-control" id="location" name="location" th:value="${#strings.contains(currentURI, 'manager') ? manager.location : staff.location}" placeholder="Address" />
+                                                <input type="text" class="form-control" id="location" name="location" th:value="${#strings.contains(currentURI, 'manager') ? manager.location : (#strings.contains(currentURI, 'staff') ? staff.location : therapist.location)}" placeholder="Address" />
                                             </div>
                                             <div class="col-md-6">
                                                 <label for="img" class="form-label">Img</label>
-                                                <input type="url" class="form-control" id="img" name="img" th:value="${#strings.contains(currentURI, 'manager') ? manager.img : staff.img}" placeholder="Address" />
+                                                <input type="url" class="form-control" id="img" name="img" th:value="${#strings.contains(currentURI, 'manager') ? manager.img : (#strings.contains(currentURI, 'staff') ? staff.img : therapist.img)}" placeholder="Address" />
                                             </div>
                                         </div>
                                         <div class="mt-6">

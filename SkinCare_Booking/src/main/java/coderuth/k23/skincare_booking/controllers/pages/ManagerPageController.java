@@ -44,6 +44,7 @@ public class ManagerPageController {
 
     @Autowired
     private FeedbackService feedbackService;
+
     @Autowired
     private CenterScheduleService centerScheduleService;
 
@@ -325,7 +326,7 @@ public class ManagerPageController {
         }
         return "redirect:/protected/manager/center-schedule";
     }
-    
+
     @GetMapping("/delete-service/{id}")
     public String deleteService(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {

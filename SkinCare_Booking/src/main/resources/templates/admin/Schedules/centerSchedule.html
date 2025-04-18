@@ -37,7 +37,7 @@
                 <div class="container-xxl flex-grow-1 container-p-y">
                     <!-- Center Schedule List -->
                     <div class="card">
-                        <div class="row mx-3 my-0 justify-content-between">
+                        <div th:if="${#strings.contains(currentURI, 'manager')}" class="row mx-3 my-0 justify-content-between">
                             <div class="py-3 d-flex align-items-center justify-content-between flex-wrap gap-3">
                                 <h5 class="mb-0">Center Schedule List</h5>
                                 <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#addScheduleModal">
@@ -46,7 +46,7 @@
                             </div>
                         </div>
                         <div class="table-responsive">
-                            <div class="container mt-3">
+                            <div th:if="${#strings.contains(currentURI, 'manager')}" class="container mt-3">
                                 <!-- Alert for Success -->
                                 <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show position-relative" role="alert">
                                     <span th:text="${successMessage}"></span>
@@ -76,8 +76,8 @@
                                         <span th:if="${schedule.isClosed}" class="badge bg-danger">Closed</span>
                                         <span th:unless="${schedule.isClosed}" class="badge bg-success">Open</span>
                                     </td>
-                                    <td>
-                                        <button class="btn btn-sm btn-warning edit-btn"
+                                    <td th:if="${#strings.contains(currentURI, 'manager')}">
+                                        <button class="btn btn-sm btn-warning edit-btn mb-1 mb-sm-1"
                                                 th:data-id="${schedule.id}"
                                                 th:data-day-of-week="${schedule.dayOfWeek}"
                                                 th:data-start-time="${schedule.startTime}"
@@ -87,7 +87,7 @@
                                                 data-bs-target="#editScheduleModal">
                                             <i class="bx bx-edit me-1"></i> Edit
                                         </button>
-                                        <button class="btn btn-sm btn-danger delete-btn"
+                                        <button class="btn btn-sm btn-danger delete-btn mb-1 mb-sm-1"
                                                 th:data-id="${schedule.id}"
                                                 data-bs-toggle="modal"
                                                 data-bs-target="#deleteConfirmModal">
