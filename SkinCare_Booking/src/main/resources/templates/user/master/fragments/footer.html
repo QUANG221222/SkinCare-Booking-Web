@@ -1,70 +1,200 @@
-<footer th:fragment="footer" class="footer-area">
+<footer th:fragment="footer" class="footer-area py-5 bg-gradient-dark text-white position-relative">
   <div class="container">
-    <div class="row">
-
-      <!-- Footer Widget Area -->
-      <div class="col-12 col-lg-5">
-        <div class="footer-widget-area mt-50">
-          <a th:href="@{/}" class="d-block mb-5"><img src="/user/img/core-img/logo_1.png" alt=""></a>
-        </div>
-        <div>
-          <a href="https://zalo.me/0777949002" class="text-white">
-            <i class="fa fa-linkedin" aria-hidden="true"></i>
-            <span class="mx-1">Contact by Linkedin</span>
+    <div class="row gy-4 align-items-center">
+      <!-- Logo and Contact Info -->
+      <div class="col-12 col-md-6 col-lg-5">
+        <div class="footer-widget-area text-center text-md-start">
+          <a th:href="@{/}" class="d-block mb-4">
+            <img src="/user/img/icon-img/logo.png" alt="SkinSoothe Logo" style="max-width: 250px; filter: drop-shadow(0 0 10px rgb(255,255,255));">
           </a>
-        </div><br>
-        <div>
-          <a href="tel:0777949002" class="text-white">
-            <i class="fa-solid fa-phone" aria-hidden="true"></i>
-            <span class="mx-1">Call HOTLINE: 0777949002</span>
-          </a>
-        </div><br>
-        <div>
-          <a href="https://www.facebook.com/skinsoothe/" class="text-white">
-            <i class="fa-brands fa-facebook" aria-hidden="true"></i>
-            <span class="mx-1">Contact by Facebook</span>
-          </a>
+          <div class="contact-info d-inline-flex justify-content-center justify-content-md-start">
+            <a href="https://github.com/QUANG221222/SkinCare-Booking-Web" class="text-white contact-icon mx-2">
+              <img src="/user/img/icon-img/3.png" alt="GitHub" style="max-width: 42px; filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));">
+            </a>
+            <a href="https://www.facebook.com/playerr55555" class="text-white contact-icon mx-2">
+              <img src="/user/img/icon-img/4.png" alt="Facebook" style="max-width: 42px; filter: drop-shadow(0 0 10px rgba(255, 0, 0, 0.5));">
+            </a>
+            <a href="https://www.instagram.com/__bacsiukhongcalo/" class="text-white contact-icon mx-2">
+              <img src="/user/img/icon-img/2.png" alt="Instagram" style="max-width: 42px; filter: drop-shadow(0 0 10px rgba(104,255,60,0.5));">
+            </a>
+            <a href="https://zalo.me/0392868271" class="text-white contact-icon mx-2">
+              <img src="/user/img/icon-img/1.png" alt="Zalo" style="max-width: 42px; filter: drop-shadow(0 0 10px rgba(253,154,249,0.5));">
+            </a>
+          </div>
         </div>
       </div>
 
-      <!-- Social Info -->
-      <!--        <div class="social-info mt-50 wow fadeInUp" data-wow-delay="600ms">-->
-      <!--            <a href="#"><i class="fa fa-pinterest" aria-hidden="true"></i></a>-->
-      <!--            <a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a>-->
-      <!--            <a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a>-->
-      <!--            <a href="#"><i class="fa fa-dribbble" aria-hidden="true"></i></a>-->
-      <!--            <a href="#"><i class="fa fa-behance" aria-hidden="true"></i></a>-->
-      <!--            <a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a>-->
-      <!--        </div>-->
-
-
-      <!-- Footer Widget Area -->
-      <div class="col-12 col-md-6 col-lg-4">
-        <div class="footer-widget-area mt-50">
-          <h6 class="widget-title mb-5">Find us on the map</h6>
-          <img src="/user/img/bg-img/footer-map.png" alt="Find us on the map">
-        </div>
-      </div>
-
-      <!-- Footer Widget Area -->
-      <div class="col-12 col-md-6 col-lg-3">
-        <div class="footer-widget-area mt-50">
-          <h6 class="widget-title mb-5">Subscribe to our newsletter</h6>
-          <form action="#" method="post" class="subscribe-form">
-            <input type="email" name="subscribe-email" id="subscribeemail" placeholder="Your E-mail">
-            <button type="submit">Subscribe</button>
-          </form>
+      <!-- Center Schedule -->
+      <div class="col-12 col-md-6 col-lg-5">
+        <div class="footer-widget-area text-center text-md-start">
+          <h6 style="font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.8rem; letter-spacing: 2px; border-bottom: 2px solid #ffffff;color: #ffffff ">Center Schedule</h6>
+          <div th:if="${#lists.isEmpty(centerSchedules)}">
+            <p class="text-muted">No schedules available.</p>
+          </div>
+          <ul th:unless="${#lists.isEmpty(centerSchedules)}" class="list-unstyled">
+            <li th:each="schedule : ${centerSchedules}" class="mb-2">
+              <strong th:text="${schedule.dayOfWeek} + ':'" class="text-white"></strong>
+              <span th:if="${schedule.isClosed}" class="badge bg-danger ms-2">Closed</span>
+              <span th:unless="${schedule.isClosed}" class="ms-2 text-white">
+                <span th:text="${schedule.startTime}"></span> - <span th:text="${schedule.endTime}"></span>
+              </span>
+            </li>
+          </ul>
         </div>
       </div>
 
       <!-- Copywrite Text -->
-      <div class="col-12">
-        <div class="copywrite-text mt-30">
-          <p><a href="#"><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-            Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart-o" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
-            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></p>
+      <div class="col-12 col-lg-2 text-center">
+        <div class="copywrite-text mt-4">
+          <p class="text-muted mb-0">
+            © <script>document.write(new Date().getFullYear());</script> SkinSoothe. All rights reserved.
+          </p>
+          <p class="text-muted small">
+            Designed by <a href="https://colorlib.com" target="_blank" class="text-white text-decoration-none">Mhuymeomeo</a>
+          </p>
         </div>
       </div>
     </div>
   </div>
+  <!-- Background Gradient Overlay -->
+  <div class="bg-overlay"></div>
+
+  <!-- Flower Animation -->
+  <div class="flower-container">
+    <div class="flower flower-1"></div>
+    <div class="flower flower-2"></div>
+    <div class="flower flower-3"></div>
+    <div class="flower flower-4"></div>
+    <div class="flower flower-5"></div>
+    <div class="flower flower-6"></div>
+    <div class="flower flower-7"></div>
+    <div class="flower flower-8"></div>
+    <div class="flower flower-9"></div>
+  </div>
+
+  <!-- Custom CSS for Footer -->
+  <style>
+    .footer-area {
+      background: linear-gradient(135deg, #2e2e2e 0%, #2e2e2e 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .bg-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
+      z-index: 0;
+    }
+
+    .footer-area .container {
+      position: relative;
+      z-index: 1;
+    }
+
+    .widget-title {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 4rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      border-bottom: 2px solid #ffd700;
+      padding-bottom: 10px;
+      color: #ffd700;
+    }
+
+    .footer-area .text-white {
+      font-family: 'Roboto', sans-serif;
+      font-weight: 400;
+      font-size: 0.95rem;
+    }
+
+    .copywrite-text p {
+      font-size: 0.85rem;
+    }
+
+    .copywrite-text a:hover {
+      color: #ffd700 !important;
+      transition: color 0.3s ease;
+    }
+
+    .flower {
+      position: absolute;
+      width: 20px; /* Kích thước bông hoa */
+      height: 20px;
+      background: radial-gradient(circle, #ffeb3b 20%, transparent 70%); /* Tạo hình bông hoa vàng */
+      border-radius: 50%; /* Hình tròn */
+      box-shadow: 0 0 10px rgba(255, 235, 59, 0.5); /* Bóng sáng vàng */
+      opacity: 0.7;
+      animation: fall linear infinite;
+    }
+
+    .flower-1 { left: 10%; animation-duration: 10s; animation-delay: 0s; }
+
+    .flower-2 { left: 20%; animation-duration: 16s; animation-delay: 2s; }
+
+    .flower-3 { left: 30%; animation-duration: 12s; animation-delay: 4s; }
+
+    .flower-4 { left: 40%; animation-duration: 14s; animation-delay: 6s; }
+
+    .flower-5 { left: 50%; animation-duration: 18s; animation-delay: 8s; }
+
+    .flower-6 { left: 60%; animation-duration: 10s; animation-delay: 10s; }
+
+    .flower-7 { left: 70%; animation-duration: 14s; animation-delay: 12s; }
+
+    .flower-8 { left: 80%; animation-duration: 16s; animation-delay: 14s; }
+
+
+    .flower-9 { left: 90%; animation-duration: 12s; animation-delay: 16s; }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(0) translateX(0) rotate(0deg);
+        opacity: 0.7;
+      }
+      25% {
+        transform: translateY(25%) translateX(10px) rotate(90deg);
+      }
+      50% {
+        transform: translateY(50%) translateX(-10px) rotate(180deg);
+        opacity: 0.4;
+      }
+      75% {
+        transform: translateY(75%) translateX(10px) rotate(270deg);
+      }
+      100% {
+        transform: translateY(100%) translateX(0) rotate(360deg);
+        opacity: 0;
+      }
+    }
+  </style>
+
+  <!-- JavaScript to Adjust Flower Animation -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const footer = document.querySelector('.footer-area');
+      const flowerContainer = document.querySelector('.flower-container');
+      const flowers = document.querySelectorAll('.flower');
+
+      // Đảm bảo flower-container có chiều cao bằng footer
+      const footerHeight = footer.offsetHeight;
+      flowerContainer.style.height = `${footerHeight}px`;
+
+      // Điều chỉnh hiệu ứng rơi cho từng bông hoa
+      flowers.forEach(flower => {
+        // Đặt vị trí ban đầu của bông hoa trên cùng của footer
+        flower.style.top = `-${flower.offsetHeight}px`;
+
+        // Tính toán và áp dụng lại animation để rơi đúng xuống dưới footer
+        const duration = parseFloat(getComputedStyle(flower).animationDuration);
+        flower.style.animation = `fall ${duration}s linear infinite`;
+      });
+    });
+  </script>
+
 </footer>
+

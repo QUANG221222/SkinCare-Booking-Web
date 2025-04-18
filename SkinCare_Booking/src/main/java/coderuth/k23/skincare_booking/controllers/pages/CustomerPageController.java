@@ -275,4 +275,13 @@ public class CustomerPageController {
     public String showQuiz() {
         return "user/customer/quiz";
     }
+
+    //hiển thị lịch làm việc của trung tâm
+    @Autowired
+    private CenterScheduleService centerScheduleService;
+
+    @ModelAttribute
+    public void addCenterSchedules(Model model) {
+        model.addAttribute("centerSchedules", centerScheduleService.getAllSchedules());
+    }
 }
