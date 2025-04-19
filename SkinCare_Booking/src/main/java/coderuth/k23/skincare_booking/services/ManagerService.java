@@ -1,7 +1,6 @@
 package coderuth.k23.skincare_booking.services;
 
 import coderuth.k23.skincare_booking.dtos.request.EditProfileRequest;
-import coderuth.k23.skincare_booking.models.Customer;
 import coderuth.k23.skincare_booking.models.Manager;
 import coderuth.k23.skincare_booking.repositories.ManagerRepository;
 import org.springframework.beans.factory.annotation.Autowired;

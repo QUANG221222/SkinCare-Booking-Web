@@ -1,12 +1,9 @@
 package coderuth.k23.skincare_booking.services;
 
 import coderuth.k23.skincare_booking.dtos.request.EditProfileRequest;
-import coderuth.k23.skincare_booking.models.Manager;
-import coderuth.k23.skincare_booking.models.SkinTherapist;
 import coderuth.k23.skincare_booking.models.Staff;
 import coderuth.k23.skincare_booking.repositories.StaffRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 

@@ -1,19 +1,15 @@
 package coderuth.k23.skincare_booking.services;
 
 import coderuth.k23.skincare_booking.dtos.request.SpaServiceRequestDTO;
-import coderuth.k23.skincare_booking.dtos.response.SpaServiceResponseDTO;
 import coderuth.k23.skincare_booking.models.CenterSchedule;
 import coderuth.k23.skincare_booking.models.SpaService;
-import coderuth.k23.skincare_booking.models.Staff;
 import coderuth.k23.skincare_booking.repositories.CenterScheduleRepository;
 import coderuth.k23.skincare_booking.repositories.SpaServiceRepository;
 import jakarta.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.math.BigDecimal;
 import java.util.List;
 @Service
 public class SpaServiceService {
@@ -37,7 +33,7 @@ public class SpaServiceService {
 
     @Transactional
     public void createService(SpaServiceRequestDTO spaServiceRequestDTO) {
-        if (spaServiceRequestDTO.getPrice() == null || spaServiceRequestDTO.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
+        if (spaServiceRequestDTO.getPrice() == null || spaServiceRequestDTO.getPrice()<= 0) {
             throw new IllegalArgumentException("Price must be greater than zero!");
         }
         if (spaServiceRepository.existsByName(spaServiceRequestDTO.getName())) {
@@ -62,7 +58,7 @@ public class SpaServiceService {
         SpaService spaService = spaServiceRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Service not found!"));
 
-        if (updatedService.getPrice() == null || updatedService.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
+        if (updatedService.getPrice() == null || updatedService.getPrice() <= 0) {
             throw new IllegalArgumentException("Price must be greater than zero!");
         }
         spaService.setPrice(updatedService.getPrice());
