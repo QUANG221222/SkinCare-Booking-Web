@@ -7,17 +7,23 @@ import coderuth.k23.skincare_booking.repositories.SkinTherapistRepository;
 import coderuth.k23.skincare_booking.repositories.TherapistScheduleRepository;
 import jakarta.transaction.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Service
 public class AppointmentService {
+
+    private static final Logger logger = LoggerFactory.getLogger(AppointmentService.class);
 
     @Autowired
     private AppointmentRepository appointmentRepository;
@@ -298,5 +304,21 @@ public class AppointmentService {
     // Get a list of appointments for a therapist
     public List<Appointment> getAppointmentsByTherapist(UUID therapistId) {
         return appointmentRepository.findBySkinTherapistId(therapistId);
+    }
+
+    // Method to calculate revenue for a specific time range
+    public double calculateCurrentMonthRevenue() {
+        LocalDate today = LocalDate.now(); // April 18, 2025
+        LocalDate startOfMonth = today.with(TemporalAdjusters.firstDayOfMonth()); // April 1, 2025
+        LocalDateTime start = startOfMonth.atStartOfDay(); // Start of April 1
+        LocalDateTime end = LocalDateTime.now(); // Current moment (April 18, 2025, 11:13 PM PDT)
+
+        List<Payment> paidPayments = paymentRepository.findByCreatedAtBetweenAndPaymentStatus(start, end, Payment.PaymentStatus.PAID);
+        double revenue = paidPayments.stream()
+                .mapToDouble(Payment::getAmount)
+                .sum();
+
+        logger.info("Calculated current month revenue (only PAID payments): ${}", revenue);
+        return revenue;
     }
 }
