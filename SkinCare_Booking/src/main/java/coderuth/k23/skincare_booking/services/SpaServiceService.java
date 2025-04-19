@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.math.BigDecimal;
 import java.util.List;
 @Service
 public class SpaServiceService {
@@ -34,11 +35,11 @@ public class SpaServiceService {
                 .orElseThrow(() -> new RuntimeException("Service not found!"));
     }
 
+    @Transactional
     public void createService(SpaServiceRequestDTO spaServiceRequestDTO) {
-        if (spaServiceRequestDTO.getPrice() <= 0) {
+        if (spaServiceRequestDTO.getPrice() == null || spaServiceRequestDTO.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Price must be greater than zero!");
         }
-
         if (spaServiceRepository.existsByName(spaServiceRequestDTO.getName())) {
             throw new IllegalArgumentException("Spa service name is already taken");
         }
@@ -56,14 +57,15 @@ public class SpaServiceService {
 
         spaServiceRepository.save(service);
     }
-
+    @Transactional
     public SpaService updateService(Long id, SpaService updatedService) {
         SpaService spaService = spaServiceRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Service not found!"));
 
-        if (updatedService.getPrice() <= 0) {
+        if (updatedService.getPrice() == null || updatedService.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Price must be greater than zero!");
         }
+        spaService.setPrice(updatedService.getPrice());
 
         spaService.setName(updatedService.getName());
         spaService.setImageUrl(updatedService.getImageUrl());
@@ -72,7 +74,7 @@ public class SpaServiceService {
         spaService.setDuration(updatedService.getDuration());
         return spaServiceRepository.save(spaService);
     }
-
+    @Transactional
     public void deleteService(Long id) {
         spaServiceRepository.deleteById(id);
     }

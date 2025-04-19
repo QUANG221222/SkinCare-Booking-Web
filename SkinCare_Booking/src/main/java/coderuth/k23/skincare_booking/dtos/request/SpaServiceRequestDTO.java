@@ -1,5 +1,7 @@
 package coderuth.k23.skincare_booking.dtos.request;
 
+import java.math.BigDecimal;
+
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
@@ -20,9 +22,9 @@ public class SpaServiceRequestDTO {
     )
     private String imageUrl;
 
-    @NotNull(message = "Price is required")
-    @Positive(message = "Price must be positive")
-    private double price;
+     @NotNull(message = "Price is required")
+    @DecimalMin(value = "0.01", message = "Price must be greater than 0")
+    private BigDecimal price;
 
     @NotNull(message = "Duration is required")
     @Positive(message = "Duration must be positive")

@@ -218,10 +218,17 @@
                             <strong class="text-white">(Duration: <strong th:text="${duration}"></strong> minutes)</strong>
                         </div>
                         <!-- Book Room -->
-                        <a class="book-room-btn btn palatin-btn" th:onclick="|loadAppointmentForm(${service.id})|"
-                            href="javascript:void(0);">
+                        <!-- Thêm điều kiện để ẩn nút Book Now nếu giá <= 0 -->
+                        <a th:if="${service.price != null and service.price > 0}"
+                           class="book-room-btn btn palatin-btn"
+                           th:onclick="|loadAppointmentForm(${service.id})|"
+                           href="javascript:void(0);">
                             Book Now
                         </a>
+                        <span th:unless="${service.price != null and service.price > 0}"
+                              class="text-danger">
+                            Dịch vụ không khả dụng
+                        </span>
                     </div>
                 </div>
                 <!-- Hiển thị thông báo nếu không có service -->
@@ -233,7 +240,7 @@
     </section>
         <!-- Appointment Form Modal -->
     <div class="modal fade" id="appointmentModal" tabindex="-1" aria-labelledby="appointmentModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
             <h5 class="modal-title" id="appointmentModalLabel">Đặt dịch vụ chăm sóc da</h5>

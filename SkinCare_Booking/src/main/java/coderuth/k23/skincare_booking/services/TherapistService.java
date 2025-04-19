@@ -30,6 +30,11 @@ public class TherapistService {
         return skinTherapistRepository.findAll();
     }
 
+    public SkinTherapist getTherapistById(UUID id) {
+        return skinTherapistRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Therapist not found!"));
+    }
+
     public SkinTherapist createTherapist(SkinTherapist therapist) {
         return skinTherapistRepository.save(therapist);
     }

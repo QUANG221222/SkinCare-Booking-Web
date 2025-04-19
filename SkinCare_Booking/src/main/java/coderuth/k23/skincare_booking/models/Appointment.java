@@ -61,8 +61,8 @@ public class Appointment {
     @Column(length = 20)
     private AppointmentStatus status; // Trạng thái đặt dịch vụ
 
-    @OneToMany(mappedBy = "appointment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Payment> payments = new ArrayList<>();
+    @OneToOne(mappedBy = "appointment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Payment payment;
 
     private String result; // Kết quả thực hiện dịch vụ (do chuyên viên ghi nhận)
 
@@ -81,9 +81,6 @@ public class Appointment {
     @Column(name = "updated_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime updatedAt;
     
-    
-    
-
     @PrePersist //sẽ được gọi khi 1 entity được lưu vào csdl đầu tiên.
     protected void onCreate() {
         createdAt = LocalDateTime.now();

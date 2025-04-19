@@ -10,7 +10,17 @@ import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+
+import java.math.BigDecimal;
+import java.time.format.DateTimeFormatter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -37,6 +47,17 @@ public class AppointmentService {
     @Autowired
     private PaymentRepository paymentRepository;
 
+    @Autowired
+    private JavaMailSender mailSender;
+
+    public void sendConfirmationEmail(Appointment appointment) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(appointment.getCustomer().getEmail());
+        message.setSubject("Xác nhận đặt lịch hẹn");
+        message.setText("Hẹn của bạn vào " + appointment.getAppointmentTime() + " đã được tạo!");
+        mailSender.send(message);
+    }
+
     // Customer books a service
     @Transactional
     public Appointment createAppointment(Appointment appointment) {
@@ -48,10 +69,17 @@ public class AppointmentService {
         if (time.isBefore(LocalTime.of(8, 0)) || time.isAfter(LocalTime.of(20, 0))) {
             throw new IllegalArgumentException("Trung tâm chỉ hoạt động từ 8:00 đến 20:00!");
         }
+        // Kiểm tra và xác thực SkinTherapist nếu được chỉ định
         if (appointment.getSkinTherapist() != null) {
-            validateTherapistAvailability(appointment.getSkinTherapist(), appointmentTime, appointment.getSpaService());
+            SkinTherapist therapist = skinTherapistRepository.findById(appointment.getSkinTherapist().getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Chuyên viên không tồn tại với ID: " + appointment.getSkinTherapist().getId()));
+            validateTherapistAvailability(therapist, appointmentTime, appointment.getSpaService());
+            appointment.setSkinTherapist(therapist);
+            appointment.setStatus(Appointment.AppointmentStatus.ASSIGNED);
+        } else {
+            appointment.setStatus(Appointment.AppointmentStatus.PENDING);
         }
-        // Đảm bảo các trường bắt buộc không null
+           
         if (appointment.getSpaService() == null || appointment.getSpaService().getId() == null) {
             throw new IllegalArgumentException("Dịch vụ không được để trống!");
         }
@@ -60,40 +88,29 @@ public class AppointmentService {
         }
         if (appointment.getAppointmentTime() == null) {
             throw new IllegalArgumentException("Thời gian đặt lịch không được để trống!");
+        }   
+
+        // Kiểm tra giá dịch vụ
+        BigDecimal servicePrice = appointment.getSpaService().getPrice();
+        if (servicePrice == null || servicePrice.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Giá dịch vụ phải lớn hơn 0 cho spa_service_id: " + appointment.getSpaService().getId());
         }
 
-        // Đặt trạng thái mặc định
-        appointment.setStatus(Appointment.AppointmentStatus.PENDING);
-
-        // Khởi tạo danh sách payments nếu chưa có
-        if (appointment.getPayments() == null) {
-            appointment.setPayments(new ArrayList<>());
-        }
-
-        // Lưu Appointment
         Appointment savedAppointment = appointmentRepository.save(appointment);
 
-        // Kiểm tra xem đã có Payment nào chưa
-        List<Payment> existingPayments = paymentRepository.findByAppointmentId(savedAppointment.getId());
-        Payment payment;
-        if (existingPayments.isEmpty()) {
-            payment = new Payment();
-            payment.setAppointment(savedAppointment);
-            payment.setAmount(savedAppointment.getSpaService().getPrice());
-            payment.setPaymentMethod("N/A");
-            payment.setPaymentStatus(Payment.PaymentStatus.UNPAID);
-            Payment savedPayment = paymentRepository.save(payment);
-            savedAppointment.getPayments().add(savedPayment);
-        }
+        Payment payment = new Payment();
+        payment.setAppointment(savedAppointment);
+        payment.setAmount(servicePrice);
+        payment.setPaymentMethod("N/A");
+        payment.setPaymentStatus(Payment.PaymentStatus.UNPAID);
+        Payment savedPayment = paymentRepository.save(payment);
+
+        savedAppointment.setPayment(savedPayment);
         return appointmentRepository.save(savedAppointment);
     }
 
     // Check the therapist's schedule
     private void validateTherapistAvailability(SkinTherapist therapist, LocalDateTime appointmentTime, SpaService spaService) {
-        // If no therapist is assigned or ID is invalid, skip the check
-        if (therapist == null || therapist.getId() == null) {
-            return;
-        }
         // Get the therapist's schedule
         List<TherapistSchedule> schedules = therapistScheduleRepository.findBySkinTherapistId(therapist.getId());
         boolean isAvailable = schedules.stream().anyMatch(schedule -> {
@@ -167,9 +184,9 @@ public class AppointmentService {
     // Therapist records the result of the service
     public Appointment recordResult(Long appointmentId, String result) {
         Appointment appointment = appointmentRepository.findById(appointmentId)
-                .orElseThrow(() -> new RuntimeException("Service booking not found!"));
-        if (appointment.getStatus() != Appointment.AppointmentStatus.ASSIGNED) {
-            throw new RuntimeException("Service booking is not in ASSIGNED status!");
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy lịch hẹn với ID: " + appointmentId));
+        if (!Appointment.AppointmentStatus.ASSIGNED.equals(appointment.getStatus())) {
+            throw new RuntimeException("Lịch hẹn phải ở trạng thái ASSIGNED để ghi kết quả! Trạng thái hiện tại: " + appointment.getStatus());
         }
         appointment.setResult(result);
         appointment.setStatus(Appointment.AppointmentStatus.COMPLETED);
@@ -180,61 +197,53 @@ public class AppointmentService {
     @Transactional
     public Appointment checkOut(Long appointmentId) {
         Appointment appointment = appointmentRepository.findById(appointmentId)
-                .orElseThrow(() -> new RuntimeException("Service booking not found!"));
+            .orElseThrow(() -> new RuntimeException("Service booking not found!"));
         if (appointment.getStatus() != Appointment.AppointmentStatus.COMPLETED) {
             throw new RuntimeException("Service booking is not in COMPLETED status!");
         }
-            // Khởi tạo danh sách payments nếu chưa có
-        if (appointment.getPayments() == null) {
-            appointment.setPayments(new ArrayList<>());
-        }
-        // Kiểm tra xem đã có Payment nào chưa
-        List<Payment> existingPayments = paymentRepository.findByAppointmentId(appointment.getId());
-        Payment payment;
-        if (existingPayments.isEmpty()) {
-            payment = new Payment();
-            payment.setAppointment(appointment);
-            payment.setAmount(appointment.getSpaService().getPrice());
-            payment.setPaymentMethod("N/A");
-            payment.setPaymentStatus(Payment.PaymentStatus.UNPAID);
-            Payment savedPayment = paymentRepository.save(payment);
-            appointment.getPayments().add(savedPayment);
+        if (appointment.getPayment() == null) {
+            throw new RuntimeException("Không tìm thấy bản ghi thanh toán cho lịch hẹn này!");
         }
         appointment.setStatus(Appointment.AppointmentStatus.CHECKED_OUT);
         return appointmentRepository.save(appointment);
     }
 
+
     // Xác nhận thanh toán cho lịch hẹn
-    public Appointment confirmPayment(Long appointmentId, String paymentMethod) {
+    @Transactional
+    public Appointment confirmPayment(Long appointmentId) {
         Appointment appointment = appointmentRepository.findById(appointmentId)
             .orElseThrow(() -> new RuntimeException("Không tìm thấy lịch hẹn!"));
         if (appointment.getStatus() != Appointment.AppointmentStatus.CHECKED_OUT) {
             throw new RuntimeException("Lịch hẹn chưa ở trạng thái CHECKED_OUT, không thể thanh toán!");
         }
-        List<Payment> existingPayments = paymentRepository.findByAppointmentId(appointmentId);
-        Payment payment;
-        if (!existingPayments.isEmpty()) {
-            payment = existingPayments.get(0);
-            if (payment.getPaymentStatus() == Payment.PaymentStatus.PAID) {
-                throw new RuntimeException("Lịch hẹn đã được thanh toán!");
-            }
-            payment.setAmount(appointment.getSpaService().getPrice()); // Gán lại amount
-            payment.setPaymentMethod(paymentMethod);
-            payment.setPaymentStatus(Payment.PaymentStatus.PAID);
-        } else {
-            payment = new Payment();
-            payment.setAppointment(appointment);
-            payment.setAmount(appointment.getSpaService().getPrice());
-            payment.setPaymentMethod(paymentMethod);
-            payment.setPaymentStatus(Payment.PaymentStatus.PAID);
+
+        Payment payment = appointment.getPayment();
+        if (payment == null) {
+            throw new RuntimeException("Không tìm thấy bản ghi thanh toán cho lịch hẹn này!");
         }
-        Payment savedPayment = paymentRepository.save(payment);
-        appointment.getPayments().add(savedPayment);
-        return appointmentRepository.save(appointment);
+        if (payment.getPaymentStatus() == Payment.PaymentStatus.PAID) {
+            throw new RuntimeException("Lịch hẹn đã được thanh toán!");
+        }
+        BigDecimal paymentAmount = payment.getAmount();
+        BigDecimal servicePrice = appointment.getSpaService().getPrice();
+        if (paymentAmount == null || servicePrice == null) {
+            throw new IllegalStateException("Số tiền thanh toán hoặc giá dịch vụ không được null!");
+        }
+        if (!paymentAmount.equals(servicePrice)) {
+            throw new IllegalStateException("Số tiền thanh toán (" + paymentAmount + ") không khớp với giá dịch vụ (" + servicePrice + ")!");
+        }
+        
+
+        payment.setPaymentMethod("N/A");
+        payment.setPaymentStatus(Payment.PaymentStatus.PAID);
+        paymentRepository.save(payment);
+
+        return appointment;
     }
 
-    
     // Hủy lịch hẹn (cho khách hàng)
+    @Transactional
     public Appointment cancelAppointmentByCustomer(Long appointmentId, UUID customerId) {
         Appointment appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy lịch hẹn!"));
@@ -250,46 +259,86 @@ public class AppointmentService {
         }
         appointment.setStatus(Appointment.AppointmentStatus.CANCELLED);
 
-        // Nếu có Payment nào đã PAID, cập nhật thành REFUNDED
-        appointment.getPayments().stream()
-        .filter(p -> p.getPaymentStatus() == Payment.PaymentStatus.PAID)
-        .forEach(p -> {
-            p.setPaymentStatus(Payment.PaymentStatus.REFUNDED);
-            paymentRepository.save(p);
-        });
+        Payment payment = appointment.getPayment();
+        if (payment != null && payment.getPaymentStatus() == Payment.PaymentStatus.PAID) {
+            payment.setPaymentStatus(Payment.PaymentStatus.REFUNDED);
+            paymentRepository.save(payment);
+        }
 
-    return appointmentRepository.save(appointment);
+        return appointmentRepository.save(appointment);
     }
 
     // Hủy lịch hẹn (cho nhân viên/quản lý)
+    @Transactional
     public Appointment cancelAppointmentByStaff(Long appointmentId) {
         Appointment appointment = appointmentRepository.findById(appointmentId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy lịch hẹn!"));
+            .orElseThrow(() -> new RuntimeException("Không tìm thấy lịch hẹn!"));
         if (appointment.getStatus() == Appointment.AppointmentStatus.CHECKED_OUT) {
             throw new RuntimeException("Không thể hủy lịch hẹn đã CHECKED_OUT!");
         }
         appointment.setStatus(Appointment.AppointmentStatus.CANCELLED);
 
-        // Nếu có Payment nào đã PAID, cập nhật thành REFUNDED
-        appointment.getPayments().stream()
-        .filter(p -> p.getPaymentStatus() == Payment.PaymentStatus.PAID)
-        .forEach(p -> {
-            p.setPaymentStatus(Payment.PaymentStatus.REFUNDED);
-            paymentRepository.save(p);
-        });
+        Payment payment = appointment.getPayment();
+        if (payment != null && payment.getPaymentStatus() == Payment.PaymentStatus.PAID) {
+            payment.setPaymentStatus(Payment.PaymentStatus.REFUNDED);
+            paymentRepository.save(payment);
+        }
 
-    return appointmentRepository.save(appointment);
+        return appointmentRepository.save(appointment);
+    }
+    // Lấy danh sách tất cả các thanh toán
+    public Page<Payment> getPaymentHistoryByCustomer(UUID customerId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        return paymentRepository.findByAppointmentCustomerId(customerId, pageable);
     }
 
-    // Lấy lịch sử thanh toán của customer
-    public List<Payment> getPaymentHistoryByCustomer(UUID customerId) {
-        return paymentRepository.findByAppointmentCustomerId(customerId);
+    public Page<Payment> getPaymentHistoryByCustomerIdAndFilters(
+            UUID customerId,
+            int page,
+            int size,
+            String status,
+            String startDate,
+            String endDate) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        
+        LocalDateTime start = null;
+        LocalDateTime end = null;
+        try {
+            if (startDate != null && !startDate.isEmpty()) {
+                start = LocalDateTime.parse(startDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+            }
+            if (endDate != null && !endDate.isEmpty()) {
+                end = LocalDateTime.parse(endDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+            }
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Định dạng ngày không hợp lệ!");
+        }
+
+        // Chuẩn hóa status
+        String normalizedStatus = status != null && !status.isEmpty() ? status.toUpperCase() : null;
+        if (normalizedStatus != null && !isValidPaymentStatus(normalizedStatus)) {
+            throw new IllegalArgumentException("Trạng thái thanh toán không hợp lệ! Chấp nhận: UNPAID, PAID, REFUNDED");
+        }
+
+        return paymentRepository.findByAppointmentCustomerIdAndFilters(
+                customerId, normalizedStatus, start, end, pageable);
+    }
+
+    private boolean isValidPaymentStatus(String status) {
+        try {
+            Payment.PaymentStatus.valueOf(status);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
     }
 
     // Lấy lịch sử thanh toán của một appointment
-    public List<Payment> getPaymentsByAppointment(Long appointmentId) {
-    return paymentRepository.findByAppointmentId(appointmentId);
-}
+    public Payment getPaymentByAppointment(Long appointmentId) {
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy lịch hẹn!"));
+        return appointment.getPayment();
+    }
 
     // Get a list of appointments by status
     public List<Appointment> getAppointmentsByStatus(Appointment.AppointmentStatus status) {
@@ -305,6 +354,34 @@ public class AppointmentService {
     public List<Appointment> getAppointmentsByTherapist(UUID therapistId) {
         return appointmentRepository.findBySkinTherapistId(therapistId);
     }
+    // Lấy một lịch hẹn theo ID
+    public Appointment getAppointmentById(Long id) {
+        return appointmentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy lịch hẹn với ID: " + id));
+    }
+
+    // Lấy tất cả lịch hẹn
+    public List<Appointment> getAllAppointments() {
+        return appointmentRepository.findAll();
+    }
+
+    // Cập nhật lịch hẹn
+    public Appointment updateAppointment(Appointment appointment) {
+        return appointmentRepository.save(appointment);
+    }
+    // Xác định trạng thái thanh toán của lịch hẹn
+    public String getPaymentStatusDescription(Appointment appointment) {
+        if (appointment.getPayment() == null) {
+            return "Chưa thanh toán";
+        }
+        Payment payment = appointment.getPayment();
+        if (payment.getPaymentStatus() == Payment.PaymentStatus.PAID) {
+            return "Đã thanh toán";
+        } else if (payment.getPaymentStatus() == Payment.PaymentStatus.REFUNDED) {
+            return "Đã hoàn tiền";
+        } else {
+            return "Chưa thanh toán";
+        }
 
     // Method to calculate revenue for a specific time range
     public double calculateCurrentMonthRevenue() {
