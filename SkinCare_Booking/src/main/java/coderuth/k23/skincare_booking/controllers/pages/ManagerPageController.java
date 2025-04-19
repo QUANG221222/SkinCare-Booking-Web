@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -51,6 +54,9 @@ public class ManagerPageController {
     @Autowired
     private SpaServiceService spaServiceService;
 
+    @Autowired
+    private AppointmentService appointmentService;
+
     @ModelAttribute("currentURI")
     public String currentURI(HttpServletRequest request) {
         return request.getRequestURI();
@@ -62,7 +68,12 @@ public class ManagerPageController {
         Manager manager = managerRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Manager not found"));
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM", Locale.ENGLISH);
+        String monthName = LocalDateTime.now().format(formatter);
+
         model.addAttribute("manager", manager);
+        model.addAttribute("month", monthName);
+        model.addAttribute("sales", appointmentService.calculateCurrentMonthRevenue());
         return "admin/index"; // "user/index.html"
     }
 
