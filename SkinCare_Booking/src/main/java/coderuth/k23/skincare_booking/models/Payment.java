@@ -4,7 +4,6 @@ import lombok.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -25,7 +24,7 @@ public class Payment {
 
     @Column(name = "amount", nullable = false)
     @Min(value = 0, message = "Số tiền không được âm")
-    private BigDecimal amount; // Số tiền thanh toán
+    private Double amount; // Số tiền thanh toán
 
     @Column(name = "payment_method", nullable = false)
     private String paymentMethod; // Phương thức thanh toán (CASH, CARD, TRANSFER)

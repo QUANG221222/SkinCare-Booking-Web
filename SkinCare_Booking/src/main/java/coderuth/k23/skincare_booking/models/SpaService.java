@@ -4,7 +4,6 @@ import lombok.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -31,7 +30,7 @@ public class SpaService {
 
     @Column(name = "price", nullable = false)
     @Min(value = 0, message = "Giá dịch vụ không được âm")
-    private BigDecimal price;
+    private Double price;
 
     @Column(name = "duration", nullable = false)
     private int duration;

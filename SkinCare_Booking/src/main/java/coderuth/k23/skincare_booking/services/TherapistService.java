@@ -1,6 +1,5 @@
 package coderuth.k23.skincare_booking.services;
 
-import coderuth.k23.skincare_booking.models.Manager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

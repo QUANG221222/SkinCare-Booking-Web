@@ -107,7 +107,7 @@
 <div class="invoice-box">
     <!-- Header -->
     <div class="invoice-header">
-        <img src="https://via.placeholder.com/120x40?text=Spa+Logo" alt="Spa Logo">
+        <img src="/user/img/core-img/logo_1.png" alt="Spa Logo">
         <h2>Hóa đơn đặt dịch vụ</h2>
         <p>Mã lịch hẹn: <span th:text="${appointment.id}"></span> |
             Ngày tạo: <span th:text="${#temporals.format(appointment.createdAt, 'dd/MM/yyyy HH:mm')}"></span> |
@@ -169,11 +169,11 @@
     <!-- Action Buttons -->
     <div class="action-buttons">
         <div th:if="${isUnpaid}">
-            <form th:action="@{/protected/staff/appointments/confirm-payment/{id}(id=${appointment.id})}" method="post" class="d-inline">
+            <form th:action="@{/protected/manager/appointments/confirm-payment/{id}(id=${appointment.id})}" method="post" class="d-inline">
                 <button type="submit" class="btn btn-primary me-2">Xác nhận thanh toán</button>
             </form>
         </div>
-        <a th:href="@{/protected/staff/appointments/checked-out}" class="btn btn-secondary">Quay lại</a>
+        <a th:href="@{/protected/manager/appointments/checked-out}" class="btn btn-secondary">Quay lại</a>
     </div>
     <button onclick="window.print()" class="btn btn-info">In hóa đơn</button>
 
