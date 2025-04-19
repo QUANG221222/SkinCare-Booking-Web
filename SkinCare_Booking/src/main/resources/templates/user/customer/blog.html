@@ -8,7 +8,7 @@
 <!-- Breadcrumb -->
 <section class="breadcumb-area bg-img d-flex align-items-center justify-content-center" style="background-image: url(/user/img/bg-img/bg-10.jpg);">
     <div class="bradcumbContent">
-        <h2>News</h2>
+        <h2>Blog</h2>
     </div>
 </section>
 
@@ -20,20 +20,21 @@
                 <div class="palatin-blog-posts">
 
                     <div class="single-blog-post mb-100 wow fadeInUp" data-wow-delay="100ms" th:each="blog : ${blogs}">
-                        <!-- Thumbnail with fallback -->
-                        <div class="blog-post-thumb" style="position:relative; padding-top:56.25%; overflow:hidden;">
-                            <a th:href="@{/protected/customer/blog/{id}(id=${blog.id})}"
-                               style="position:absolute; top:0; left:0; width:100%; height:100%;">
-                                <img th:if="${blog.imageUrl != null and !#strings.isEmpty(blog.imageUrl)}"
-                                     th:src="@{${blog.imageUrl}}"
-                                     alt="Post image"
-                                     style="width:100%; height:100%; object-fit:cover;" />
-                                <img th:unless="${blog.imageUrl != null and !#strings.isEmpty(blog.imageUrl)}"
-                                     th:src="@{/user/img/blog-img/default-blog.jpg}"
-                                     alt="Default post image"
-                                     style="width:100%; height:100%; object-fit:cover;" />
+                        <!-- Thumbnail with proper error handling and centered -->
+                        <div class="blog-post-thumb text-center mb-4">
+                            <a th:href="@{/protected/customer/blog/{id}(id=${blog.id})}">
+                                <img
+                                        th:src="${blog.imageUrl != null && !#strings.isEmpty(blog.imageUrl)
+                    ? blog.imageUrl
+                    : '/user/img/blog-img/default-blog.jpg'}"
+                                        th:onerror="this.src='/user/img/blog-img/default-blog.jpg'"
+                                        th:alt="${blog.title}"
+                                        class="img-fluid mx-auto d-block"
+                                        style="max-width: 800px;"/>
                             </a>
                         </div>
+
+
 
                         <!-- Content -->
                         <div class="post-content text-center">
@@ -47,7 +48,7 @@
                             </h4>
                             <div class="post-meta d-flex justify-content-center">
                                 <a href="#" class="post-catagory" th:text="${blog.category}">Category</a>
-                                <a href="#" class="post-comments" th:text="${blog.commentCount} + ' comments'">0 comments</a>
+                                <a href="#" class="post-comments" th:text="${blog.commentCount != null ? blog.commentCount + ' comments' : '0 comments'}">0 comments</a>
                             </div>
                             <p th:text="${blog.excerpt}">Blog excerpt goes here...</p>
                         </div>

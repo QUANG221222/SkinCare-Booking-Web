@@ -5,8 +5,6 @@ import coderuth.k23.skincare_booking.dtos.response.BlogResponseDTO;
 import coderuth.k23.skincare_booking.models.Blog;
 import coderuth.k23.skincare_booking.repositories.BlogRepository;
 import coderuth.k23.skincare_booking.util.BlogMapper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -22,24 +20,12 @@ public class BlogService {
         this.blogRepository = blogRepository;
     }
 
-    public Page<BlogResponseDTO> getAllBlogs(Pageable pageable) {
-        return blogRepository.findAll(pageable)
-                .map(BlogMapper::toDto);
-    }
-
 
     public List<BlogResponseDTO> getAllBlogs() {
         return blogRepository.findAll()
                 .stream()
                 .map(BlogMapper::toDto)
                 .collect(Collectors.toList());
-    }
-
-
-    public BlogResponseDTO getBlogById(Long id) {
-        return blogRepository.findById(id)
-                .map(BlogMapper::toDto)
-                .orElseThrow(() -> new RuntimeException("Blog not found with id = " + id));
     }
 
 

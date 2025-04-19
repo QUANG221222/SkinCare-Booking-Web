@@ -46,6 +46,7 @@ public class CustomerPageController {
     @Autowired
     private FeedbackService feedbackService;
 
+    @Autowired
     private SpaServiceService spaServiceService;
 
     @Autowired
@@ -207,7 +208,6 @@ public class CustomerPageController {
         model.addAttribute("blogs", blogs);
         return "user/customer/blog";
     }
-
     @GetMapping("/profile")
     public String getCustomerProfile(Model model, Principal principal) {
         String username = principal.getName();
