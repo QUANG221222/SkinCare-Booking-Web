@@ -2,6 +2,9 @@ package coderuth.k23.skincare_booking.models;
 
 import lombok.*;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -21,7 +24,8 @@ public class Payment {
     private Appointment appointment;
 
     @Column(name = "amount", nullable = false)
-    private double amount; // Số tiền thanh toán
+    @Min(value = 0, message = "Số tiền không được âm")
+    private BigDecimal amount; // Số tiền thanh toán
 
     @Column(name = "payment_method", nullable = false)
     private String paymentMethod; // Phương thức thanh toán (CASH, CARD, TRANSFER)
@@ -32,6 +36,11 @@ public class Payment {
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt; // Thời gian thanh toán
+
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
 
     @Column(name = "transaction_id")
     private String transactionId; // Mã giao dịch (dùng cho QR hoặc các phương thức khác)
@@ -48,5 +57,10 @@ public class Payment {
         if(paymentStatus == null) {
             paymentStatus = PaymentStatus.UNPAID; // Mặc định là chưa thanh toán
         }
+    }
+        
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 }

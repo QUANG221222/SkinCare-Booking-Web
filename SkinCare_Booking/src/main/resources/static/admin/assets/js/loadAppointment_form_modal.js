@@ -19,6 +19,7 @@ $(document).on("submit", "#appointmentForm", function(e) {
     url: "/protected/customer/appointment", // URL POST của controller
     method: "POST",
     data: formData,
+    dataType: "json", // Đảm bảo server trả về JSON
     success: function(resp) {
       if (resp.status === "success") {
         showToast("Thành công", resp.message);
@@ -27,7 +28,13 @@ $(document).on("submit", "#appointmentForm", function(e) {
       }
     },
     error: function(xhr) {
-      let errorMsg = (xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : "Có lỗi xảy ra!";
+      let errorMsg = "Có lỗi xảy ra!";
+      try {
+        let response = JSON.parse(xhr.responseText);
+        errorMsg = response.message || errorMsg;
+      } catch (e) {
+        errorMsg = xhr.responseText || errorMsg;
+      }
       showToast("Lỗi", errorMsg);
     }
   });

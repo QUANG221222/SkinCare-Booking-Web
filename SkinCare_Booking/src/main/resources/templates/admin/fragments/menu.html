@@ -146,58 +146,88 @@
       </a>
     </li>
 
-    <!-- Appointment -->
-    <li class="menu-item">
-      <a href="javascript:void(0);" class="menu-link menu-toggle">
+    <!-- Appointment (Manager and Staff) -->
+    <li
+      th:if="${#strings.contains(currentURI, 'manager') || #strings.contains(currentURI, 'staff')}"
+      th:classappend="${#strings.contains(currentURI, '/manager/appointments') || 
+                        #strings.contains(currentURI, '/staff/appointments')} ? 'active open' : ''"
+      class="menu-item cursor-pointer"
+    >
+      <a class="menu-link menu-toggle" href="javascript:void(0)">
         <i class="menu-icon tf-icons bx bx-calendar-check"></i>
-        <div class="text-truncate" data-i18n="Dashboards">Appointment</div>
+        <div class="text-truncate" data-i18n="Appointment">Appointment</div>
       </a>
       <ul class="menu-sub">
-        <li class="menu-item">
+        <li
+          th:classappend="${#strings.contains(currentURI, '/staff/appointments/pending') || 
+                            #strings.contains(currentURI, '/manager/appointments/pending')} ? 'active' : ''"
+          class="menu-item"
+        >
           <a
-            th:href="@{/protected/staff/appointments/pending}"
-            target="_blank"
+            th:href="${#strings.contains(currentURI, 'manager') ? '/protected/manager/appointments/pending' : '/protected/staff/appointments/pending'}"
             class="menu-link"
           >
-            <div class="text-truncate" data-i18n="eCommerce">
-              List Appointments
-            </div>
+            <div class="text-truncate" data-i18n="Pending">Pending</div>
           </a>
         </li>
-        <li class="menu-item">
+        <li
+          th:classappend="${#strings.contains(currentURI, '/staff/appointments/checked-in') || 
+                            #strings.contains(currentURI, '/manager/appointments/checked-in')} ? 'active' : ''"
+          class="menu-item"
+        >
           <a
-            th:href="@{/protected/staff/appointments/checked-in}"
-            target="_blank"
+            th:href="${#strings.contains(currentURI, 'manager') ? '/protected/manager/appointments/checked-in' : '/protected/staff/appointments/checked-in'}"
             class="menu-link"
           >
-            <div class="text-truncate" data-i18n="eCommerce">Checked</div>
+            <div class="text-truncate" data-i18n="Checked-in">Checked-in</div>
           </a>
         </li>
-        <li class="menu-item">
+        <li
+          th:classappend="${#strings.contains(currentURI, '/staff/appointments/assigned') || 
+                            #strings.contains(currentURI, '/manager/appointments/assigned')} ? 'active' : ''"
+          class="menu-item"
+        >
           <a
-            th:href="@{/protected/staff/appointments/assigned}"
-            target="_blank"
+            th:href="${#strings.contains(currentURI, 'manager') ? '/protected/manager/appointments/assigned' : '/protected/staff/appointments/assigned'}"
             class="menu-link"
           >
-            <div class="text-truncate" data-i18n="eCommerce">Assigned</div>
+            <div class="text-truncate" data-i18n="Assigned">Assigned</div>
           </a>
         </li>
-        <li class="menu-item">
+        <li
+          th:classappend="${#strings.contains(currentURI, '/staff/appointments/completed') || 
+                            #strings.contains(currentURI, '/manager/appointments/completed')} ? 'active' : ''"
+          class="menu-item"
+        >
           <a
-            th:href="@{/protected/staff/appointments/completed}"
-            target="_blank"
+            th:href="${#strings.contains(currentURI, 'manager') ? '/protected/manager/appointments/completed' : '/protected/staff/appointments/completed'}"
             class="menu-link"
           >
-            <div class="text-truncate" data-i18n="eCommerce">Completed</div>
+            <div class="text-truncate" data-i18n="Completed">Completed</div>
           </a>
         </li>
-        <li class="menu-item">
+        <li
+          th:classappend="${#strings.contains(currentURI, '/staff/appointments/checked-out') || 
+                            #strings.contains(currentURI, '/manager/appointments/checked-out')} ? 'active' : ''"
+          class="menu-item"
+        >
           <a
-            th:href="@{/protected/staff/appointments/checked-out}"
-            target="_blank"
+            th:href="${#strings.contains(currentURI, 'manager') ? '/protected/manager/appointments/checked-out' : '/protected/staff/appointments/checked-out'}"
             class="menu-link"
           >
-            <div class="text-truncate" data-i18n="eCommerce">Checked-out</div>
+            <div class="text-truncate" data-i18n="Checked-out">Checked-out</div>
+          </a>
+        </li>
+        <li
+          th:classappend="${#strings.contains(currentURI, '/staff/payments/history') || 
+                            #strings.contains(currentURI, '/manager/payments/history')} ? 'active' : ''"
+          class="menu-item"
+        >
+          <a
+            th:href="${#strings.contains(currentURI, 'manager') ? '/protected/manager/payments/history' : '/protected/staff/payments/history'}"
+            class="menu-link"
+          >
+            <div class="text-truncate" data-i18n="Payment History">Payment History</div>
           </a>
         </li>
       </ul>

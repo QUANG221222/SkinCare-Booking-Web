@@ -24,10 +24,10 @@
             <td th:text="${appointment.spaService.name}"></td>
             <td th:text="${appointment.appointmentTime}"></td>
             <td>
-                <form th:action="@{/protected/staff/appointments/check-in/{id}(id=${appointment.id})}" method="post" style="display:inline;">
+                <form th:action="@{/protected/manager/appointments/check-in/{id}(id=${appointment.id})}" method="post" style="display:inline;">
                     <button type="submit" class="btn btn-primary">Check-in</button>
                 </form>
-                <form th:action="@{/protected/staff/appointments/cancel/{id}(id=${appointment.id})}" method="post" style="display:inline;">
+                <form th:action="@{/protected/manager/appointments/cancel/{id}(id=${appointment.id})}" method="post" style="display:inline;">
                     <button type="submit" class="btn btn-danger">Hủy</button>
                 </form>
             </td>

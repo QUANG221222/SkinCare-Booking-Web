@@ -2,6 +2,7 @@ package coderuth.k23.skincare_booking.controllers.res;
 
 // import coderuth.k23.skincare_booking.dtos.response.ApiResponse;
 // import coderuth.k23.skincare_booking.dtos.response.StaffInfoResponse;
+import coderuth.k23.skincare_booking.repositories.AppointmentRepository;
 import coderuth.k23.skincare_booking.services.AppointmentService;
 import coderuth.k23.skincare_booking.services.PaymentService;
 // import coderuth.k23.skincare_booking.services.StaffService;
@@ -10,6 +11,7 @@ import coderuth.k23.skincare_booking.models.Appointment;
 import coderuth.k23.skincare_booking.models.Payment;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 // import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -34,6 +36,9 @@ public class StaffController {
 
     @Autowired
     private PaymentService paymentService;
+
+    @Autowired
+    private AppointmentRepository appointmentRepository;
 //    @GetMapping("/home")
 //    public String adminPage() {
 //        return "admin/index"; // "user/index.html"
@@ -63,10 +68,15 @@ public class StaffController {
     // Phân công chuyên viên
     @GetMapping("/appointments/assign/{id}")
     public String showAssignTherapistForm(@PathVariable Long id, Model model) {
-        Appointment appointment = appointmentService.getAppointmentsByStatus(Appointment.AppointmentStatus.CHECKED_IN)
-                .stream().filter(b -> b.getId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Book service not found!"));
+        Appointment appointment = appointmentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy lịch hẹn!"));
+        if (appointment.getStatus() == Appointment.AppointmentStatus.ASSIGNED) {
+            return "redirect:/protected/staff/appointments/assigned";
+        }
+        if (appointment.getStatus() != Appointment.AppointmentStatus.CHECKED_IN) {
+            model.addAttribute("error", "Lịch hẹn phải ở trạng thái CHECKED_IN để phân công!");
+            return "admin/staff/checked_in_appointments";
+        }
         model.addAttribute("appointment", appointment);
         model.addAttribute("therapists", therapistService.getAllTherapists());
         return "admin/staff/assign_therapist";
@@ -112,19 +122,57 @@ public class StaffController {
                 .stream().filter(a -> a.getId().equals(id))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy lịch hẹn!"));
-        boolean isUnpaid = appointment.getPayments().stream().noneMatch(p -> p.getPaymentStatus() == Payment.PaymentStatus.PAID);
+        Payment payment = appointment.getPayment();
+        boolean isUnpaid = payment == null || payment.getPaymentStatus() != Payment.PaymentStatus.PAID;
         model.addAttribute("appointment", appointment);
         model.addAttribute("isUnpaid", isUnpaid);
         return "admin/staff/invoice";
     }
-
+    
     // Xác nhận thanh toán
     @PostMapping("/appointments/confirm-payment/{id}")
-    public String confirmPayment(@PathVariable Long id, @RequestParam String paymentMethod) {
-        appointmentService.confirmPayment(id, paymentMethod);
+    public String confirmPayment(@PathVariable Long id) {
+        appointmentService.confirmPayment(id);
         return "redirect:/protected/staff/appointments/invoice/{id}";
     }
+    // Ghi kết quả dịch vụ (hiển thị form)
+  
+    @GetMapping("/appointments/record-result/{id}")
+    public String showRecordResultForm(@PathVariable Long id, Model model) {
+        try {
+            Appointment appointment = appointmentRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy lịch hẹn với ID: " + id));
+            if (appointment.getStatus() != Appointment.AppointmentStatus.ASSIGNED) {
+                model.addAttribute("error", "Lịch hẹn phải ở trạng thái ASSIGNED để ghi kết quả! Trạng thái hiện tại: " + appointment.getStatus());
+                model.addAttribute("appointments", appointmentService.getAppointmentsByStatus(Appointment.AppointmentStatus.ASSIGNED));
+                return "admin/staff/assigned_appointments";
+            }
+            model.addAttribute("appointment", appointment);
+            return "admin/therapists/therapists_record_result";
+        } catch (RuntimeException e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("appointments", appointmentService.getAppointmentsByStatus(Appointment.AppointmentStatus.ASSIGNED));
+            return "admin/staff/assigned_appointments";
+        }
+    }
 
+    // Ghi kết quả dịch vụ (xử lý form)
+    @PostMapping("/appointments/record-result/{id}")
+    public String recordResult(@PathVariable Long id, @RequestParam String result, Model model) {
+        try {
+            if (result == null || result.trim().isEmpty()) {
+                throw new IllegalArgumentException("Kết quả không được để trống!");
+            }
+            Appointment appointment = appointmentRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy lịch hẹn với ID: " + id));
+            appointmentService.recordResult(id, result);
+            return "redirect:/protected/staff/appointments/completed";
+        } catch (RuntimeException e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("appointment", appointmentRepository.findById(id).orElse(null));
+            return "admin/therapists/therapists_record_result";
+        }
+    }
     // Hủy lịch hẹn
     @PostMapping("/appointments/cancel/{id}")
     public String cancelAppointment(@PathVariable Long id) {
@@ -141,9 +189,15 @@ public class StaffController {
 
     // Xem lịch sử thanh toán của tất cả khách hàng
     @GetMapping("/payments/history")
-    public String viewPaymentHistory(Model model) {
-        List<Payment> payments = paymentService.findAllPayments();
-        model.addAttribute("payments", payments);
+    public String viewPaymentHistory(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model) {
+        Page<Payment> paymentPage = paymentService.findAllPayments(page, size);
+        model.addAttribute("payments", paymentPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", paymentPage.getTotalPages());
+        model.addAttribute("totalItems", paymentPage.getTotalElements());
         return "admin/staff/payment_history";
     }
     // Endpoint để lấy thông tin cơ bản của tất cả nhân viên
