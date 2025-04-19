@@ -22,20 +22,20 @@ $(document).on("submit", "#appointmentForm", function(e) {
     dataType: "json", // Đảm bảo server trả về JSON
     success: function(resp) {
       if (resp.status === "success") {
-        showToast("Thành công", resp.message);
+        showToast("Success", resp.message);
       } else {
-        showToast("Lỗi", resp.message);
+        showToast("Error", resp.message);
       }
     },
     error: function(xhr) {
-      let errorMsg = "Có lỗi xảy ra!";
+      let errorMsg = "An error occurred!";
       try {
         let response = JSON.parse(xhr.responseText);
         errorMsg = response.message || errorMsg;
       } catch (e) {
         errorMsg = xhr.responseText || errorMsg;
       }
-      showToast("Lỗi", errorMsg);
+      showToast("Error", errorMsg);
     }
   });
 });
