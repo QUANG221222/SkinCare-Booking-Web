@@ -43,8 +43,7 @@ public class StaffController {
 //    public String adminPage() {
 //        return "admin/index"; // "user/index.html"
 //    }
-
-    // Xem danh sách đặt dịch vụ đang chờ xử lý
+    // Xem danh sách đ  ặt dịch vụ đang chờ xử lý
     @GetMapping("/appointments/pending")
     public String listPendingAppointments(Model model) {
         model.addAttribute("appointments", appointmentService.getAppointmentsByStatus(Appointment.AppointmentStatus.PENDING));
@@ -131,10 +130,11 @@ public class StaffController {
     
     // Xác nhận thanh toán
     @PostMapping("/appointments/confirm-payment/{id}")
-    public String confirmPayment(@PathVariable Long id) {
+    public String confirmPayment(@PathVariable Long id) { // Bỏ tham số paymentMethod
         appointmentService.confirmPayment(id);
         return "redirect:/protected/staff/appointments/invoice/{id}";
     }
+
     // Ghi kết quả dịch vụ (hiển thị form)
   
     @GetMapping("/appointments/record-result/{id}")

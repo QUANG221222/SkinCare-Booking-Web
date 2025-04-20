@@ -91,7 +91,7 @@ public class CustomerPageController {
      }
  
     // Khách hàng đặt dịch vụ
-    @PostMapping("/appointment")
+    @PostMapping("/appointment/create")
     @ResponseBody
     public ResponseEntity<?> createAppointment(@ModelAttribute Appointment appointment) {
         try {
@@ -129,14 +129,21 @@ public class CustomerPageController {
             return ResponseEntity.badRequest().body(Map.of("status", "error", "message", ex.getMessage()));
         }
     }
-
     // Xem danh sách đặt dịch vụ của khách hàng
     @GetMapping("/appointments")
-    public String listAppointments(Model model) {
-        UUID customerId = getLoggedInCustomerId();
-        model.addAttribute("appointments", appointmentService.getAppointmentsByCustomer(customerId));
-        return "user/customer/appointments_list";
+    public String getAppointmentsFragment(Model model, Authentication authentication) {
+        String username = authentication.getName();
+        List<Appointment> appointments = appointmentService.findAppointmentsByUsername(username);
+        model.addAttribute("appointments", appointments);
+        return "user/customer/appointments_list :: appointmentsList";
     }
+//    // Xem danh sách đặt dịch vụ của khách hàng
+//    @GetMapping("/appointments")
+//    public String listAppointments(Model model) {
+//        UUID customerId = getLoggedInCustomerId();
+//        model.addAttribute("appointments", appointmentService.getAppointmentsByCustomer(customerId));
+//        return "user/customer/appointments_list";
+//    }
 
      // Hủy lịch hẹn
      @PostMapping("/appointments/cancel/{id}")

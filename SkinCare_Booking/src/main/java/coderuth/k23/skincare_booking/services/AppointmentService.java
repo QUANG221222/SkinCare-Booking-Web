@@ -1,16 +1,19 @@
 package coderuth.k23.skincare_booking.services;
 
 import coderuth.k23.skincare_booking.repositories.AppointmentRepository;
+import coderuth.k23.skincare_booking.repositories.CustomerRepository;
 import coderuth.k23.skincare_booking.repositories.PaymentRepository;
 import coderuth.k23.skincare_booking.models.*;
 import coderuth.k23.skincare_booking.repositories.SkinTherapistRepository;
 import coderuth.k23.skincare_booking.repositories.TherapistScheduleRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,13 +22,19 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 
 import java.time.format.DateTimeFormatter;
-
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
+import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
+
+import org.springframework.web.client.RestTemplate;
+import coderuth.k23.skincare_booking.dtos.response.VietQRResponse;
 
 @Service
 public class AppointmentService {
@@ -37,6 +46,9 @@ public class AppointmentService {
 
     @Autowired
     private SkinTherapistRepository skinTherapistRepository;
+    
+    @Autowired
+    private CustomerRepository customerRepository;
 
     @Autowired
     private TherapistScheduleRepository therapistScheduleRepository;
@@ -47,50 +59,50 @@ public class AppointmentService {
     @Autowired
     private JavaMailSender mailSender;
 
-    public void sendConfirmationEmail(Appointment appointment) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(appointment.getCustomer().getEmail());
-        message.setSubject("Appointment Confirmation");
-        message.setText("Your appointment at " + appointment.getAppointmentTime() + " has been created!");
-        mailSender.send(message);
-    }
+   // Thông tin tài khoản ngân hàng để tạo mã QR
+   private static final String BANK_ID = "970436";
+   private static final String ACCOUNT_NO = "1030301953";
+   private static final String ACCOUNT_NAME = "NGUYEN MINH THUAN";
+   private static final String TEMPLATE = "compact2";
+   private static final String VIETQR_API_URL = "https://api.vietqr.io/v2/generate";
 
-    // Customer books a service
-    @Transactional
+   public void sendConfirmationEmail(Appointment appointment) {
+       SimpleMailMessage message = new SimpleMailMessage();
+       message.setTo(appointment.getCustomer().getEmail());
+       message.setSubject("Xác nhận đặt lịch hẹn");
+       message.setText("Hẹn của bạn vào " + appointment.getAppointmentTime() + " đã được tạo!");
+       mailSender.send(message);
+   }
+
+   @Transactional
     public Appointment createAppointment(Appointment appointment) {
         LocalDateTime appointmentTime = appointment.getAppointmentTime();
         if (appointmentTime.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("Appointment time cannot be in the past!");
+            throw new IllegalArgumentException("Thời gian đặt lịch không được ở quá khứ!");
         }
         LocalTime time = appointmentTime.toLocalTime();
         if (time.isBefore(LocalTime.of(8, 0)) || time.isAfter(LocalTime.of(20, 0))) {
-            throw new IllegalArgumentException("The center operates only from 8:00 AM to 8:00 PM!");
+            throw new IllegalArgumentException("Trung tâm chỉ hoạt động từ 8:00 đến 20:00!");
         }
-        // Validate and verify SkinTherapist if specified
         if (appointment.getSkinTherapist() != null) {
-            SkinTherapist therapist = skinTherapistRepository.findById(appointment.getSkinTherapist().getId())
-                    .orElseThrow(() -> new IllegalArgumentException("Therapist does not exist with ID: " + appointment.getSkinTherapist().getId()));
-            validateTherapistAvailability(therapist, appointmentTime, appointment.getSpaService());
-            appointment.setSkinTherapist(therapist);
+            validateTherapistAvailability(appointment.getSkinTherapist(), appointmentTime, appointment.getSpaService());
             appointment.setStatus(Appointment.AppointmentStatus.ASSIGNED);
         } else {
             appointment.setStatus(Appointment.AppointmentStatus.PENDING);
         }
-           
         if (appointment.getSpaService() == null || appointment.getSpaService().getId() == null) {
-            throw new IllegalArgumentException("Service cannot be empty!");
+            throw new IllegalArgumentException("Dịch vụ không được để trống!");
         }
         if (appointment.getCustomer() == null || appointment.getCustomer().getId() == null) {
-            throw new IllegalArgumentException("Customer cannot be empty!");
+            throw new IllegalArgumentException("Khách hàng không được để trống!");
         }
         if (appointment.getAppointmentTime() == null) {
-            throw new IllegalArgumentException("Appointment time cannot be empty!");
-        }   
+            throw new IllegalArgumentException("Thời gian đặt lịch không được để trống!");
+        }
 
-        // Validate service price
         Double servicePrice = appointment.getSpaService().getPrice();
         if (servicePrice == null || servicePrice <= 0) {
-            throw new IllegalArgumentException("Service price must be greater than 0 for spa_service_id: " + appointment.getSpaService().getId());
+            throw new IllegalArgumentException("Dịch vụ '" + appointment.getSpaService().getName() + "' có giá không hợp lệ (ID: " + appointment.getSpaService().getId() + "). Vui lòng liên hệ quản trị viên.");
         }
 
         Appointment savedAppointment = appointmentRepository.save(appointment);
@@ -98,7 +110,7 @@ public class AppointmentService {
         Payment payment = new Payment();
         payment.setAppointment(savedAppointment);
         payment.setAmount(servicePrice);
-        payment.setPaymentMethod("N/A");
+        payment.setPaymentMethod("PENDING"); // Nhân viên sẽ chọn phương thức sau
         payment.setPaymentStatus(Payment.PaymentStatus.UNPAID);
         Payment savedPayment = paymentRepository.save(payment);
 
@@ -106,44 +118,73 @@ public class AppointmentService {
         return appointmentRepository.save(savedAppointment);
     }
 
-    // Check the therapist's schedule
-    private void validateTherapistAvailability(SkinTherapist therapist, LocalDateTime appointmentTime, SpaService spaService) {
-        // Get the therapist's schedule
-        List<TherapistSchedule> schedules = therapistScheduleRepository.findBySkinTherapistId(therapist.getId());
-        boolean isAvailable = schedules.stream().anyMatch(schedule -> {
-            // Check if the appointment day matches the therapist's schedule
-            boolean isDayMatching = schedule.getDayOfWeek().equalsIgnoreCase(appointmentTime.getDayOfWeek().toString());
+    private String generateQRCode(Double amount, String transactionId) {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
 
-            // Check if the appointment time falls within the therapist's available hours
-            boolean isTimeMatching = appointmentTime.toLocalTime().isAfter(schedule.getStartTime()) &&
-                                    appointmentTime.toLocalTime().isBefore(schedule.getEndTime());
+        String payload = String.format(
+                "{\"accountNo\":\"%s\",\"accountName\":\"%s\",\"acqId\":\"%s\",\"amount\":%.0f,\"addInfo\":\"%s\",\"format\":\"%s\"}",
+                ACCOUNT_NO, ACCOUNT_NAME, BANK_ID, amount, transactionId, TEMPLATE
+        );
 
-            // Calculate the end time of the service based on its duration
-            LocalTime serviceEndTime = appointmentTime.toLocalTime().plusMinutes(spaService.getDuration());
+        HttpEntity<String> request = new HttpEntity<>(payload, headers);
 
-            // Check if the service duration fits within the available time
-            boolean isDurationValid = serviceEndTime.isBefore(schedule.getEndTime()) || serviceEndTime.equals(schedule.getEndTime());
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(
+                    VIETQR_API_URL, HttpMethod.POST, request, String.class
+            );
 
-            return isDayMatching && isTimeMatching && isDurationValid;
-        });
+            if (response.getStatusCode() != HttpStatus.OK) {
+                throw new RuntimeException("VietQR API trả về lỗi: " + response.getStatusCode());
+            }
 
-        // If no suitable schedule is found, throw an exception
-        if (!isAvailable) {
-            throw new RuntimeException("The therapist is not available at this time or the service duration exceeds the available time!");
-        }
-        // Check for appointment conflicts
-        List<Appointment> existingAppointments = appointmentRepository.findBySkinTherapistId(therapist.getId());
-        LocalDateTime serviceEndTime = appointmentTime.plusMinutes(spaService.getDuration());
-        boolean hasConflict = existingAppointments.stream().anyMatch(a -> {
-            LocalDateTime existingStart = a.getAppointmentTime();
-            LocalDateTime existingEnd = existingStart.plusMinutes(a.getSpaService().getDuration());
-            return a.getStatus() != Appointment.AppointmentStatus.CANCELLED &&
-                appointmentTime.isBefore(existingEnd) && serviceEndTime.isAfter(existingStart);
-        });
-        if (hasConflict) {
-            throw new RuntimeException("Therapist already has an appointment at this time!");
+            ObjectMapper objectMapper = new ObjectMapper();
+            VietQRResponse vietQRResponse = objectMapper.readValue(response.getBody(), VietQRResponse.class);
+
+            if (!"00".equals(vietQRResponse.getCode())) {
+                throw new RuntimeException("VietQR API trả về lỗi: " + vietQRResponse.getDesc());
+            }
+
+            if (vietQRResponse.getData() == null || vietQRResponse.getData().getQrDataURL() == null) {
+                throw new RuntimeException("Không tìm thấy qrDataURL trong phản hồi từ VietQR");
+            }
+
+            return vietQRResponse.getData().getQrDataURL();
+        } catch (Exception e) {
+            logger.error("Failed to generate QR code: {}", e.getMessage());
+            throw new RuntimeException("Không thể tạo mã QR thanh toán: " + e.getMessage());
         }
     }
+   private void validateTherapistAvailability(SkinTherapist therapist, LocalDateTime appointmentTime, SpaService spaService) {
+       if (therapist == null || therapist.getId() == null) {
+           return;
+       }
+       List<TherapistSchedule> schedules = therapistScheduleRepository.findBySkinTherapistId(therapist.getId());
+       boolean isAvailable = schedules.stream().anyMatch(schedule -> {
+           boolean isDayMatching = schedule.getDayOfWeek().equalsIgnoreCase(appointmentTime.getDayOfWeek().toString());
+           boolean isTimeMatching = appointmentTime.toLocalTime().isAfter(schedule.getStartTime()) &&
+                                   appointmentTime.toLocalTime().isBefore(schedule.getEndTime());
+           LocalTime serviceEndTime = appointmentTime.toLocalTime().plusMinutes(spaService.getDuration());
+           boolean isDurationValid = serviceEndTime.isBefore(schedule.getEndTime()) || serviceEndTime.equals(schedule.getEndTime());
+           return isDayMatching && isTimeMatching && isDurationValid;
+       });
+
+       if (!isAvailable) {
+           throw new RuntimeException("Chuyên viên không có lịch trống vào thời điểm này hoặc thời gian dịch vụ vượt quá lịch làm việc!");
+       }
+       List<Appointment> existingAppointments = appointmentRepository.findBySkinTherapistId(therapist.getId());
+       LocalDateTime serviceEndTime = appointmentTime.plusMinutes(spaService.getDuration());
+       boolean hasConflict = existingAppointments.stream().anyMatch(a -> {
+           LocalDateTime existingStart = a.getAppointmentTime();
+           LocalDateTime existingEnd = existingStart.plusMinutes(a.getSpaService().getDuration());
+           return a.getStatus() != Appointment.AppointmentStatus.CANCELLED &&
+                  appointmentTime.isBefore(existingEnd) && serviceEndTime.isAfter(existingStart);
+       });
+       if (hasConflict) {
+           throw new RuntimeException("Chuyên viên đã có lịch hẹn khác vào thời điểm này!");
+       }
+   }
 
     // Staff checks in the customer
     public Appointment checkIn(Long appointmentId) {
@@ -204,11 +245,83 @@ public class AppointmentService {
         appointment.setStatus(Appointment.AppointmentStatus.CHECKED_OUT);
         return appointmentRepository.save(appointment);
     }
-
-
-    // Confirm payment for the appointment
     @Transactional
-    public Appointment confirmPayment(Long appointmentId) {
+    public Appointment updatePaymentMethod(Long appointmentId, String paymentMethod) {
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+            .orElseThrow(() -> new RuntimeException("Appointment not found!"));
+
+        if (appointment.getStatus() != Appointment.AppointmentStatus.CHECKED_OUT) {
+            throw new RuntimeException("Appointment is not in CHECKED_OUT status, cannot update payment method!");
+        }
+
+        Payment payment = appointment.getPayment();
+        if (payment == null) {
+            throw new RuntimeException("Payment record not found for this appointment!");
+        }
+        if (payment.getPaymentStatus() == Payment.PaymentStatus.PAID) {
+            throw new RuntimeException("Appointment has already been paid!");
+        }
+
+        payment.setPaymentMethod(paymentMethod);
+        if ("QR".equals(paymentMethod) || "TRANSFER".equals(paymentMethod)) {
+            String transactionId = UUID.randomUUID().toString();
+            payment.setTransactionId(transactionId);
+            String qrDataUrl = generateQRCode((payment.getAmount() * 23000), transactionId);
+            try {
+                String qrCodeFilePath = saveQRCodeAsFile(qrDataUrl); // Lưu file và lấy đường dẫn
+                payment.setQrCodeDataUrl(qrCodeFilePath); // Lưu đường dẫn file
+                logger.info("qrCodeFilePath: {} (length: {})", qrCodeFilePath, qrCodeFilePath.length());
+            } catch (IOException e) {
+                logger.error("Failed to save QR code as file: {}", e.getMessage());
+                throw new RuntimeException("Không thể lưu mã QR dưới dạng file: " + e.getMessage());
+            }
+        } else {
+            payment.setQrCodeDataUrl(null);
+        }
+
+        paymentRepository.save(payment);
+        return appointmentRepository.save(appointment);
+    }
+  // Confirm payment for the appointment with payment method
+//   @Transactional
+//   public Appointment confirmPayment(Long appointmentId, String paymentMethod) {
+//       Appointment appointment = appointmentRepository.findById(appointmentId)
+//           .orElseThrow(() -> new RuntimeException("Appointment not found!"));
+//       if (appointment.getStatus() != Appointment.AppointmentStatus.CHECKED_OUT) {
+//           throw new RuntimeException("Appointment is not in CHECKED_OUT status, cannot confirm payment!");
+//       }
+
+//       Payment payment = appointment.getPayment();
+//       if (payment == null) {
+//           throw new RuntimeException("Payment record not found for this appointment!");
+//       }
+//       if (payment.getPaymentStatus() == Payment.PaymentStatus.PAID) {
+//           throw new RuntimeException("Appointment has already been paid!");
+//       }
+//       Double paymentAmount = payment.getAmount();
+//       Double servicePrice = appointment.getSpaService().getPrice();
+//       if (paymentAmount == null || servicePrice == null) {
+//           throw new IllegalStateException("Payment amount or service price cannot be null!");
+//       }
+//       if (!paymentAmount.equals(servicePrice)) {
+//           throw new IllegalStateException("Payment amount (" + paymentAmount + ") does not match service price (" + servicePrice + ")!");
+//       }
+
+//       // Cập nhật phương thức thanh toán và trạng thái
+//       payment.setPaymentMethod(paymentMethod);
+//       if ("QR".equals(paymentMethod) || "TRANSFER".equals(paymentMethod)) {
+//           String transactionId = UUID.randomUUID().toString();
+//           payment.setTransactionId(transactionId);
+//           String qrDataUrl = generateQRCode(payment.getAmount(), transactionId);
+//           payment.setQrCodeDataUrl(qrDataUrl);
+//       }
+//       payment.setPaymentStatus(Payment.PaymentStatus.PAID);
+//       paymentRepository.save(payment);
+
+//       return appointment;
+//   }
+    @Transactional
+    public Appointment confirmPayment(Long appointmentId) { // Bỏ tham số paymentMethod
         Appointment appointment = appointmentRepository.findById(appointmentId)
             .orElseThrow(() -> new RuntimeException("Appointment not found!"));
         if (appointment.getStatus() != Appointment.AppointmentStatus.CHECKED_OUT) {
@@ -230,13 +343,36 @@ public class AppointmentService {
         if (!paymentAmount.equals(servicePrice)) {
             throw new IllegalStateException("Payment amount (" + paymentAmount + ") does not match service price (" + servicePrice + ")!");
         }
-        
 
-        payment.setPaymentMethod("N/A");
+        // Không cần cập nhật paymentMethod hoặc tạo QR vì đã làm trước đó
         payment.setPaymentStatus(Payment.PaymentStatus.PAID);
         paymentRepository.save(payment);
 
         return appointment;
+    }
+    private String saveQRCodeAsFile(String qrDataUrl) throws IOException {
+        if (!qrDataUrl.startsWith("data:image/")) {
+            return qrDataUrl;
+        }
+    
+        String base64Data = qrDataUrl.split(",")[1];
+        byte[] imageBytes = Base64.getDecoder().decode(base64Data);
+    
+        // Sử dụng đường dẫn tuyệt đối đến thư mục gốc của dự án
+        String projectRoot = System.getProperty("user.dir"); // Lấy thư mục gốc của dự án
+        String qrCodeDir = projectRoot + "/public/qr_codes";
+        String fileName = "qrcode_" + UUID.randomUUID().toString() + ".png";
+        String filePath = qrCodeDir + "/" + fileName;
+    
+        try {
+            Files.createDirectories(Paths.get(qrCodeDir));
+            Files.write(Paths.get(filePath), imageBytes);
+        } catch (IOException e) {
+            logger.error("Không thể lưu file mã QR: {}", e.getMessage());
+            throw new IOException("Không thể lưu file mã QR", e);
+        }
+    
+        return "/qr_codes/" + fileName;
     }
 
     // Cancel appointment (for customers)
@@ -394,5 +530,12 @@ public class AppointmentService {
 
         logger.info("Calculated current month revenue (only PAID payments): ${}", revenue);
         return revenue;
+    }
+    
+    // Find appointments by username
+    public List<Appointment> findAppointmentsByUsername(String username) {
+        Customer customer = customerRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Customer not found with username: " + username));
+        return appointmentRepository.findByCustomerId(customer.getId());
     }
 }
