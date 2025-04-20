@@ -58,20 +58,7 @@
   </div>
   <!-- Background Gradient Overlay -->
   <div class="bg-overlay"></div>
-
-  <!-- Flower Animation -->
-  <div class="flower-container">
-    <div class="flower flower-1"></div>
-    <div class="flower flower-2"></div>
-    <div class="flower flower-3"></div>
-    <div class="flower flower-4"></div>
-    <div class="flower flower-5"></div>
-    <div class="flower flower-6"></div>
-    <div class="flower flower-7"></div>
-    <div class="flower flower-8"></div>
-    <div class="flower flower-9"></div>
-  </div>
-
+  
   <!-- Custom CSS for Footer -->
   <style>
     .footer-area {
@@ -120,81 +107,7 @@
       color: #ffd700 !important;
       transition: color 0.3s ease;
     }
-
-    .flower {
-      position: absolute;
-      width: 20px; /* Kích thước bông hoa */
-      height: 20px;
-      background: radial-gradient(circle, #ffeb3b 20%, transparent 70%); /* Tạo hình bông hoa vàng */
-      border-radius: 50%; /* Hình tròn */
-      box-shadow: 0 0 10px rgba(255, 235, 59, 0.5); /* Bóng sáng vàng */
-      opacity: 0.7;
-      animation: fall linear infinite;
-    }
-
-    .flower-1 { left: 10%; animation-duration: 10s; animation-delay: 0s; }
-
-    .flower-2 { left: 20%; animation-duration: 16s; animation-delay: 2s; }
-
-    .flower-3 { left: 30%; animation-duration: 12s; animation-delay: 4s; }
-
-    .flower-4 { left: 40%; animation-duration: 14s; animation-delay: 6s; }
-
-    .flower-5 { left: 50%; animation-duration: 18s; animation-delay: 8s; }
-
-    .flower-6 { left: 60%; animation-duration: 10s; animation-delay: 10s; }
-
-    .flower-7 { left: 70%; animation-duration: 14s; animation-delay: 12s; }
-
-    .flower-8 { left: 80%; animation-duration: 16s; animation-delay: 14s; }
-
-
-    .flower-9 { left: 90%; animation-duration: 12s; animation-delay: 16s; }
-
-    @keyframes fall {
-      0% {
-        transform: translateY(0) translateX(0) rotate(0deg);
-        opacity: 0.7;
-      }
-      25% {
-        transform: translateY(25%) translateX(10px) rotate(90deg);
-      }
-      50% {
-        transform: translateY(50%) translateX(-10px) rotate(180deg);
-        opacity: 0.4;
-      }
-      75% {
-        transform: translateY(75%) translateX(10px) rotate(270deg);
-      }
-      100% {
-        transform: translateY(100%) translateX(0) rotate(360deg);
-        opacity: 0;
-      }
-    }
-  </style>
-
-  <!-- JavaScript to Adjust Flower Animation -->
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const footer = document.querySelector('.footer-area');
-      const flowerContainer = document.querySelector('.flower-container');
-      const flowers = document.querySelectorAll('.flower');
-
-      // Đảm bảo flower-container có chiều cao bằng footer
-      const footerHeight = footer.offsetHeight;
-      flowerContainer.style.height = `${footerHeight}px`;
-
-      // Điều chỉnh hiệu ứng rơi cho từng bông hoa
-      flowers.forEach(flower => {
-        // Đặt vị trí ban đầu của bông hoa trên cùng của footer
-        flower.style.top = `-${flower.offsetHeight}px`;
-
-        // Tính toán và áp dụng lại animation để rơi đúng xuống dưới footer
-        const duration = parseFloat(getComputedStyle(flower).animationDuration);
-        flower.style.animation = `fall ${duration}s linear infinite`;
-      });
-    });
-  </script>
+    </style>
 
 </footer>
 

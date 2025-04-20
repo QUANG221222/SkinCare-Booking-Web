@@ -72,12 +72,22 @@ public class ManagerPageController {
         Manager manager = managerRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Manager not found"));
 
+        // Dashboard statistics
+        long totalAppointments = appointmentService.getTotalAppointments();
+        double cancellationRate = appointmentService.getCancellationRate();
+        double successRate = appointmentService.getSuccessRate();
+        SpaService mostBookedSpaService = appointmentService.getMostBookedSpaService();
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM", Locale.ENGLISH);
         String monthName = LocalDateTime.now().format(formatter);
 
         model.addAttribute("manager", manager);
         model.addAttribute("month", monthName);
         model.addAttribute("sales", appointmentService.calculateCurrentMonthRevenue());
+        model.addAttribute("totalAppointments", totalAppointments);
+        model.addAttribute("cancellationRate", String.format("%.2f", cancellationRate));
+        model.addAttribute("successRate", String.format("%.2f", successRate));
+        model.addAttribute("mostBookedSpaService", mostBookedSpaService != null ? mostBookedSpaService.getName() : "N/A");
         return "admin/index"; // "user/index.html"
     }
 
