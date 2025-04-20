@@ -22,7 +22,7 @@ import java.security.Principal;
 import java.util.List;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Locale
+import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -396,12 +396,6 @@ public class ManagerPageController {
         return "redirect:/spa-services/schedules";
     }
 
-
-    @GetMapping("/therapists")
-    public String TherapistPage() {
-        return "redirect:/therapists";
-    }
-
     //endpoint quản lí feedback
     @GetMapping("/feedbacks")
     public String getFeedbackList(Model model, Principal principal) {
@@ -628,7 +622,7 @@ public class ManagerPageController {
     }
 
     // Create a new blog
-    @PostMapping("/blogs/create")
+    @PostMapping("/create-blog")
     public String createBlog(@ModelAttribute BlogRequestDTO blogRequest,
                              RedirectAttributes redirectAttributes) {
         try {
@@ -641,7 +635,7 @@ public class ManagerPageController {
     }
 
     // Update an existing blog
-    @PostMapping("/blogs/update/{id}")
+    @PostMapping("/update-blog/{id}")
     public String updateBlog(@PathVariable Long id,
                              @ModelAttribute BlogRequestDTO blogRequest,
                              RedirectAttributes redirectAttributes) {
@@ -657,7 +651,7 @@ public class ManagerPageController {
     // Delete a blog
     @GetMapping("/blogs/delete/{id}")
     public String deleteBlog(@PathVariable Long id,
-                             RedirectAttributes redirectAttributes {
+                             RedirectAttributes redirectAttributes) {
         try {
             blogService.deleteBlog(id);
             redirectAttributes.addFlashAttribute("successMessage", "Blog deleted successfully!");

@@ -29,8 +29,10 @@ public class BlogService {
     }
 
 
-    public BlogResponseDTO createBlog(BlogRequestDTO dto) {
+    public void createBlog(BlogRequestDTO dto) {
+
         Blog blog = new Blog();
+
         blog.setTitle(dto.getTitle());
         blog.setContent(dto.getContent());
         blog.setAuthor(dto.getAuthor());
@@ -42,8 +44,7 @@ public class BlogService {
         blog.setCreatedAt(now);
         blog.setUpdatedAt(now);
 
-        Blog saved = blogRepository.save(blog);
-        return BlogMapper.toDto(saved);
+        blogRepository.save(blog);
     }
 
 

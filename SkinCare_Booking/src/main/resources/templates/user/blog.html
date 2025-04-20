@@ -1,125 +1,69 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-
-<div th:replace="user/master/fragments/head :: head"></div>
-
+<head th:replace="user/master/fragments/head :: head"></head>
 <body>
-    <!-- Preloader -->
-    <div class="preloader d-flex align-items-center justify-content-center">
-        <div class="cssload-container">
-            <div class="cssload-loading"><i></i><i></i><i></i><i></i></div>
-        </div>
+<!-- Header -->
+<div th:replace="user/master/fragments/header :: header"></div>
+
+<!-- Breadcrumb -->
+<section class="breadcumb-area bg-img d-flex align-items-center justify-content-center" style="background-image: url(/user/img/bg-img/bg-10.jpg);">
+    <div class="bradcumbContent">
+        <h2>Blog</h2>
     </div>
+</section>
 
-    <!-- ##### Header Area Start ##### -->
-    <div th:replace="user/master/fragments/header :: header"></div>
-    <!-- ##### Header Area End ##### -->
+<!-- ##### Book Now Area Start ##### -->
+<div th:replace="user/master/fragments/book-now:: book-now"></div>
+<!-- ##### Book Now Area End ##### -->
 
-    <!-- ##### Breadcumb Area Start ##### -->
-    <section class="breadcumb-area bg-img d-flex align-items-center justify-content-center" style="background-image: url(/user/img/bg-img/bg-10.jpg);">
-        <div class="bradcumbContent">
-            <h2>News</h2>
-        </div>
-    </section>
-    <!-- ##### Breadcumb Area End ##### -->
+<!-- Blog Posts -->
+<div class="blog-area section-padding-0-100">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="palatin-blog-posts">
 
-    <!-- ##### Book Now Area Start ##### -->
-    <div th:replace="user/master/fragments/book-now:: book-now"></div>
-    <!-- ##### Book Now Area End ##### -->
-
-    <!-- ##### Blog Area Start ##### -->
-    <div class="blog-area section-padding-0-100">
-        <div class="container">
-            <div class="row">
-                <div class="col-12">
-                    <div class="palatin-blog-posts">
-
-                        <!-- ##### Single Blog Post ##### -->
-                        <div class="single-blog-post mb-100 wow fadeInUp" data-wow-delay="100ms">
-                            <!-- Post Thumb -->
-                            <div class="blog-post-thumb">
-                                <img src="/user/img/bg-img/bg-12.jpg" alt="">
-                            </div>
-                            <!-- Post Content -->
-                            <div class="post-content">
-                                <!-- Post Date-->
-                                <a href="#" class="post-date btn palatin-btn">June 25, 2018</a>
-                                <!-- Post Title -->
-                                <a href="#" class="post-title">Sun-Kissed Radiance: Achieve Dewy Skin Under the Summer Heat</a>
-                                <!-- Post Meta -->
-                                <div class="post-meta d-flex justify-content-center">
-                                    <!-- Catagory -->
-                                    <a href="#" class="post-catagory">In Hotel</a>
-                                    <!-- Comments -->
-                                    <a href="#" class="post-comments">3 comments</a>
-                                </div>
-                                <!-- Post Excerpt -->
-                                <p>Summer's arrival brings sun-drenched days, and unique skincare challenges. This guide reveals the "golden" secrets to maintain your skin's vibrancy and dewy glow, despite the summer heat. From selecting the perfect sunscreen to mastering deep hydration techniques, we'll equip you with everything you need for healthy, glowing skin all season long.</p>
-                            </div>
+                    <div class="single-blog-post mb-100 wow fadeInUp" data-wow-delay="100ms" th:each="blog : ${blogs}">
+                        <!-- Thumbnail with proper error handling and centered -->
+                        <div class="blog-post-thumb text-center mb-4">
+                            <a th:href="@{/protected/customer/blog/{id}(id=${blog.id})}">
+                                <img
+                                        th:src="${blog.imageUrl != null && !#strings.isEmpty(blog.imageUrl)
+                                                ? blog.imageUrl : '/user/img/blog-img/default-blog.jpg'}"
+                                        th:onerror="this.src='/user/img/blog-img/default-blog.jpg'"
+                                        th:alt="${blog.title}"
+                                        class="img-fluid mx-auto d-block"
+                                        style="max-width: 1140px;"/>
+                            </a>
                         </div>
-
-                        <!-- ##### Single Blog Post ##### -->
-                        <div class="single-blog-post mb-100 wow fadeInUp" data-wow-delay="300ms">
-                            <!-- Post Thumb -->
-                            <div class="blog-post-thumb">
-                                <img src="/user/img/bg-img/bg-13.jpg" alt="">
+                        <!-- Content -->
+                        <div class="post-content text-center">
+                            <a th:href="@{/protected/customer/blog/{id}(id=${blog.id})}"
+                               class="post-date btn palatin-btn"
+                               th:text="${#temporals.format(blog.date, 'MMMM dd, yyyy')}">Date</a>
+                            <h4>
+                                <a th:href="@{/protected/customer/blog/{id}(id=${blog.id})}"
+                                   class="post-title"
+                                   th:text="${blog.title}">Blog Title</a>
+                            </h4>
+                            <div class="post-meta d-flex justify-content-center">
+                                <a href="#" class="post-catagory" th:text="${blog.category}">Category</a>
+                                <a href="#" class="post-comments" th:text="${blog.commentCount != null ? blog.commentCount + ' comments' : '0 comments'}">0 comments</a>
                             </div>
-                            <!-- Post Content -->
-                            <div class="post-content">
-                                <!-- Post Date-->
-                                <a href="#" class="post-date btn palatin-btn">June 25, 2018</a>
-                                <!-- Post Title -->
-                                <a href="#" class="post-title">Nature's Remedy: Exploring Natural Ingredients for Radiant Skin</a>
-                                <!-- Post Meta -->
-                                <div class="post-meta d-flex justify-content-center">
-                                    <!-- Catagory -->
-                                    <a href="#" class="post-catagory">In Hotel</a>
-                                    <!-- Comments -->
-                                    <a href="#" class="post-comments">3 comments</a>
-                                </div>
-                                <!-- Post Excerpt -->
-                                <p>Did you know that nature holds countless beauty secrets? In this blog, we unveil the powerful benefits of natural ingredients for nourishing and rejuvenating your skin. From honey and aloe vera to coconut oil, we'll guide you in creating safe and effective skincare routines that highlight your natural beauty from the inside out.</p>
-                            </div>
+                            <p th:text="${blog.excerpt}">Blog excerpt goes here...</p>
                         </div>
-
-                        <!-- ##### Single Blog Post ##### -->
-                        <div class="single-blog-post mb-100 wow fadeInUp" data-wow-delay="500ms">
-                            <!-- Post Thumb -->
-                            <div class="blog-post-thumb">
-                                <img src="/user/img/bg-img/bg-12.jpg" alt="">
-                            </div>
-                            <!-- Post Content -->
-                            <div class="post-content">
-                                <!-- Post Date-->
-                                <a href="#" class="post-date btn palatin-btn">June 25, 2018</a>
-                                <!-- Post Title -->
-                                <a href="#" class="post-title">Beauty Forward: An Honest Look at the Newest Skincare Treatments</a>
-                                <!-- Post Meta -->
-                                <div class="post-meta d-flex justify-content-center">
-                                    <!-- Catagory -->
-                                    <a href="#" class="post-catagory">In Hotel</a>
-                                    <!-- Comments -->
-                                    <a href="#" class="post-comments">3 comments</a>
-                                </div>
-                                <!-- Post Excerpt -->
-                                <p>The beauty industry is constantly evolving, introducing cutting-edge skincare techniques and treatments. In this blog, we'll explore the latest advancements, from laser technology and light therapy to groundbreaking serums and moisturizers.  We’ll analyze, review, and offer expert advice to help you find the best solutions for your unique skincare needs.</p>
-                            </div>
-                        </div>
-
                     </div>
-                </div>
 
+                </div>
             </div>
         </div>
     </div>
-    <!-- ##### Blog Area End ##### -->
+</div>
 
-    <!-- ##### Footer Area Start ##### -->
-    <div th:replace="user/master/fragments/footer:: footer"></div>
-    <!-- ##### Footer Area End ##### -->
+<!-- Footer -->
+<div th:replace="user/master/fragments/footer :: footer"></div>
 
-    <!-- ##### All Javascript Script ##### -->
-    <div th:replace="user/master/fragments/script"></div>
+<!-- Scripts -->
+<div th:replace="user/master/fragments/script :: script"></div>
 </body>
-
 </html>
