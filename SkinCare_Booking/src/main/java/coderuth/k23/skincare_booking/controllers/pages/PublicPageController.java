@@ -1,5 +1,7 @@
 package coderuth.k23.skincare_booking.controllers.pages;
 
+import coderuth.k23.skincare_booking.dtos.response.BlogResponseDTO;
+import coderuth.k23.skincare_booking.services.BlogService;
 import coderuth.k23.skincare_booking.services.TherapistService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -8,12 +10,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import jakarta.servlet.http.HttpServletRequest;
 
+import java.util.List;
+
 @Controller
 
 public class PublicPageController {
 
     @Autowired
     TherapistService therapistService;
+
+    @Autowired
+    private BlogService blogService;
 
     @ModelAttribute("currentURI")
     public String currentURI(HttpServletRequest request) {
@@ -43,8 +50,10 @@ public class PublicPageController {
     }
 
     @GetMapping("/blog")
-    public String userBlogPage() {
-        return "user/blog";
+    public String userBlogPage(Model model) {
+        List<BlogResponseDTO> blogs = blogService.getAllBlogs();
+        model.addAttribute("blogs", blogs);
+        return "user/customer/blog";
     }
 
     @GetMapping("/skin-therapist")
