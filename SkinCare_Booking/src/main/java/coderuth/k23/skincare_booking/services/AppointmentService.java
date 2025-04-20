@@ -395,4 +395,24 @@ public class AppointmentService {
         logger.info("Calculated current month revenue (only PAID payments): ${}", revenue);
         return revenue;
     }
+
+    public double calculateCurrentYearRevenue() {
+        LocalDate today = LocalDate.now(); // Ví dụ: April 18, 2025
+        LocalDate startOfYear = today.with(TemporalAdjusters.firstDayOfYear()); // January 1, 2025
+        LocalDateTime start = startOfYear.atStartOfDay(); // Bắt đầu từ 00:00 ngày 1/1/2025
+        LocalDateTime end = LocalDateTime.now(); // Thời điểm hiện tại (April 18, 2025, 11:13 PM)
+
+        List<Payment> paidPayments = paymentRepository.findByCreatedAtBetweenAndPaymentStatus(
+                start,
+                end,
+                Payment.PaymentStatus.PAID
+        );
+
+        double revenue = paidPayments.stream()
+                .mapToDouble(Payment::getAmount)
+                .sum();
+
+        logger.info("Calculated current year revenue (only PAID payments): ${}", revenue);
+        return revenue;
+    }
 }

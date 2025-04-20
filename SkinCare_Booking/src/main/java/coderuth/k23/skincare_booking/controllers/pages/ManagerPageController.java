@@ -78,6 +78,7 @@ public class ManagerPageController {
         model.addAttribute("manager", manager);
         model.addAttribute("month", monthName);
         model.addAttribute("sales", appointmentService.calculateCurrentMonthRevenue());
+        model.addAttribute("annualRevenue", appointmentService.calculateCurrentYearRevenue());
         return "admin/index"; // "user/index.html"
     }
 
