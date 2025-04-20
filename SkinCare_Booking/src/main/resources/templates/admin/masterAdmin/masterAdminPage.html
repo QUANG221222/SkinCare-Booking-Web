@@ -100,79 +100,63 @@
                 <div class="card-header d-flex justify-content-between">
                   <div class="card-title mb-0">
                     <h5 class="mb-1 me-2">Order Statistics</h5>
-                    <p class="card-subtitle">42.82k Total Sales</p>
+                    <p class="card-subtitle">Total Appointments: <span th:text="${totalAppointments}"></span></p>
                   </div>
                 </div>
                 <div class="card-body">
                   <div class="d-flex justify-content-between align-items-center mb-6">
                     <div class="d-flex flex-column align-items-center gap-1">
-                      <h3 class="mb-1">8,258</h3>
-                      <small>Total Orders</small>
+                      <h3 class="mb-1" th:text="${totalAppointments}"></h3>
+                      <small>Total Appointments</small>
                     </div>
                     <div id="orderStatisticsChart"></div>
                   </div>
                   <ul class="p-0 m-0">
                     <li class="d-flex align-items-center mb-5">
                       <div class="avatar flex-shrink-0 me-3">
-                            <span class="avatar-initial rounded bg-label-primary"
-                            ><i class="icon-base bx bx-mobile-alt"></i
-                            ></span>
+                        <span class="avatar-initial rounded bg-label-primary">
+                          <i class="icon-base bx bx-x-circle"></i>
+                        </span>
                       </div>
                       <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
                         <div class="me-2">
-                          <h6 class="mb-0">Electronic</h6>
-                          <small>Mobile, Earbuds, TV</small>
+                          <h6 class="mb-0">Cancellation Rate</h6>
+                          <small>Percentage of canceled appointments</small>
                         </div>
                         <div class="user-progress">
-                          <h6 class="mb-0">82.5k</h6>
+                          <h6 class="mb-0" th:text="${cancellationRate} + '%'"></h6>
                         </div>
                       </div>
                     </li>
                     <li class="d-flex align-items-center mb-5">
                       <div class="avatar flex-shrink-0 me-3">
-                            <span class="avatar-initial rounded bg-label-success"
-                            ><i class="icon-base bx bx-closet"></i
-                            ></span>
+                        <span class="avatar-initial rounded bg-label-success">
+                          <i class="icon-base bx bx-check-circle"></i>
+                        </span>
                       </div>
                       <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
                         <div class="me-2">
-                          <h6 class="mb-0">Fashion</h6>
-                          <small>T-shirt, Jeans, Shoes</small>
+                          <h6 class="mb-0">Success Rate</h6>
+                          <small>Percentage of completed appointments</small>
                         </div>
                         <div class="user-progress">
-                          <h6 class="mb-0">23.8k</h6>
-                        </div>
-                      </div>
-                    </li>
-                    <li class="d-flex align-items-center mb-5">
-                      <div class="avatar flex-shrink-0 me-3">
-                            <span class="avatar-initial rounded bg-label-info"
-                            ><i class="icon-base bx bx-home-alt"></i
-                            ></span>
-                      </div>
-                      <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                        <div class="me-2">
-                          <h6 class="mb-0">Decor</h6>
-                          <small>Fine Art, Dining</small>
-                        </div>
-                        <div class="user-progress">
-                          <h6 class="mb-0">849k</h6>
+                          <h6 class="mb-0" th:text="${successRate} + '%'"></h6>
                         </div>
                       </div>
                     </li>
                     <li class="d-flex align-items-center">
                       <div class="avatar flex-shrink-0 me-3">
-                            <span class="avatar-initial rounded bg-label-secondary"
-                            ><i class="icon-base bx bx-football"></i
-                            ></span>
+                        <span class="avatar-initial rounded bg-label-info">
+                          <i class="icon-base bx bx-star"></i>
+                        </span>
                       </div>
                       <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
                         <div class="me-2">
-                          <h6 class="mb-0">Sports</h6>
-                          <small>Football, Cricket Kit</small>
+                          <h6 class="mb-0">Most Booked Service</h6>
+                          <small>SpaService with the highest bookings</small>
                         </div>
                         <div class="user-progress">
-                          <h6 class="mb-0">10</h6>
+                          <h6 class="mb-0" th:text="${mostBookedSpaService}"></h6>
                         </div>
                       </div>
                     </li>

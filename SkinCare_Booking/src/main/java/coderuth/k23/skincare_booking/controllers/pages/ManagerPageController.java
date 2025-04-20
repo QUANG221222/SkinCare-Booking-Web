@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Repository;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -72,11 +71,20 @@ public class ManagerPageController {
         Manager manager = managerRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Manager not found"));
 
+        long totalAppointments = appointmentService.getTotalAppointments();
+        double cancellationRate = appointmentService.getCancellationRate();
+        double successRate = appointmentService.getSuccessRate();
+        SpaService mostBookedSpaService = appointmentService.getMostBookedSpaService();
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM", Locale.ENGLISH);
         String monthName = LocalDateTime.now().format(formatter);
 
         model.addAttribute("manager", manager);
         model.addAttribute("month", monthName);
+        model.addAttribute("totalAppointments", totalAppointments);
+        model.addAttribute("cancellationRate", String.format("%.2f", cancellationRate));
+        model.addAttribute("successRate", String.format("%.2f", successRate));
+        model.addAttribute("mostBookedSpaService", mostBookedSpaService != null ? mostBookedSpaService.getName() : "N/A");
         model.addAttribute("sales", appointmentService.calculateCurrentMonthRevenue());
         model.addAttribute("annualRevenue", appointmentService.calculateCurrentYearRevenue());
         return "admin/index"; // "user/index.html"
