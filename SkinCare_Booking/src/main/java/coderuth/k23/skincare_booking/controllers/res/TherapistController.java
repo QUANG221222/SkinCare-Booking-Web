@@ -8,6 +8,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import coderuth.k23.skincare_booking.models.SkinTherapist;
 import coderuth.k23.skincare_booking.models.TherapistSchedule;
+import coderuth.k23.skincare_booking.repositories.AppointmentRepository;
 import coderuth.k23.skincare_booking.repositories.SkinTherapistRepository;
 import coderuth.k23.skincare_booking.repositories.TherapistScheduleRepository;
 import coderuth.k23.skincare_booking.services.AppointmentService;
@@ -31,6 +32,9 @@ public class TherapistController {
     
     @Autowired
     private AppointmentService appointmentService;
+
+    @Autowired
+    private AppointmentRepository appointmentRepository;
 
     // Quản lý nhà trị liệu
     @GetMapping
@@ -163,7 +167,6 @@ public class TherapistController {
         return "redirect:/therapists/" + therapistId + "/schedules";
     }
 
-    // Thêm vào TherapistController hiện có
     @GetMapping("/{therapistId}/appointments")
     public String listTherapistAppointments(@PathVariable UUID therapistId, Model model, RedirectAttributes redirectAttributes) {
         try {
@@ -172,26 +175,50 @@ public class TherapistController {
             redirectAttributes.addFlashAttribute("error", "An error occurred while retrieving appointments: " + e.getMessage());
             return "redirect:/therapists";
         }
-        return "user/customer/appointments_list";
+        return "admin/therapists/appointments_list";
     }
 
     @GetMapping("/appointments/record/{id}")
     public String showRecordResultForm(@PathVariable Long id, Model model) {
-        Appointment appointment = appointmentService.getAppointmentsByStatus(Appointment.AppointmentStatus.ASSIGNED)
-                .stream().filter(b -> b.getId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Appointment not found!"));
-        model.addAttribute("appointment", appointment);
-        return "admin/therapists/therapists_record_result";
+        try {
+            Appointment appointment = appointmentRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy lịch hẹn với ID: " + id));
+            if (appointment.getStatus() != Appointment.AppointmentStatus.ASSIGNED) {
+                model.addAttribute("error", "Lịch hẹn phải ở trạng thái ASSIGNED để ghi kết quả! Trạng thái hiện tại: " + appointment.getStatus());
+                model.addAttribute("appointments", appointmentService.getAppointmentsByTherapist(appointment.getSkinTherapist().getId()));
+                return "admin/therapists/appointments_list";
+            }
+            model.addAttribute("appointment", appointment);
+            return "admin/therapists/therapists_record_result";
+        } catch (RuntimeException e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("appointments", appointmentService.getAppointmentsByTherapist(
+                    appointmentRepository.findById(id)
+                            .map(a -> a.getSkinTherapist().getId())
+                            .orElse(null)));
+            return "admin/therapists/appointments_list";
+        }
     }
 
     @PostMapping("/appointments/record/{id}")
-    public String recordResult(@PathVariable Long id, @RequestParam String result) {
-        appointmentService.recordResult(id, result);
-        return "redirect:/therapists/" + appointmentService.getAppointmentsByStatus(Appointment.AppointmentStatus.COMPLETED)
-            .stream().filter(b -> b.getId().equals(id))
-            .findFirst()
-            .map(b -> b.getSkinTherapist().getId())
-            .orElseThrow(() -> new RuntimeException("Therapist not found!")) + "/appointments";
+    public String recordResult(@PathVariable Long id, @RequestParam String result, Model model) {
+        try {
+            if (result == null || result.trim().isEmpty()) {
+                throw new IllegalArgumentException("Kết quả không được để trống!");
+            }
+            Appointment appointment = appointmentRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy lịch hẹn với ID: " + id));
+            if (appointment.getStatus() != Appointment.AppointmentStatus.ASSIGNED) {
+                model.addAttribute("error", "Lịch hẹn phải ở trạng thái ASSIGNED để ghi kết quả! Trạng thái hiện tại: " + appointment.getStatus());
+                model.addAttribute("appointment", appointment);
+                return "admin/therapists/therapists_record_result";
+            }
+            appointmentService.recordResult(id, result);
+            return "redirect:/therapists/" + appointment.getSkinTherapist().getId() + "/appointments";
+        } catch (RuntimeException e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("appointment", appointmentRepository.findById(id).orElse(null));
+            return "admin/therapists/therapists_record_result";
+        }
     }
 }

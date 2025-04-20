@@ -37,7 +37,7 @@
                 <div class="container-xxl flex-grow-1 container-p-y">
                     <!-- Users List Table -->
                     <div class="card">
-                        <div class="row mx-3 my-0 justify-content-between">
+                        <div th:if="${#strings.contains(currentURI, 'manager')}" class="row mx-3 my-0 justify-content-between">
                             <div class="py-3 d-flex align-items-center justify-content-between flex-wrap gap-3">
                                 <button class="btn add-new btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasAddUser">
                                     <i class="icon-base bx bx-plus icon-sm me-2"></i>
@@ -46,7 +46,7 @@
                             </div>
                         </div>
                         <div class="table-responsive">
-                            <div class="container mt-3">
+                            <div th:if="${#strings.contains(currentURI, 'manager')}" class="container mt-3">
                                 <!-- Alert for Success -->
                                 <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show position-relative" role="alert">
                                     <span th:text="${successMessage}"></span>
@@ -69,8 +69,8 @@
                                 </tr>
                                 </thead>
                                 <tbody id="therapistTable">
-                                <tr th:each="therapist : ${therapistList}" style="display: none;">
-                                    <div th:replace="admin/Users/ListTherapist/Therapist/therapist :: therapist"></div>
+                                <tr th:each="therapist : ${therapistList}">
+                                    <div th:replace="admin/Users/ListTherapist/Therapist/Therapist :: therapist"></div>
                                 </tr>
                                 <tr id="noTherapistRow" th:if="${#lists.isEmpty(therapistList)}">
                                     <td colspan="6" class="text-center">No therapists found.</td>

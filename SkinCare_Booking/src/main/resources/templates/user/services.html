@@ -185,42 +185,68 @@
             </div>
 
             <!-- Kiểm tra nếu serviceList không null hoặc rỗng -->
-            <div class="row" th:if="${services != null}">
+            <div class="row">
                 <!-- Lặp và hiển thị mỗi service -->
                 <div class="col-12 col-md-6 col-lg-4"
                      th:each="service : ${services}"
                      th:with="
-                         bgimg=${(service != null and service.imageUrl != null and service.imageUrl != '') 
-                                     ? service.imageUrl 
-                                     : '/user/img/about-us-img/3.jpg'},
+                         bgimg=${service.imageUrl},
                          price=${service.price},
                          title=${service.name},
-                         desc=${service.description}">
+                         desc=${service.description},
+                         duration=${service.duration}"
+                >
             
                     <div class="single-rooms-area wow fadeInUp" data-wow-delay="200ms">
                         <!-- Thumbnail -->
                         <div class="bg-thumbnail bg-img" 
                              th:style="'background-image: url(' + ${bgimg} + ');'"></div>
                         <!-- Price -->
-                        <p class="price-from" th:text="${price}">Price Service</p>
+                        <p class="price-from">
+                            <span class="vnd-display">0 VND</span>
+                            (<span class="service-price-usd" th:text="${price}">0</span> $)
+                        </p>
                         <!-- Rooms Text -->
                         <div class="rooms-text">
                             <div class="line"></div>
                             <h4 th:text="${title}">Title Service</h4>
-                            <p th:text="${desc}">Desc Service</p>
+                            <p>
+                                <span th:text="${desc}"></span>
+                            </p>
+                            <strong class="text-white">(Duration: <strong th:text="${duration}"></strong> minutes)</strong>
                         </div>
                         <!-- Book Room -->
-                        <a class="book-room-btn btn palatin-btn" th:href="@{/protected/customer/appointment(serviceId=${service.id})}">
-                                Book Now
-                        </a> 
+                        <!-- Thêm điều kiện để ẩn nút Book Now nếu giá <= 0 -->
+                        <a class="book-room-btn btn palatin-btn" th:href="@{/login}">
+                            Book Now
+                        </a>
+                        <a th:if="${#strings.contains(currentURI, 'customer')}"
+                           class="book-room-btn btn palatin-btn"
+                           th:onclick="|loadAppointmentForm(${service.id})|"
+                           href="javascript:void(0);">
+                            Book Now
+                        </a>
                     </div>
                 </div>
                 <!-- Hiển thị thông báo nếu không có service -->
-                <!--<div th:if="${serviceList == null or #lists.isEmpty(serviceList)}">
-                    <p>Không có dịch vụ nào được hiển thị.</p>
-                </div> --> 
+                <div th:if="${#lists.isEmpty(services)}">
+                    <p>No services are displayed.</p>
+                </div>
+            </div>
             </div>
     </section>
+        <!-- Appointment Form Modal -->
+    <div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" id="appointmentModal" tabindex="-1" aria-labelledby="appointmentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="appointmentModalLabel">Book a skin care service</h5>
+                </div>
+                <!-- Phần này sẽ được nạp nội dung từ appointment_form -->
+                <div class="modal-body" id="appointmentModalBody"></div>
+            </div>
+        </div>
+    </div>
     <!-- ##### Rooms Area End ##### -->
     <!-- ##### Footer Area Start ##### -->
     <div th:replace="user/master/fragments/footer:: footer"></div>
@@ -229,14 +255,6 @@
     <!-- ##### All Javascript Script ##### -->
     <div th:replace="user/master/fragments/script"></div>
 
-    <div id="successToast" class="toast align-items-center text-bg-success border-0 position-fixed bottom-0 start-0 m-3" role="alert" aria-live="assertive" aria-atomic="true" style="z-index: 1055; display: none;">
-        <div class="d-flex">
-          <div class="toast-body">
-            Đặt lịch thành công ^^!
-          </div>
-          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-    </div>
 </body>
 
 </html>

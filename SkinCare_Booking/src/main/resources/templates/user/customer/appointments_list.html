@@ -18,24 +18,33 @@
         </div>
         <table class="table table-bordered">
             <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Service</th>
-                    <th>Specialist</th>
-                    <th>Time</th>
-                    <th>Status</th>
-                </tr>
+            <tr>
+                <th>ID</th>
+                <th>Dịch vụ</th>
+                <th>Thời gian</th>
+                <th>Chuyên viên</th>
+                <th>Trạng thái</th>
+                <th>Hành động</th>
+            </tr>
             </thead>
             <tbody>
-                <tr th:each="appointment : ${appointments}">
-                    <td th:text="${appointment.id}"></td>
-                    <td th:text="${appointment.spaService.name}"></td>
-                    <td th:text="${appointment.skinTherapist?.fullName}"></td>
-                    <td th:text="${appointment.appointmentTime}"></td>
-                    <td th:text="${appointment.status}"></td>
-                </tr>
+            <tr th:each="appointment : ${appointments}">
+                <td th:text="${appointment.id}"></td>
+                <td th:text="${appointment.spaService.name}"></td>
+                <td th:text="${appointment.appointmentTime}"></td>
+                <td th:text="${appointment.skinTherapist?.fullName} ?: 'Chưa phân công'"></td>
+                <td th:text="${appointment.status}"></td>
+                <td>
+                    <div th:if="${appointment.status == 'PENDING'}">
+                        <form th:action="@{/customer/appointments/cancel/{id}(id=${appointment.id})}" method="post">
+                            <button type="submit" class="btn btn-danger">Hủy</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
             </tbody>
         </table>
+        <a th:href="@{/customer/appointments}" class="btn btn-primary">Đặt lịch mới</a>
     </div>
 </body>
 </html>

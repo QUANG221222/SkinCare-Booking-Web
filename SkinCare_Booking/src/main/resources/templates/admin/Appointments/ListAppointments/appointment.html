@@ -1,0 +1,103 @@
+<th:block th:fragment="appointment">
+    <td th:text="${appointment.id}"></td>
+    <td th:text="${appointment.customer?.name}"></td>
+    <td th:text="${appointment.spaService?.name}"></td>
+    <td th:text="${appointment.appointmentTime}"></td>
+    <td th:text="${appointment.status}"></td>
+    <td th:text="${appointment.skinTherapist?.name} ?: 'Chưa phân công'"></td>
+    <td th:text="${appointment.result} ?: 'Chưa có'"></td>
+    <td>
+        <div class="d-flex align-items-center gap-2">
+            <a class="btn btn-sm btn-danger cancel-btn" data-bs-toggle="modal" data-bs-target="#cancelConfirmModal" th:data-id="${appointment.id}">
+                <i class="bx bx-trash"></i>
+            </a>
+            <a class="btn btn-sm btn-info edit-btn" data-bs-toggle="modal" data-bs-target="#editAppointmentModal" th:data-id="${appointment.id}" th:data-status="${appointment.status}" th:data-result="${appointment.result}">
+                <i class="bx bx-edit"></i>
+            </a>
+        </div>
+    </td>
+
+    <!-- Modal Confirm Cancel Appointment -->
+    <div class="modal fade" id="cancelConfirmModal" tabindex="-1" aria-labelledby="cancelConfirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cancelConfirmModalLabel">Xác nhận hủy</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Bạn có chắc chắn muốn hủy lịch hẹn này?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy bỏ</button>
+                    <a class="btn btn-danger" id="confirmCancelButton">Hủy lịch hẹn</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Edit Appointment -->
+    <div class="modal fade" id="editAppointmentModal" aria-labelledby="editAppointmentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editAppointmentModalLabel">Chỉnh sửa lịch hẹn</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <!-- Status -->
+                        <div class="mb-3">
+                            <label for="edit-appointment-status" class="form-label">Trạng thái</label>
+                            <select class="form-control" id="edit-appointment-status" name="status" required>
+                                <option th:each="status : ${T(coderuth.k23.skincare_booking.models.Appointment.AppointmentStatus).values()}" th:value="${status}" th:text="${status}"></option>
+                            </select>
+                        </div>
+
+                        <!-- Result -->
+                        <div class="mb-3">
+                            <label for="edit-appointment-result" class="form-label">Kết quả</label>
+                            <textarea class="form-control" id="edit-appointment-result" name="result" placeholder="Nhập kết quả" maxlength="500"></textarea>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy bỏ</button>
+                            <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const editButtons = document.querySelectorAll(".edit-btn");
+            const cancelButtons = document.querySelectorAll(".cancel-btn");
+
+            cancelButtons.forEach((button) => {
+                button.addEventListener("click", (event) => {
+                    const id = event.currentTarget.getAttribute("data-id");
+                    const confirmCancelButton = document.getElementById("confirmCancelButton");
+                    confirmCancelButton.setAttribute("href", `/protected/manager/appointments/cancel/${id}`);
+                });
+            });
+
+            editButtons.forEach((button) => {
+                button.addEventListener("click", function (event) {
+                    const editModal = document.querySelector("#editAppointmentModal");
+                    const id = event.currentTarget.getAttribute("data-id");
+                    const status = event.currentTarget.getAttribute("data-status");
+                    const result = event.currentTarget.getAttribute("data-result");
+
+                    editModal.querySelector("#edit-appointment-status").value = status;
+                    editModal.querySelector("#edit-appointment-result").value = result || '';
+
+                    const form = editModal.querySelector("form");
+                    form.setAttribute("action", `/protected/manager/appointments/update/${id}`);
+                    form.setAttribute("method", "post");
+                });
+            });
+        });
+    </script>
+</th:block>

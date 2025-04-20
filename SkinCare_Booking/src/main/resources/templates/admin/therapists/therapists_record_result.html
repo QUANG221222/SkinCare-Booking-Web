@@ -1,23 +1,34 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
     <title>Record Execution Result</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <h1>Record result for service booking #<span th:text="${appointment.id}"></span></h1>
-        <!-- Error or success notification -->
-        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+    <div class="container mt-5">
+        <h1>Record Result for Appointment #<span th:text="${appointment.id}"></span></h1>
+        <div th:if="${error != null and error != ''}" class="alert alert-danger" role="alert">
+            <span th:text="${error}"></span>
+        </div>
         <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
-        <form th:action="@{/therapists/appointments/record/{id}(id=${appointment.id})}" method="post">
+        <div class="card mb-3">
+            <div class="card-body">
+                <p><strong>Customer:</strong> <span th:text="${appointment.customer.username}"></span></p>
+                <p><strong>Service:</strong> <span th:text="${appointment.spaService.name}"></span></p>
+                <p><strong>Time:</strong> <span th:text="${#temporals.format(appointment.appointmentTime, 'dd/MM/yyyy HH:mm')}"></span></p>
+                <p><strong>Therapist:</strong> <span th:text="${appointment.skinTherapist?.fullName} ?: 'N/A'"></span></p>
+            </div>
+        </div>
+        <form th:action="@{/protected/manager/appointments/record-result/{id}(id=${appointment.id})}" method="post">
             <div class="mb-3">
-                <label>Result:</label>
-                <textarea name="result" class="form-control" required></textarea>
+                <label for="result" class="form-label">Result:</label>
+                <textarea name="result" id="result" class="form-control" required></textarea>
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
-            <a th:href="@{/therapists/{id}/appointments(id=${appointment.skinTherapist.id})}" class="btn btn-secondary">Cancel</a>
+            <a th:href="@{/protected/manager/appointments/assigned}" class="btn btn-secondary">Cancel</a>
         </form>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

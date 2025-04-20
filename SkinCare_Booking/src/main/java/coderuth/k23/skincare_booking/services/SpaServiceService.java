@@ -1,19 +1,16 @@
 package coderuth.k23.skincare_booking.services;
 
 import coderuth.k23.skincare_booking.dtos.request.SpaServiceRequestDTO;
-import coderuth.k23.skincare_booking.dtos.response.SpaServiceResponseDTO;
 import coderuth.k23.skincare_booking.models.CenterSchedule;
 import coderuth.k23.skincare_booking.models.SpaService;
 import coderuth.k23.skincare_booking.repositories.CenterScheduleRepository;
 import coderuth.k23.skincare_booking.repositories.SpaServiceRepository;
+import jakarta.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 @Service
 public class SpaServiceService {
 
@@ -27,18 +24,45 @@ public class SpaServiceService {
     public List<SpaService> getAllServices() {
         return spaServiceRepository.findAll();
     }
+
+    @Transactional
     public SpaService getServiceById(Long id) {
         return spaServiceRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Service not found!"));
     }
 
-    public SpaService createService(SpaService spaService) {
-        return spaServiceRepository.save(spaService);
-    }
+    @Transactional
+    public void createService(SpaServiceRequestDTO spaServiceRequestDTO) {
+        if (spaServiceRequestDTO.getPrice() == null || spaServiceRequestDTO.getPrice()<= 0) {
+            throw new IllegalArgumentException("Price must be greater than zero!");
+        }
+        if (spaServiceRepository.existsByName(spaServiceRequestDTO.getName())) {
+            throw new IllegalArgumentException("Spa service name is already taken");
+        }
 
+        if (spaServiceRepository.existsByImageUrl(spaServiceRequestDTO.getImageUrl())) {
+            throw new IllegalArgumentException("Image spa service is already in use");
+        }
+
+        SpaService service = new SpaService();
+        service.setName(spaServiceRequestDTO.getName());
+        service.setImageUrl(spaServiceRequestDTO.getImageUrl());
+        service.setPrice(spaServiceRequestDTO.getPrice());
+        service.setDescription(spaServiceRequestDTO.getDescription());
+        service.setDuration(spaServiceRequestDTO.getDuration());
+
+        spaServiceRepository.save(service);
+    }
+    @Transactional
     public SpaService updateService(Long id, SpaService updatedService) {
         SpaService spaService = spaServiceRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Service not found!"));
+
+        if (updatedService.getPrice() == null || updatedService.getPrice() <= 0) {
+            throw new IllegalArgumentException("Price must be greater than zero!");
+        }
+        spaService.setPrice(updatedService.getPrice());
+
         spaService.setName(updatedService.getName());
         spaService.setImageUrl(updatedService.getImageUrl());
         spaService.setDescription(updatedService.getDescription());
@@ -46,8 +70,8 @@ public class SpaServiceService {
         spaService.setDuration(updatedService.getDuration());
         return spaServiceRepository.save(spaService);
     }
-
-    public void deleteService(Long id,  RedirectAttributes redirectAttributes) {
+    @Transactional
+    public void deleteService(Long id) {
         spaServiceRepository.deleteById(id);
     }
 

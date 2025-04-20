@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<div th:replace="user/master/fragments/head :: head"></div>
+
+<body>
+<!-- Preloader -->
+<div class="preloader d-flex align-items-center justify-content-center">
+    <div class="cssload-container">
+        <div class="cssload-loading"><i></i><i></i><i></i><i></i></div>
+    </div>
+</div>
+
+<!-- ##### Header Area Start ##### -->
+<div th:replace="user/master/fragments/header :: header"></div>
+<!-- ##### Header Area End ##### -->
+
+<!-- ##### Breadcumb Area Start ##### -->
+<section
+        class="breadcumb-area bg-img d-flex align-items-center justify-content-center"
+        style="background-image: url(/user/img/bg-img/bg-10.jpg)"
+>
+    <div class="bradcumbContent">
+        <h2>Skin Care Quiz</h2>
+    </div>
+</section>
+<!-- ##### Breadcumb Area End ##### -->
+
+<!-- ##### Book Now Area Start ##### -->
+<div th:replace="user/master/fragments/book-now:: book-now"></div>
+<!-- ##### Book Now Area End ##### -->
+
+<section class="breadcrumb-area border-none">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item">
+                    <a th:href="@{/protected/customer/home}" class="text-decoration-none">Home</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Quiz</li>
+            </ol>
+        </nav>
+    </div>
+</section>
+
+<div class="container py-5">
+    <h1 class="text-center mb-4">Discover Your Perfect Spa Treatment</h1>
+
+    <div id="quizContainer">
+        <form id="spaQuizForm" onsubmit="handleSubmit(event)">
+            <div class="container my-4">
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <div class="card shadow-lg">
+                            <div class="card-body">
+                                <!-- Mental Issues -->
+                                <div class="mb-4">
+                                    <h4>What problem are you having?</h4>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="mentalIssues" value="stress">
+                                        <label class="form-check-label">Stress</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="mentalIssues" value="tired">
+                                        <label class="form-check-label">Fatigue</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="mentalIssues" value="insomnia">
+                                        <label class="form-check-label">Insomnia</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="skinIssues" value="acne">
+                                        <label class="form-check-label">Acne & Breakouts</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="skinIssues" value="blackheads">
+                                        <label class="form-check-label">Blackheads & Large Pores</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="skinIssues" value="aging">
+                                        <label class="form-check-label">Aging & Wrinkles</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="skinIssues" value="dullness">
+                                        <label class="form-check-label">Dull & Uneven Skin Tone</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="skinIssues" value="scars">
+                                        <label class="form-check-label">Acne Scars & Dark Spots</label>
+                                    </div>
+                                </div>
+
+
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-primary">Get Results</button>
+                                    <a href="/protected/customer/home" class="btn btn-secondary">Back to Home</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Results Section -->
+                <div id="resultContainer" class="mt-4" style="display:none;">
+                    <div class="card shadow-lg">
+                        <div class="card-body">
+                            <div id="recommendedServices"></div>
+                            <div class="text-center mt-4">
+                                <a href="/protected/customer/services" class="btn palatin-btn">Recommended Services for You</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+</div>
+
+<!-- ##### Footer Area Start ##### -->
+<div th:replace="user/master/fragments/footer:: footer"></div>
+<!-- ##### Footer Area End ##### -->
+
+<!-- ##### All Javascript Script ##### -->
+<div th:replace="user/master/fragments/script"></div>
+
+<script>
+    document.getElementById('spaQuizForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const formData = {
+            mentalIssues: [...document.querySelectorAll('input[name="mentalIssues"]:checked')].map(el => el.value),
+            skinIssues: [...document.querySelectorAll('input[name="skinIssues"]:checked')].map(el => el.value),
+            goals: [...document.querySelectorAll('input[name="goals"]:checked')].map(el => el.value)
+        };
+
+        const recommendations = getRecommendations(formData);
+        displayResults(recommendations);
+    });
+
+    function getRecommendations(formData) {
+        const recommendations = [];
+
+        // Mental health services
+        if (formData.mentalIssues.includes('stress') || formData.mentalIssues.includes('tired')) {
+            recommendations.push({
+                name: "Relaxation Massage",
+                description: "Helps reduce stress, fatigue and improve sleep quality"
+            });
+        }
+
+        // Skin care services
+        if (formData.skinIssues.includes('acne')) {
+            recommendations.push({
+                name: "PDT Light Therapy",
+                description: "Biolight therapy that helps eliminate acne-causing bacteria"
+            });
+            recommendations.push({
+                name: "Deep Cleansing Treatment",
+                description: "Deep pore cleansing and acne treatment"
+            });
+        }
+
+        if (formData.skinIssues.includes('blackheads')) {
+            recommendations.push({
+                name: "Aqua Peel Treatment",
+                description: "Deep cleansing and exfoliation, reduces pore size"
+            });
+        }
+
+        if (formData.skinIssues.includes('aging')) {
+            recommendations.push({
+                name: "LDM Ultrasound Therapy",
+                description: "Dual ultrasound technology for skin rejuvenation and lifting"
+            });
+            recommendations.push({
+                name: "Stem Cell Cryo Treatment",
+                description: "Stem cell therapy combined with cryo technology for skin regeneration"
+            });
+        }
+
+        if (formData.skinIssues.includes('dullness')) {
+            recommendations.push({
+                name: "Aladin Peel",
+                description: "Advanced peeling for brighter and even skin tone"
+            });
+            recommendations.push({
+                name: "Ionto Treatment",
+                description: "Ionization therapy for enhanced nutrient absorption"
+            });
+        }
+
+        if (formData.skinIssues.includes('scars')) {
+            recommendations.push({
+                name: "LHALALA Fill Treatment",
+                description: "Effective treatment for acne scars and deep marks"
+            });
+        }
+
+        return recommendations;
+    }
+
+    function displayResults(recommendations) {
+        const resultContainer = document.getElementById('resultContainer');
+        const recommendedServicesDiv = document.getElementById('recommendedServices');
+
+        if (recommendations.length === 0) {
+            recommendedServicesDiv.innerHTML = '<div class="alert alert-info">Please select at least one concern to get service recommendations.</div>';
+        } else {
+            let html = '';
+            recommendations.forEach(service => {
+                html += `
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">${service.name}</h5>
+                            <p class="card-text">${service.description}</p>
+                        </div>
+                    </div>
+                `;
+            });
+            recommendedServicesDiv.innerHTML = html;
+        }
+
+        resultContainer.style.display = 'block';
+        resultContainer.scrollIntoView({ behavior: 'smooth' });
+    }
+</script>
+</body>
+</html>

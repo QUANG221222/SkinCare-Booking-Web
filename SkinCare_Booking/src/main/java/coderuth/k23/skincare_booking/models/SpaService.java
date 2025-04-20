@@ -2,6 +2,8 @@ package coderuth.k23.skincare_booking.models;
 
 import lombok.*;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -17,7 +19,7 @@ public class SpaService {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "SpaService_id", nullable = false, unique = true)
+    @Column(name = "spaService_id", nullable = false, unique = true)
     private Long Id;
 
     @Column(name = "name", nullable = false)
@@ -27,7 +29,8 @@ public class SpaService {
     private String description;
 
     @Column(name = "price", nullable = false)
-    private double price;
+    @Min(value = 0, message = "Giá dịch vụ không được âm")
+    private Double price;
 
     @Column(name = "duration", nullable = false)
     private int duration;

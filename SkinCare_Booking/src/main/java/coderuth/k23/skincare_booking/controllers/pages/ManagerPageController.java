@@ -6,10 +6,12 @@ import coderuth.k23.skincare_booking.dtos.request.RegisterStaffRequest;
 import coderuth.k23.skincare_booking.dtos.request.RegisterTherapistRequest;
 import coderuth.k23.skincare_booking.dtos.response.BlogResponseDTO;
 import coderuth.k23.skincare_booking.models.*;
+import coderuth.k23.skincare_booking.dtos.request.SpaServiceRequestDTO;
 import coderuth.k23.skincare_booking.services.*;
 import coderuth.k23.skincare_booking.repositories.ManagerRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +20,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
 import java.util.List;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale
+import java.util.Optional;
 import java.util.UUID;
 
 @Controller
@@ -48,6 +54,18 @@ public class ManagerPageController {
     @Autowired
     private FeedbackService feedbackService;
 
+    @Autowired
+    private CenterScheduleService centerScheduleService;
+
+    @Autowired
+    private SpaServiceService spaServiceService;
+
+    @Autowired
+    private AppointmentService appointmentService;
+
+    @Autowired
+    private PaymentService paymentService;
+
     @ModelAttribute("currentURI")
     public String currentURI(HttpServletRequest request) {
         return request.getRequestURI();
@@ -59,7 +77,22 @@ public class ManagerPageController {
         Manager manager = managerRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Manager not found"));
 
+        long totalAppointments = appointmentService.getTotalAppointments();
+        double cancellationRate = appointmentService.getCancellationRate();
+        double successRate = appointmentService.getSuccessRate();
+        SpaService mostBookedSpaService = appointmentService.getMostBookedSpaService();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM", Locale.ENGLISH);
+        String monthName = LocalDateTime.now().format(formatter);
+
         model.addAttribute("manager", manager);
+        model.addAttribute("month", monthName);
+        model.addAttribute("totalAppointments", totalAppointments);
+        model.addAttribute("cancellationRate", String.format("%.2f", cancellationRate));
+        model.addAttribute("successRate", String.format("%.2f", successRate));
+        model.addAttribute("mostBookedSpaService", mostBookedSpaService != null ? mostBookedSpaService.getName() : "N/A");
+        model.addAttribute("sales", appointmentService.calculateCurrentMonthRevenue());
+        model.addAttribute("annualRevenue", appointmentService.calculateCurrentYearRevenue());
         return "admin/index"; // "user/index.html"
     }
 
@@ -256,8 +289,106 @@ public class ManagerPageController {
     }
 
     @GetMapping("/spa-services")
-    public String spaServicesPage() {
-        return "redirect:/spa-services";
+    public String spaServicesPage(Model model, Principal principal) {
+        String username = principal.getName();
+        Manager manager = managerRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Manager not found"));
+
+        model.addAttribute("manager", manager);
+        model.addAttribute("spaServicesList", spaServiceService.getAllServices());
+        return "/admin/SpaServices/ListSpaServices/listSpaServices";
+    }
+
+    @PostMapping("/add-services")
+    public String addNewServices(@ModelAttribute SpaServiceRequestDTO spaServiceRequestDTO, RedirectAttributes redirectAttributes) {
+        try {
+
+            //Add new
+            spaServiceService.createService(spaServiceRequestDTO);
+
+            redirectAttributes.addFlashAttribute("successMessage", "Service has been created successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "An error occurred while creating the service: " + e.getMessage());
+        }
+        return "redirect:/protected/manager/spa-services";
+    }
+
+    @GetMapping("/center-schedule")
+    public String getCenterSchedule(Model model, Principal principal) {
+        String username = principal.getName();
+        Manager manager = managerRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Manager not found"));
+
+        model.addAttribute("manager", manager);
+        model.addAttribute("scheduleList", centerScheduleService.getAllSchedules());
+        return "admin/Schedules/centerSchedule";
+    }
+
+    @PostMapping("/center-schedule/add")
+    public String addCenterSchedule(@ModelAttribute CenterSchedule schedule, RedirectAttributes redirectAttributes) {
+        try {
+            centerScheduleService.createSchedule(schedule);
+            redirectAttributes.addFlashAttribute("successMessage", "Schedule added successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to add schedule: " + e.getMessage());
+        }
+        return "redirect:/protected/manager/center-schedule";
+    }
+
+    @PostMapping("/center-schedule/update/{id}")
+    public String updateCenterSchedule(@PathVariable Long id, @ModelAttribute CenterSchedule schedule, RedirectAttributes redirectAttributes) {
+        try {
+            centerScheduleService.updateSchedule(id, schedule);
+            redirectAttributes.addFlashAttribute("successMessage", "Schedule updated successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to update schedule: " + e.getMessage());
+        }
+        return "redirect:/protected/manager/center-schedule";
+    }
+
+    @GetMapping("/center-schedule/delete/{id}")
+    public String deleteCenterSchedule(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            centerScheduleService.deleteSchedule(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Schedule deleted successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to delete schedule: " + e.getMessage());
+        }
+        return "redirect:/protected/manager/center-schedule";
+    }
+
+    @GetMapping("/delete-service/{id}")
+    public String deleteService(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            // Kiểm tra xem dịch vụ có đang được sử dụng trong lịch hẹn không
+            Optional<SpaService> spaServiceOptional = spaServiceService.getAllServices().stream()
+                    .filter(s -> s.getId().equals(id))
+                    .findFirst();
+
+            if (spaServiceOptional.isEmpty()) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Service not found to delete.");
+                return "redirect:/protected/manager/spa-services";
+            }
+
+            spaServiceService.deleteService(id);
+
+            redirectAttributes.addFlashAttribute("successMessage", "Spa Service has been deleted successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "An error occurred while deleting the spa service: " + e.getMessage());
+        }
+        return "redirect:/protected/manager/spa-services";
+    }
+
+    @PostMapping("/update-service/{id}")
+    public String updateService(@PathVariable Long id, @ModelAttribute SpaService spaService, RedirectAttributes redirectAttributes) {
+        try {
+            spaServiceService.updateService(id, spaService);
+
+            redirectAttributes.addFlashAttribute("successMessage", "Service has been updated successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "An error occurred while updating the service: " + e.getMessage());
+        }
+        return "redirect:/protected/manager/spa-services";
     }
 
     @GetMapping("/spa-services/schedules")
@@ -282,8 +413,207 @@ public class ManagerPageController {
         model.addAttribute("feedbackList", feedbackService.getAllFeedbacks(username));
         return "admin/Feedbacks/managerFeedback";
     }
+     // Appointment endpoints for Manager
+     @GetMapping("/appointments/pending")
+     public String listPendingAppointments(Model model, Principal principal) {
+         String username = principal.getName();
+         Manager manager = managerRepository.findByUsername(username)
+                 .orElseThrow(() -> new RuntimeException("Manager not found"));
+         model.addAttribute("manager", manager);
+         model.addAttribute("appointments", appointmentService.getAppointmentsByStatus(Appointment.AppointmentStatus.PENDING));
+         return "admin/staff/pending_appointments";
+     }
+ 
+     @PostMapping("/appointments/check-in/{id}")
+     public String checkIn(@PathVariable Long id) {
+         appointmentService.checkIn(id);
+         return "redirect:/protected/manager/appointments/checked-in";
+     }
+ 
+     @GetMapping("/appointments/checked-in")
+     public String listCheckedInAppointments(Model model, Principal principal) {
+         String username = principal.getName();
+         Manager manager = managerRepository.findByUsername(username)
+                 .orElseThrow(() -> new RuntimeException("Manager not found"));
+         model.addAttribute("manager", manager);
+         model.addAttribute("appointments", appointmentService.getAppointmentsByStatus(Appointment.AppointmentStatus.CHECKED_IN));
+         return "admin/staff/checked_in_appointments";
+     }
+ 
+     @GetMapping("/appointments/assign/{id}")
+     public String showAssignTherapistForm(@PathVariable Long id, Model model, Principal principal) {
+         String username = principal.getName();
+         Manager manager = managerRepository.findByUsername(username)
+                 .orElseThrow(() -> new RuntimeException("Manager not found"));
+         Appointment appointment = appointmentService.getAppointmentById(id);
+         if (appointment.getStatus() == Appointment.AppointmentStatus.ASSIGNED) {
+             return "redirect:/protected/manager/appointments/assigned";
+         }
+         if (appointment.getStatus() != Appointment.AppointmentStatus.CHECKED_IN) {
+             model.addAttribute("error", "Lịch hẹn phải ở trạng thái CHECKED_IN để phân công!");
+             model.addAttribute("manager", manager);
+             model.addAttribute("appointments", appointmentService.getAppointmentsByStatus(Appointment.AppointmentStatus.CHECKED_IN));
+             return "admin/staff/checked_in_appointments";
+         }
+         model.addAttribute("manager", manager);
+         model.addAttribute("appointment", appointment);
+         model.addAttribute("therapists", therapistService.getAllTherapists());
+         return "admin/staff/assign_therapist";
+     }
+ 
+     @PostMapping("/appointments/assign/{id}")
+     public String assignTherapist(@PathVariable Long id, @RequestParam UUID therapistId) {
+         appointmentService.assignTherapist(id, therapistId);
+         return "redirect:/protected/manager/appointments/assigned";
+     }
+ 
+     @GetMapping("/appointments/assigned")
+     public String listAssignedAppointments(Model model, Principal principal) {
+         String username = principal.getName();
+         Manager manager = managerRepository.findByUsername(username)
+                 .orElseThrow(() -> new RuntimeException("Manager not found"));
+         model.addAttribute("manager", manager);
+         model.addAttribute("appointments", appointmentService.getAppointmentsByStatus(Appointment.AppointmentStatus.ASSIGNED));
+         return "admin/staff/assigned_appointments";
+     }
+ 
+     @GetMapping("/appointments/completed")
+     public String listCompletedAppointments(Model model, Principal principal) {
+         String username = principal.getName();
+         Manager manager = managerRepository.findByUsername(username)
+                 .orElseThrow(() -> new RuntimeException("Manager not found"));
+         model.addAttribute("manager", manager);
+         model.addAttribute("appointments", appointmentService.getAppointmentsByStatus(Appointment.AppointmentStatus.COMPLETED));
+         return "admin/staff/completed_appointments";
+     }
+ 
+     @PostMapping("/appointments/check-out/{id}")
+     public String checkOut(@PathVariable Long id) {
+         appointmentService.checkOut(id);
+         return "redirect:/protected/manager/appointments/checked-out";
+     }
+ 
+     @GetMapping("/appointments/checked-out")
+     public String listCheckedOutAppointments(Model model, Principal principal) {
+         String username = principal.getName();
+         Manager manager = managerRepository.findByUsername(username)
+                 .orElseThrow(() -> new RuntimeException("Manager not found"));
+         model.addAttribute("manager", manager);
+         model.addAttribute("appointments", appointmentService.getAppointmentsByStatus(Appointment.AppointmentStatus.CHECKED_OUT));
+         return "admin/staff/checked_out_appointments";
+     }
+ 
+     @GetMapping("/appointments/invoice/{id}")
+     public String showInvoice(@PathVariable Long id, Model model, Principal principal) {
+         String username = principal.getName();
+         Manager manager = managerRepository.findByUsername(username)
+                 .orElseThrow(() -> new RuntimeException("Manager not found"));
+        Appointment appointment = appointmentService.getAppointmentById(id);
+        if (appointment.getStatus() != Appointment.AppointmentStatus.CHECKED_OUT) {
+            throw new RuntimeException("Lịch hẹn không ở trạng thái CHECKED_OUT!");
+        }
+         Payment payment = appointment.getPayment();
+         boolean isUnpaid = payment == null || payment.getPaymentStatus() != Payment.PaymentStatus.PAID;
+         model.addAttribute("manager", manager);
+         model.addAttribute("appointment", appointment);
+         model.addAttribute("isUnpaid", isUnpaid);
+         return "admin/staff/invoice";
+     }
+ 
+     @PostMapping("/appointments/confirm-payment/{id}")
+     public String confirmPayment(@PathVariable Long id) {
+         appointmentService.confirmPayment(id);
+         return "redirect:/protected/manager/appointments/invoice/{id}";
+     }
+ 
+     @GetMapping("/appointments/record-result/{id}")
+     public String showRecordResultForm(@PathVariable Long id, Model model, Principal principal) {
+         String username = principal.getName();
+         Manager manager = managerRepository.findByUsername(username)
+                 .orElseThrow(() -> new RuntimeException("Manager not found"));
+         try {
+             Appointment appointment = appointmentService.getAppointmentById(id);
+             if (appointment.getStatus() != Appointment.AppointmentStatus.ASSIGNED) {
+                 model.addAttribute("error", "Lịch hẹn phải ở trạng thái ASSIGNED để ghi kết quả! Trạng thái hiện tại: " + appointment.getStatus());
+                 model.addAttribute("manager", manager);
+                 model.addAttribute("appointments", appointmentService.getAppointmentsByStatus(Appointment.AppointmentStatus.ASSIGNED));
+                 return "admin/staff/assigned_appointments";
+             }
+             model.addAttribute("manager", manager);
+             model.addAttribute("appointment", appointment);
+             return "admin/therapists/therapists_record_result";
+         } catch (RuntimeException e) {
+             model.addAttribute("error", e.getMessage());
+             model.addAttribute("manager", manager);
+             model.addAttribute("appointments", appointmentService.getAppointmentsByStatus(Appointment.AppointmentStatus.ASSIGNED));
+             return "admin/staff/assigned_appointments";
+         }
+     }
+ 
+     @PostMapping("/appointments/record-result/{id}")
+     public String recordResult(@PathVariable Long id, @RequestParam String result, Model model, Principal principal) {
+         String username = principal.getName();
+         Manager manager = managerRepository.findByUsername(username)
+                 .orElseThrow(() -> new RuntimeException("Manager not found"));
+         try {
+             if (result == null || result.trim().isEmpty()) {
+                 throw new IllegalArgumentException("Kết quả không được để trống!");
+             }
+             Appointment appointment = appointmentService.getAppointmentById(id);
+             appointmentService.recordResult(id, result);
+             return "redirect:/protected/manager/appointments/completed";
+         } catch (RuntimeException e) {
+             model.addAttribute("error", e.getMessage());
+             model.addAttribute("manager", manager);
+             model.addAttribute("appointment", appointmentService.getAppointmentById(id));
+             return "admin/therapists/therapists_record_result";
+         }
+     }
+ 
+     @PostMapping("/appointments/cancel/{id}")
+     public String cancelAppointment(@PathVariable Long id) {
+         appointmentService.cancelAppointmentByStaff(id);
+         return "redirect:/protected/manager/appointments/pending";
+     }
+ 
+    @GetMapping("/appointments/cancelled")
+    public String listCancelledAppointments(Model model, Principal principal) {
+        String username = principal.getName();
+        Manager manager = managerRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy quản lý"));
+        model.addAttribute("manager", manager);
+        model.addAttribute("appointments", appointmentService.getAppointmentsByStatus(Appointment.AppointmentStatus.CANCELLED));
+        return "admin/staff/cancelled_appointments";
+    }
+ 
+     @GetMapping("/payments/history")
+     public String viewPaymentHistory(
+             @RequestParam(defaultValue = "0") int page,
+             @RequestParam(defaultValue = "10") int size,
+             Model model, Principal principal) {
+         String username = principal.getName();
+         Manager manager = managerRepository.findByUsername(username)
+                 .orElseThrow(() -> new RuntimeException("Manager not found"));
+         Page<Payment> paymentPage = paymentService.findAllPayments(page, size);
+         model.addAttribute("manager", manager);
+         model.addAttribute("payments", paymentPage.getContent());
+         model.addAttribute("currentPage", page);
+         model.addAttribute("totalPages", paymentPage.getTotalPages());
+         model.addAttribute("totalItems", paymentPage.getTotalElements());
+         return "admin/staff/staff_payment_history";
+     }
 
-    //endpoint quản lí blog
+     // Hiển thị tất cả lịch hẹn trên một trang
+    @GetMapping("/appointments")
+    public String listAllAppointments(Model model, Principal principal) {
+        String username = principal.getName();
+        Manager manager = managerRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy quản lý"));
+        model.addAttribute("manager", manager);
+        model.addAttribute("appointments", appointmentService.getAllAppointments());
+        return "admin/staff/listAppointments";
+    }
+
 
     // Display the Blog management page with list of blogs
     @GetMapping("/blogs")
@@ -327,7 +657,7 @@ public class ManagerPageController {
     // Delete a blog
     @GetMapping("/blogs/delete/{id}")
     public String deleteBlog(@PathVariable Long id,
-                             RedirectAttributes redirectAttributes) {
+                             RedirectAttributes redirectAttributes {
         try {
             blogService.deleteBlog(id);
             redirectAttributes.addFlashAttribute("successMessage", "Blog deleted successfully!");
@@ -335,6 +665,27 @@ public class ManagerPageController {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to delete blog: " + e.getMessage());
         }
         return "redirect:/protected/manager/blogs";
+    }
+                             
+    // Cập nhật lịch hẹn
+    @PostMapping("/appointments/update/{id}")
+    public String updateAppointment(
+            @PathVariable Long id,
+            @RequestParam String status,
+            @RequestParam(required = false) String result,
+            RedirectAttributes redirectAttributes) {
+        try {
+            Appointment appointment = appointmentService.getAppointmentById(id);
+            appointment.setStatus(Appointment.AppointmentStatus.valueOf(status));
+            if (result != null && !result.trim().isEmpty()) {
+                appointment.setResult(result);
+            }
+            appointmentService.updateAppointment(appointment);
+            redirectAttributes.addFlashAttribute("successMessage", "Cập nhật lịch hẹn thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Không thể cập nhật lịch hẹn: " + e.getMessage());
+        }
+        return "redirect:/protected/manager/appointments";
     }
 }
 

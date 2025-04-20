@@ -5,8 +5,7 @@ import coderuth.k23.skincare_booking.dtos.request.EditProfileRequest;
 import coderuth.k23.skincare_booking.dtos.response.BlogResponseDTO;
 import coderuth.k23.skincare_booking.models.Staff;
 import coderuth.k23.skincare_booking.repositories.StaffRepository;
-import coderuth.k23.skincare_booking.services.BlogService;
-import coderuth.k23.skincare_booking.services.StaffService;
+import coderuth.k23.skincare_booking.services.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +33,17 @@ public class StaffPageController {
     @Autowired
     private BlogService blogService;
 
+    @Autowired
+    TherapistService therapistService;
+
+    @Autowired
+    CustomerService customerService;
+
+    @Autowired
+    SpaServiceService spaServiceService;
+
+    @Autowired
+    private CenterScheduleService centerScheduleService;
 
     @ModelAttribute("currentURI")
     public String currentURI(HttpServletRequest request) {
@@ -151,7 +161,7 @@ public class StaffPageController {
         return "redirect:/protected/staff/blogs";
     }
 
-    // DELETE: GET /protected/staff/blogs/delete/{id}
+   
     @GetMapping("/blogs/delete/{id}")
     public String deleteBlog(@PathVariable Long id,
                              RedirectAttributes redirectAttributes) {
@@ -164,4 +174,48 @@ public class StaffPageController {
         // Redirect về list đúng route
         return "redirect:/protected/staff/blogs";
     }
-}
+  
+    @GetMapping("/list-therapist")
+    public String getTherapistList(Model model, Principal principal) {
+        String username = principal.getName();
+        Staff staff = staffRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Staff not found"));
+
+        model.addAttribute("staff", staff);
+        model.addAttribute("therapistList", therapistService.getAllTherapists());
+        return "admin/Users/ListTherapist/listTherapist";
+    }
+
+    @GetMapping("/list-customer")
+    public String getCustomerList(Model model, Principal principal) {
+        String username = principal.getName();
+        Staff staff = staffRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Staff not found"));
+
+        model.addAttribute("staff", staff);
+        model.addAttribute("customerList", customerService.getAllCustomers());
+        return "admin/Users/ListCustomer/listCustomer";
+    }
+
+    @GetMapping("/spa-services")
+    public String spaServicesPage(Model model, Principal principal) {
+        String username = principal.getName();
+        Staff staff = staffRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Staff not found"));
+
+        model.addAttribute("staff", staff);
+        model.addAttribute("spaServicesList", spaServiceService.getAllServices());
+        return "/admin/SpaServices/ListSpaServices/listSpaServices";
+    }
+
+    @GetMapping("/center-schedule")
+    public String getCenterSchedule(Model model, Principal principal) {
+        String username = principal.getName();
+        Staff staff = staffRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Staff not found"));
+
+        model.addAttribute("staff", staff);
+        model.addAttribute("scheduleList", centerScheduleService.getAllSchedules());
+        return "admin/Schedules/centerSchedule";
+    }
+

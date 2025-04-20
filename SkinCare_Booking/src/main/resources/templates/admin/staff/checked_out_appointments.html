@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
     <title>Checked-out Appointments</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-<div class="container">
+<div class="container mt-5">
     <h1>Checked-out Appointments</h1>
     <table class="table table-bordered">
         <thead>
@@ -16,20 +17,31 @@
             <th>Time</th>
             <th>Therapist</th>
             <th>Result</th>
+            <th>Payment Status</th>
+            <th>Action</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="appointment : ${appointments}">
             <td th:text="${appointment.id}"></td>
-            <td th:text="${appointment.customer.fullName}"></td>
+            <td th:text="${appointment.customer.username}"></td>
             <td th:text="${appointment.spaService.name}"></td>
-            <td th:text="${appointment.appointmentTime}"></td>
-            <td th:text="${appointment.skinTherapist?.fullName}"></td>
-            <td th:text="${appointment.result}"></td>
+            <td th:text="${#temporals.format(appointment.appointmentTime, 'dd/MM/yyyy HH:mm')}"></td>
+            <td th:text="${appointment.skinTherapist?.fullName} ?: 'N/A'"></td>
+            <td th:text="${appointment.result} ?: 'N/A'"></td>
+            <td th:text="${appointment.payment?.paymentStatus} ?: 'N/A'"></td>
+            <td>
+                <a th:href="@{/protected/manager/appointments/invoice/{id}(id=${appointment.id})}"
+                   class="btn btn-primary">View Invoice</a>
+            </td>
+        </tr>
+        <tr th:if="${appointments.isEmpty}">
+            <td colspan="8" class="text-center">No checked-out appointments found</td>
         </tr>
         </tbody>
     </table>
-    <a th:href="@{/protected/staff/appointments/completed}" class="btn btn-secondary">Go Back</a>
+    <a th:href="@{/protected/manager/appointments/completed}" class="btn btn-secondary">Back</a>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
