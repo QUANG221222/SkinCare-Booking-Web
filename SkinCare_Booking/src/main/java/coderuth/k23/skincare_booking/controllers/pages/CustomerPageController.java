@@ -2,13 +2,12 @@ package coderuth.k23.skincare_booking.controllers.pages;
 
 import coderuth.k23.skincare_booking.dtos.request.EditProfileRequest;
 import coderuth.k23.skincare_booking.dtos.request.FeedbackRequest;
-import coderuth.k23.skincare_booking.dtos.response.ApiResponse;
 import coderuth.k23.skincare_booking.models.*;
 import coderuth.k23.skincare_booking.repositories.CustomerRepository;
-import coderuth.k23.skincare_booking.repositories.ManagerRepository;
 import coderuth.k23.skincare_booking.repositories.SpaServiceRepository;
 import coderuth.k23.skincare_booking.security.UserDetailsImpl;
 import coderuth.k23.skincare_booking.services.*;
+import coderuth.k23.skincare_booking.dtos.response.BlogResponseDTO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -27,11 +26,6 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import coderuth.k23.skincare_booking.dtos.response.BlogResponseDTO;
 
 @Controller
 @PreAuthorize("hasRole('CUSTOMER')")
@@ -265,7 +259,7 @@ public class CustomerPageController {
     public String userBlogPage(Model model) {
         List<BlogResponseDTO> blogs = blogService.getAllBlogs();
         model.addAttribute("blogs", blogs);
-        return "user/customer/blog";
+        return "user/blog";
     }
   
     @GetMapping("/skin-therapist")

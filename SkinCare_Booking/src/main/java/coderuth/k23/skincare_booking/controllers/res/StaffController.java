@@ -1,22 +1,17 @@
 package coderuth.k23.skincare_booking.controllers.res;
 
-// import coderuth.k23.skincare_booking.dtos.response.ApiResponse;
-// import coderuth.k23.skincare_booking.dtos.response.StaffInfoResponse;
 import coderuth.k23.skincare_booking.repositories.AppointmentRepository;
 import coderuth.k23.skincare_booking.services.AppointmentService;
 import coderuth.k23.skincare_booking.services.PaymentService;
-// import coderuth.k23.skincare_booking.services.StaffService;
 import coderuth.k23.skincare_booking.services.TherapistService;
 import coderuth.k23.skincare_booking.models.Appointment;
 import coderuth.k23.skincare_booking.models.Payment;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-// import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 import java.util.UUID;
 import org.springframework.ui.Model;
 
@@ -24,9 +19,6 @@ import org.springframework.ui.Model;
 @RequestMapping("/protected/staff")
 @PreAuthorize("hasRole('MANAGER')")
 public class StaffController {
-
-    // @Autowired
-    // private StaffService staffService;
 
     @Autowired
     private AppointmentService appointmentService;
@@ -39,10 +31,6 @@ public class StaffController {
 
     @Autowired
     private AppointmentRepository appointmentRepository;
-//    @GetMapping("/home")
-//    public String adminPage() {
-//        return "admin/index"; // "user/index.html"
-//    }
 
     // Xem danh sách đặt dịch vụ đang chờ xử lý
     @GetMapping("/appointments/pending")

@@ -63,7 +63,7 @@ public class PublicPageController {
     public String userBlogPage(Model model) {
         List<BlogResponseDTO> blogs = blogService.getAllBlogs();
         model.addAttribute("blogs", blogs);
-        return "user/customer/blog";
+        return "user/blog";
     }
 
     @GetMapping("/skin-therapist")

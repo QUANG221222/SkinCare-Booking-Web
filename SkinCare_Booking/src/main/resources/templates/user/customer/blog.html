@@ -12,6 +12,10 @@
     </div>
 </section>
 
+<!-- ##### Book Now Area Start ##### -->
+<div th:replace="user/master/fragments/book-now:: book-now"></div>
+<!-- ##### Book Now Area End ##### -->
+
 <!-- Blog Posts -->
 <div class="blog-area section-padding-0-100">
     <div class="container">
@@ -25,17 +29,13 @@
                             <a th:href="@{/protected/customer/blog/{id}(id=${blog.id})}">
                                 <img
                                         th:src="${blog.imageUrl != null && !#strings.isEmpty(blog.imageUrl)
-                    ? blog.imageUrl
-                    : '/user/img/blog-img/default-blog.jpg'}"
+                                                ? blog.imageUrl : '/user/img/blog-img/default-blog.jpg'}"
                                         th:onerror="this.src='/user/img/blog-img/default-blog.jpg'"
                                         th:alt="${blog.title}"
                                         class="img-fluid mx-auto d-block"
-                                        style="max-width: 800px;"/>
+                                        style="max-width: 1140px;"/>
                             </a>
                         </div>
-
-
-
                         <!-- Content -->
                         <div class="post-content text-center">
                             <a th:href="@{/protected/customer/blog/{id}(id=${blog.id})}"
