@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="user/master/fragments/head :: head"></head>
+<body>
+<!-- Header -->
+<div th:replace="user/master/fragments/header :: header"></div>
+
+<!-- Breadcrumb -->
+<section class="breadcumb-area bg-img d-flex align-items-center justify-content-center" style="background-image: url(/user/img/bg-img/bg-10.jpg);">
+    <div class="bradcumbContent">
+        <h2>Blog</h2>
+    </div>
+</section>
+
+<!-- Blog Posts -->
+<div class="blog-area section-padding-0-100">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="palatin-blog-posts">
+
+                    <div class="single-blog-post mb-100 wow fadeInUp" data-wow-delay="100ms" th:each="blog : ${blogs}">
+                        <!-- Thumbnail with proper error handling and centered -->
+                        <div class="blog-post-thumb text-center mb-4">
+                            <a th:href="@{/protected/customer/blog/{id}(id=${blog.id})}">
+                                <img
+                                        th:src="${blog.imageUrl != null && !#strings.isEmpty(blog.imageUrl)
+                    ? blog.imageUrl
+                    : '/user/img/blog-img/default-blog.jpg'}"
+                                        th:onerror="this.src='/user/img/blog-img/default-blog.jpg'"
+                                        th:alt="${blog.title}"
+                                        class="img-fluid mx-auto d-block"
+                                        style="max-width: 800px;"/>
+                            </a>
+                        </div>
+
+
+
+                        <!-- Content -->
+                        <div class="post-content text-center">
+                            <a th:href="@{/protected/customer/blog/{id}(id=${blog.id})}"
+                               class="post-date btn palatin-btn"
+                               th:text="${#temporals.format(blog.date, 'MMMM dd, yyyy')}">Date</a>
+                            <h4>
+                                <a th:href="@{/protected/customer/blog/{id}(id=${blog.id})}"
+                                   class="post-title"
+                                   th:text="${blog.title}">Blog Title</a>
+                            </h4>
+                            <div class="post-meta d-flex justify-content-center">
+                                <a href="#" class="post-catagory" th:text="${blog.category}">Category</a>
+                                <a href="#" class="post-comments" th:text="${blog.commentCount != null ? blog.commentCount + ' comments' : '0 comments'}">0 comments</a>
+                            </div>
+                            <p th:text="${blog.excerpt}">Blog excerpt goes here...</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<div th:replace="user/master/fragments/footer :: footer"></div>
+
+<!-- Scripts -->
+<div th:replace="user/master/fragments/script :: script"></div>
+</body>
+</html>

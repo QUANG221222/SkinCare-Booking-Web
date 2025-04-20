@@ -27,6 +27,11 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import coderuth.k23.skincare_booking.dtos.response.BlogResponseDTO;
 
 @Controller
 @PreAuthorize("hasRole('CUSTOMER')")
@@ -51,11 +56,14 @@ public class CustomerPageController {
     @Autowired
     SpaServiceRepository spaServiceRepository;
 
-
     @Autowired
     private TherapistService therapistService;
 
-     // Lấy ID khách hàng đã đăng nhập từ SecurityContext
+    @Autowired
+    private BlogService blogService;
+
+
+    // Lấy ID khách hàng đã đăng nhập từ SecurityContext
      private UUID getLoggedInCustomerId() {
         // Thay thế bằng logic thực tế để lấy ID khách hàng đã đăng nhập
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -254,10 +262,12 @@ public class CustomerPageController {
 
 
     @GetMapping("/blog")
-    public String userBlogPage() {
-        return "user/blog";
+    public String userBlogPage(Model model) {
+        List<BlogResponseDTO> blogs = blogService.getAllBlogs();
+        model.addAttribute("blogs", blogs);
+        return "user/customer/blog";
     }
-
+  
     @GetMapping("/skin-therapist")
     public String userSkinTherapistPage(Model model) {
         model.addAttribute("therapist", therapistService.getAllTherapists());

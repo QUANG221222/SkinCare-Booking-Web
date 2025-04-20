@@ -1,44 +1,74 @@
 package coderuth.k23.skincare_booking.services;
 
+import coderuth.k23.skincare_booking.dtos.request.BlogRequestDTO;
+import coderuth.k23.skincare_booking.dtos.response.BlogResponseDTO;
 import coderuth.k23.skincare_booking.models.Blog;
 import coderuth.k23.skincare_booking.repositories.BlogRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import coderuth.k23.skincare_booking.util.BlogMapper;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class BlogService {
 
-    @Autowired
-    private BlogRepository blogRepository;
+    private final BlogRepository blogRepository;
 
-    // Lấy danh sách tất cả blog
-    public List<Blog> getAllBlogs() {
-        return blogRepository.findAll();
+    public BlogService(BlogRepository blogRepository) {
+        this.blogRepository = blogRepository;
     }
 
-    // Tạo blog mới
-    public Blog createBlog(Blog blog) {
-        blog.setCreatedAt(LocalDateTime.now());
-        blog.setUpdatedAt(LocalDateTime.now());
-        return blogRepository.save(blog);
+
+    public List<BlogResponseDTO> getAllBlogs() {
+        return blogRepository.findAll()
+                .stream()
+                .map(BlogMapper::toDto)
+                .collect(Collectors.toList());
     }
 
-    // Cập nhật blog
-    public Blog updateBlog(Long id, Blog updatedBlog) {
+
+    public BlogResponseDTO createBlog(BlogRequestDTO dto) {
+        Blog blog = new Blog();
+        blog.setTitle(dto.getTitle());
+        blog.setContent(dto.getContent());
+        blog.setAuthor(dto.getAuthor());
+        blog.setCategory(dto.getCategory());
+        blog.setDate(dto.getDate());
+        blog.setExcerpt(dto.getExcerpt());
+        blog.setImageUrl(dto.getImageUrl());
+        LocalDateTime now = LocalDateTime.now();
+        blog.setCreatedAt(now);
+        blog.setUpdatedAt(now);
+
+        Blog saved = blogRepository.save(blog);
+        return BlogMapper.toDto(saved);
+    }
+
+
+    public BlogResponseDTO updateBlog(Long id, BlogRequestDTO dto) {
         Blog blog = blogRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy bài viết!"));
-        blog.setTitle(updatedBlog.getTitle());
-        blog.setContent(updatedBlog.getContent());
+                .orElseThrow(() -> new RuntimeException("Blog not found with id = " + id));
+
+        blog.setTitle(dto.getTitle());
+        blog.setContent(dto.getContent());
+        blog.setAuthor(dto.getAuthor());
+        blog.setCategory(dto.getCategory());
+        blog.setDate(dto.getDate());
+        blog.setExcerpt(dto.getExcerpt());
+        blog.setImageUrl(dto.getImageUrl());
         blog.setUpdatedAt(LocalDateTime.now());
-        return blogRepository.save(blog);
+
+        Blog updated = blogRepository.save(blog);
+        return BlogMapper.toDto(updated);
     }
 
-    // Xóa blog
-    public void deleteBlog(Long id, RedirectAttributes redirectAttributes) {
+
+    public void deleteBlog(Long id) {
+        if (!blogRepository.existsById(id)) {
+            throw new RuntimeException("Blog not found with id = " + id);
+        }
         blogRepository.deleteById(id);
     }
 }

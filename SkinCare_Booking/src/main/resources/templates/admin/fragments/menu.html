@@ -133,6 +133,18 @@
         </li>
       </ul>
     </li>
+
+    <!-- Manager Blog -->
+    <li class="menu-item" th:classappend="${#strings.contains(currentURI, '/manager/blogs')} ? 'active' : ''">
+      <a th:href="@{/protected/manager/blogs}" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-book"></i>
+        <div data-i18n="Blogs">Blogs</div>
+      </a>
+    </li>
+
+
+
+
     <!-- Center Schedule (Manager) -->
     <li
         class="menu-item"
@@ -232,7 +244,6 @@
         </li>
       </ul>
     </li>
-
     <!-- Manager Feedback -->
     <li th:if="${#strings.contains(currentURI, 'manager')}"
       class="menu-item"
@@ -245,3 +256,7 @@
     </li>
   </ul>
 </aside>
+
+
+
+
