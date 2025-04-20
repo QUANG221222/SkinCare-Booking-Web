@@ -1,7 +1,8 @@
 package coderuth.k23.skincare_booking.controllers.pages;
 
+import coderuth.k23.skincare_booking.dtos.request.BlogRequestDTO;
 import coderuth.k23.skincare_booking.dtos.request.EditProfileRequest;
-import coderuth.k23.skincare_booking.models.Manager;
+import coderuth.k23.skincare_booking.dtos.response.BlogResponseDTO;
 import coderuth.k23.skincare_booking.models.Staff;
 import coderuth.k23.skincare_booking.repositories.StaffRepository;
 import coderuth.k23.skincare_booking.services.*;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
+import java.util.List;
 
 @Controller
 @RequestMapping("/protected/staff")
@@ -25,6 +27,9 @@ public class StaffPageController {
 
     @Autowired
     StaffRepository staffRepository;
+
+    @Autowired
+    private BlogService blogService;
 
     @Autowired
     TherapistService therapistService;
@@ -116,6 +121,58 @@ public class StaffPageController {
         return "redirect:/protected/staff/security";
     }
 
+    @GetMapping("/blogs")
+    public String getBlogList(Model model, Principal principal) {
+        String username = principal.getName();
+        Staff staff = staffRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Staff not found"));
+        model.addAttribute("role", "staff");
+        model.addAttribute("staff", staff);
+        List<BlogResponseDTO> blogList = blogService.getAllBlogs();
+        model.addAttribute("blogs", blogList);
+        return "admin/Blog/blog_management";
+    }
+
+    @PostMapping("/create-blog")
+    public String createBlog(@ModelAttribute BlogRequestDTO blogRequest,
+                             RedirectAttributes redirectAttributes) {
+        try {
+            blogService.createBlog(blogRequest);
+            redirectAttributes.addFlashAttribute("successMessage", "Blog created successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to create blog: " + e.getMessage());
+        }
+        return "redirect:/protected/staff/blogs";
+    }
+
+    @PostMapping("/update-blog/{id}")
+    public String updateBlog(@PathVariable Long id,
+                             @ModelAttribute BlogRequestDTO blogRequest,
+                             RedirectAttributes redirectAttributes) {
+        try {
+            blogService.updateBlog(id, blogRequest);
+            redirectAttributes.addFlashAttribute("successMessage", "Blog updated successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to update blog: " + e.getMessage());
+        }
+        // Redirect về list đúng route
+        return "redirect:/protected/staff/blogs";
+    }
+
+
+    @GetMapping("/blogs/delete/{id}")
+    public String deleteBlog(@PathVariable Long id,
+                             RedirectAttributes redirectAttributes) {
+        try {
+            blogService.deleteBlog(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Blog deleted successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to delete blog: " + e.getMessage());
+        }
+        // Redirect về list đúng route
+        return "redirect:/protected/staff/blogs";
+    }
+
     @GetMapping("/list-therapist")
     public String getTherapistList(Model model, Principal principal) {
         String username = principal.getName();
@@ -160,3 +217,4 @@ public class StaffPageController {
         return "admin/Schedules/centerSchedule";
     }
 }
+

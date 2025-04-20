@@ -1,14 +1,11 @@
 package coderuth.k23.skincare_booking.security;
 
-import coderuth.k23.skincare_booking.models.Customer;
 import coderuth.k23.skincare_booking.models.User;
 import coderuth.k23.skincare_booking.repositories.CustomerRepository;
 import coderuth.k23.skincare_booking.repositories.ManagerRepository;
 
 import coderuth.k23.skincare_booking.repositories.SkinTherapistRepository;
 import coderuth.k23.skincare_booking.repositories.StaffRepository;
-import coderuth.k23.skincare_booking.services.StaffService;
-import coderuth.k23.skincare_booking.services.TherapistService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

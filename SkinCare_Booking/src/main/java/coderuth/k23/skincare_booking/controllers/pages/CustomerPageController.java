@@ -2,13 +2,12 @@ package coderuth.k23.skincare_booking.controllers.pages;
 
 import coderuth.k23.skincare_booking.dtos.request.EditProfileRequest;
 import coderuth.k23.skincare_booking.dtos.request.FeedbackRequest;
-import coderuth.k23.skincare_booking.dtos.response.ApiResponse;
 import coderuth.k23.skincare_booking.models.*;
 import coderuth.k23.skincare_booking.repositories.CustomerRepository;
-import coderuth.k23.skincare_booking.repositories.ManagerRepository;
 import coderuth.k23.skincare_booking.repositories.SpaServiceRepository;
 import coderuth.k23.skincare_booking.security.UserDetailsImpl;
 import coderuth.k23.skincare_booking.services.*;
+import coderuth.k23.skincare_booking.dtos.response.BlogResponseDTO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -51,11 +50,14 @@ public class CustomerPageController {
     @Autowired
     SpaServiceRepository spaServiceRepository;
 
-
     @Autowired
     private TherapistService therapistService;
 
-     // Lấy ID khách hàng đã đăng nhập từ SecurityContext
+    @Autowired
+    private BlogService blogService;
+
+
+    // Lấy ID khách hàng đã đăng nhập từ SecurityContext
      private UUID getLoggedInCustomerId() {
         // Thay thế bằng logic thực tế để lấy ID khách hàng đã đăng nhập
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -254,10 +256,12 @@ public class CustomerPageController {
 
 
     @GetMapping("/blog")
-    public String userBlogPage() {
+    public String userBlogPage(Model model) {
+        List<BlogResponseDTO> blogs = blogService.getAllBlogs();
+        model.addAttribute("blogs", blogs);
         return "user/blog";
     }
-
+  
     @GetMapping("/skin-therapist")
     public String userSkinTherapistPage(Model model) {
         model.addAttribute("therapist", therapistService.getAllTherapists());
