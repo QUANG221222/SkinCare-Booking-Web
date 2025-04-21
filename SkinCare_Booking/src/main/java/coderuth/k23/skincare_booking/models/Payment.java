@@ -44,6 +44,8 @@ public class Payment {
     @Column(name = "transaction_id")
     private String transactionId; // Mã giao dịch (dùng cho QR hoặc các phương thức khác)
 
+    @Column(name = "qr_code_data_url", length = 255)
+    private String qrCodeDataUrl;
     public enum PaymentStatus {
         UNPAID,    // Chưa thanh toán
         PAID,      // Đã thanh toán

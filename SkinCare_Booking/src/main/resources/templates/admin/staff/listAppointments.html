@@ -39,7 +39,7 @@
                     <div class="card">
                         <div class="row mx-3 my-0 justify-content-between">
                             <div class="py-3 d-flex align-items-center justify-content-between flex-wrap gap-3">
-                                <h5 class="mb-0">Danh sách lịch hẹn</h5>
+                                <h5 class="mb-0">Appointment List</h5>
                             </div>
                         </div>
                         <div class="table-responsive">
@@ -58,13 +58,13 @@
                                 <thead class="table-light">
                                 <tr>
                                     <th>ID</th>
-                                    <th>Khách hàng</th>
-                                    <th>Dịch vụ</th>
-                                    <th>Thời gian</th>
-                                    <th>Trạng thái</th>
-                                    <th>Chuyên viên</th>
-                                    <th>Kết quả</th>
-                                    <th>Thao tác</th>
+                                    <th>Customer</th>
+                                    <th>Service</th>
+                                    <th>Time</th>
+                                    <th>Status</th>
+                                    <th>Staff</th>
+                                    <th>Result</th>
+                                    <th>Actions</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -72,7 +72,7 @@
                                     <div th:replace="admin/Appointments/ListAppointments/appointment :: appointment"></div>
                                 </tr>
                                 <tr id="noAppointmentRow" th:if="${#lists.isEmpty(appointments)}">
-                                    <td colspan="8" class="text-center">Không tìm thấy lịch hẹn.</td>
+                                    <td colspan="8" class="text-center">No appointments found.</td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -115,7 +115,7 @@
     <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
     <script>
         $(document).ready(function () {
-            // Phân trang
+            // Pagination
             const appointmentTable = $('#appointmentTable');
             const appointmentRows = appointmentTable.find('tr').not('#noAppointmentRow').get();
 

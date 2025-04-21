@@ -1,183 +1,172 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Hóa đơn đặt dịch vụ</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f8f9fa;
-        }
-        .invoice-box {
-            max-width: 900px;
-            margin: 30px auto;
-            padding: 30px;
-            background-color: #ffffff;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-        .invoice-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .invoice-header img {
-            max-width: 120px;
-            margin-bottom: 15px;
-        }
-        .invoice-header h2 {
-            color: #28a745;
-            font-weight: 700;
-            font-size: 28px;
-            margin-bottom: 10px;
-        }
-        .invoice-header p {
-            color: #6c757d;
-            font-size: 14px;
-            margin: 0;
-        }
-        .section-title {
-            color: #28a745;
-            font-weight: 500;
-            font-size: 20px;
-            margin-bottom: 15px;
-        }
-        .info-card {
-            background-color: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-        .info-card p {
-            margin: 5px 0;
-            font-size: 16px;
-            color: #343a40;
-        }
-        .info-card p strong {
-            color: #495057;
-        }
-        .table-responsive {
-            margin-bottom: 20px;
-        }
-        .table th, .table td {
-            font-size: 16px;
-            vertical-align: middle;
-        }
-        .table th {
-            background-color: #e9ecef;
-            color: #495057;
-        }
-        .action-buttons {
-            text-align: center;
-            margin-top: 30px;
-        }
-        .btn-primary, .btn-secondary {
-            padding: 10px 20px;
-            font-size: 16px;
-            border-radius: 5px;
-            transition: background-color 0.2s;
-        }
-        .btn-primary:hover {
-            background-color: #218838;
-        }
-        .btn-secondary:hover {
-            background-color: #5a6268;
-        }
-        @media (max-width: 767px) {
-            .invoice-box {
-                padding: 20px;
-            }
-            .info-card {
-                padding: 15px;
-            }
-            .table th, .table td {
-                font-size: 14px;
-            }
-        }
-    </style>
-    <style>
-        @media print {
-            .action-buttons, .btn { display: none; }
-            .invoice-box { box-shadow: none; margin: 0; }
-        }
-    </style>
-</head>
+<html lang="en" class="layout-menu-fixed layout-compact" data-assets-path="/admin/assets/" data-template="vertical-menu-template-free" xmlns:th="http://www.thymeleaf.org">
+<!-- Head -->
+<div th:replace="admin/fragments/head :: head"></div>
+
 <body>
-<div class="invoice-box">
-    <!-- Header -->
-    <div class="invoice-header">
-        <img src="/user/img/core-img/logo_1.png" alt="Spa Logo">
-        <h2>Hóa đơn đặt dịch vụ</h2>
-        <p>Mã lịch hẹn: <span th:text="${appointment.id}"></span> |
-            Ngày tạo: <span th:text="${#temporals.format(appointment.createdAt, 'dd/MM/yyyy HH:mm')}"></span> |
-            Ngày cập nhật: <span th:text="${appointment.updatedAt != null} ? ${#temporals.format(appointment.updatedAt, 'dd/MM/yyyy HH:mm')} : 'N/A'"></span></p>
-    </div>
+<!-- Layout wrapper -->
+<div class="layout-wrapper layout-content-navbar">
+  <div class="layout-container">
+    <!-- Menu -->
+    <div th:replace="admin/fragments/menu :: menu"></div>
+    <!-- / Menu -->
 
-    <!-- Body -->
-    <div class="row">
-        <!-- Thông tin khách hàng -->
-        <div class="col-12 col-md-6">
-            <h4 class="section-title">Thông tin khách hàng</h4>
-            <div class="info-card">
-                <p><strong>Tên:</strong> <span th:text="${appointment.customer.username}"></span></p>
-                <p><strong>Email:</strong> <span th:text="${appointment.customer.email} ?: 'N/A'"></span></p>
-                <p><strong>Số điện thoại:</strong> <span th:text="${appointment.customer.phone} ?: 'N/A'"></span></p>
+    <!-- Layout container -->
+    <div class="layout-page">
+      <!-- Navbar -->
+      <nav class="layout-navbar container-xxl navbar-detached navbar navbar-expand-xl align-items-center bg-navbar-theme" id="layout-navbar">
+        <div class="layout-menu-toggle navbar-nav align-items-xl-center me-4 me-xl-0 d-xl-none">
+          <a class="nav-item nav-link px-0 me-xl-6" href="javascript:void(0)">
+            <i class="icon-base bx bx-menu icon-md"></i>
+          </a>
+        </div>
+
+        <div class="navbar-nav-right d-flex align-items-center justify-content-end" id="navbar-collapse">
+          <ul class="navbar-nav flex-row align-items-center ms-md-auto">
+            <!-- User -->
+            <div th:replace="admin/fragments/user :: user"></div>
+            <!--/ User -->
+          </ul>
+        </div>
+      </nav>
+      <!-- / Navbar -->
+
+      <!-- Content wrapper -->
+      <div class="content-wrapper">
+        <!-- Content -->
+        <div class="container-xxl flex-grow-1 container-p-y">
+          <!-- Invoice Card -->
+          <div class="card shadow-sm border-0">
+            <div class="row mx-3 my-0 justify-content-center">
+              <div class="py-3 d-flex flex-column align-items-center text-center">
+                <!-- Logo -->
+                <img src="/user/img/core-img/logo_1.png" alt="Logo" style="max-width: 150px; margin-bottom: 15px;" />
+                <!-- Invoice Title -->
+                <h4 class="card-header text-primary mb-0">Invoice</h4>
+              </div>
             </div>
-        </div>
-        <!-- Thông tin dịch vụ -->
-        <div class="col-12 col-md-6">
-            <h4 class="section-title">Thông tin dịch vụ</h4>
-            <div class="info-card">
-                <p><strong>Dịch vụ:</strong> <span th:text="${appointment.spaService.name}"></span></p>
-                <p><strong>Chuyên viên:</strong> <span th:text="${appointment.skinTherapist?.fullName} ?: 'Không chỉ định'"></span></p>
-                <p><strong>Thời gian:</strong> <span th:text="${#temporals.format(appointment.appointmentTime, 'dd/MM/yyyy HH:mm')}"></span></p>
-                <p><strong>Kết quả:</strong> <span th:text="${appointment.result} ?: 'N/A'"></span></p>
+            <div class="card-body">
+              <h5 class="text-muted mb-4">Appointment Information</h5>
+              <table class="table table-bordered table-hover" style="background-color: #f8f9fa;">
+                <tbody>
+                <tr style="background-color: #e9ecef;">
+                  <th class="py-3">Appointment ID</th>
+                  <td class="py-3" th:text="${appointment.id}"></td>
+                </tr>
+                <tr>
+                  <th class="py-3">Customer</th>
+                  <td class="py-3" th:text="${appointment.customer.fullName}"></td>
+                </tr>
+                <tr>
+                  <th class="py-3">Email</th>
+                  <td class="py-3" th:text="${appointment.customer.email}"></td>
+                </tr>
+                <tr>
+                  <th class="py-3">Service</th>
+                  <td class="py-3" th:text="${appointment.spaService.name}"></td>
+                </tr>
+                <tr>
+                  <th class="py-3">Time</th>
+                  <td class="py-3" th:text="${#temporals.format(appointment.appointmentTime, 'dd/MM/yyyy HH:mm')}"></td>
+                </tr>
+                <tr>
+                  <th class="py-3">Specialist</th>
+                  <td class="py-3" th:text="${appointment.skinTherapist?.fullName} ?: 'N/A'"></td>
+                </tr>
+                <tr>
+                  <th class="py-3">Result</th>
+                  <td class="py-3" th:text="${appointment.result} ?: 'N/A'"></td>
+                </tr>
+                <tr>
+                  <th class="py-3">Amount</th>
+                  <td class="py-3" th:text="${appointment.payment?.amount} ?: 'N/A'"></td>
+                </tr>
+                <tr>
+                  <th class="py-3">Payment Status</th>
+                  <td class="py-3" th:text="${appointment.payment?.paymentStatus} ?: 'N/A'"></td>
+                </tr>
+                <tr>
+                  <th class="py-3">Payment Method</th>
+                  <td class="py-3" th:text="${appointment.payment?.paymentMethod} ?: 'N/A'"></td>
+                </tr>
+                </tbody>
+              </table>
+
+              <!-- Display QR Code if available -->
+              <div th:if="${appointment.payment != null and appointment.payment.qrCodeDataUrl != null}" id="qrCodeContainer" class="text-center mt-5">
+                <h5 class="text-primary mb-3">Scan QR Code to Pay</h5>
+                <div class="d-flex justify-content-center">
+                  <div class="p-3 bg-white shadow-sm rounded" style="border: 2px solid #007bff;">
+                    <img th:src="${appointment.payment.qrCodeDataUrl}" alt="QR Code" style="max-width: 200px;"/>
+                  </div>
+                </div>
+                <p class="mt-3">Please scan the QR code to pay the amount of <strong th:text="${appointment.payment.amount}"></strong> VND.</p>
+                <p th:if="${appointment.payment.paymentStatus != null and appointment.payment.paymentStatus.name() == 'PAID'}" class="text-success">Payment has been confirmed!</p>
+                <p th:if="${appointment.payment.paymentStatus != null and appointment.payment.paymentStatus.name() == 'UNPAID'}" class="text-warning">Please complete the payment by scanning the QR code.</p>
+              </div>
+
+              <!-- Confirm Payment Button if unpaid -->
+              <div class="mt-5 d-flex justify-content-center">
+                <div class="mt-4 text-center" th:if="${isUnpaid}" style="width: 400px;">
+                  <form id="paymentForm" th:action="@{/protected/manager/appointments/confirm-payment/{id}(id=${appointment.id})}" method="post">
+                    <div class="mb-3">
+                      <label for="paymentMethod" class="form-label text-muted">Select Payment Method:</label>
+                      <select name="paymentMethod" id="paymentMethod" class="form-control form-select-lg shadow-sm" required onchange="updatePaymentMethod(this.value)">
+                        <option value="CASH" th:selected="${appointment.payment.paymentMethod == 'CASH'}">Cash</option>
+                        <option value="QR" th:selected="${appointment.payment.paymentMethod == 'QR'}">QR Code</option>
+                        <option value="TRANSFER" th:selected="${appointment.payment.paymentMethod == 'TRANSFER'}">Bank Transfer</option>
+                      </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg shadow-sm me-2" style="transition: background-color 0.3s;">Confirm Payment</button>
+                    <button type="button" class="btn btn-success btn-lg shadow-sm" onclick="window.print()" style="transition: background-color 0.3s;">Print Invoice</button>
+                  </form>
+                </div>
             </div>
+          </div>
         </div>
+      </div>
+      <!-- / Content -->
     </div>
+    <!-- / Layout page -->
+  </div>
 
-    <!-- Thông tin thanh toán -->
-    <h4 class="section-title">Thông tin thanh toán</h4>
-    <div class="table-responsive">
-        <table class="table table-bordered">
-            <thead>
-            <tr>
-                <th>Số tiền</th>
-                <th>Phương thức</th>
-                <th>Trạng thái</th>
-                <th>Thời gian</th>
-                <th>Mã giao dịch</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:if="${appointment.payment != null}">
-                <td th:text="${#numbers.formatDecimal(appointment.payment.amount, 0, 'COMMA', 2, 'POINT')}"></td>
-                <td th:text="${appointment.payment.paymentMethod}"></td>
-                <td th:class="${appointment.payment.paymentStatus == 'PAID'} ? 'text-success' : (${appointment.payment.paymentStatus == 'UNPAID'} ? 'text-danger' : 'text-warning')"
-                    th:text="${appointment.payment.paymentStatus}"></td>
-                <td th:text="${#temporals.format(appointment.payment.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
-                <td th:text="${appointment.payment.transactionId} ?: 'N/A'"></td>
-            </tr>
-            <tr th:if="${appointment.payment == null}">
-                <td colspan="5" class="text-center">Chưa có giao dịch nào.</td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Action Buttons -->
-    <div class="action-buttons">
-        <div th:if="${isUnpaid}">
-            <form th:action="@{/protected/manager/appointments/confirm-payment/{id}(id=${appointment.id})}" method="post" class="d-inline">
-                <button type="submit" class="btn btn-primary me-2">Xác nhận thanh toán</button>
-            </form>
-        </div>
-        <a th:href="@{/protected/manager/appointments/checked-out}" class="btn btn-secondary">Quay lại</a>
-    </div>
-    <button onclick="window.print()" class="btn btn-info">In hóa đơn</button>
-
+  <!-- Overlay -->
+  <div class="layout-overlay layout-menu-toggle"></div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- / Layout wrapper -->
+
+<!-- Core JS -->
+<div th:replace="admin/fragments/script :: script"></div>
+<script th:inline="javascript">
+  function updatePaymentMethod(paymentMethod) {
+    const appointmentId = /*[[${appointment.id}]]*/ 0;
+    if (appointmentId <= 0) {
+      alert("Unable to retrieve appointment ID!");
+      return;
+    }
+    const url = "/protected/manager/appointments/update-payment-method/" + appointmentId;
+
+    fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ paymentMethod: paymentMethod })
+    })
+            .then(response => {
+              if (response.ok) {
+                window.location.reload();
+              } else {
+                return response.text().then(errorText => {
+                  throw new Error(errorText);
+                });
+              }
+            })
+            .catch(error => {
+              console.error("Error:", error);
+              alert(error.message || "An error occurred while updating the payment method!");
+            });
+  }
+</script>
 </body>
 </html>
