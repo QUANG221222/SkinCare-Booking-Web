@@ -29,7 +29,7 @@ public class Appointment {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @ManyToOne
-    @JoinColumn(name = "skin_therapist_id", nullable = true)
+    @JoinColumn(name = "skin_therapist_id")
     private SkinTherapist skinTherapist; // Chuyên viên được chỉ định
 
     @EqualsAndHashCode.Exclude

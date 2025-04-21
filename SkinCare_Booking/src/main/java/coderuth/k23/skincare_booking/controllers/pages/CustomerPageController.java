@@ -23,6 +23,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.security.Principal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -77,68 +79,69 @@ public class CustomerPageController {
     }
 
      // Hiển thị danh sách dịch vụ và form đặt dịch vụ
-     @GetMapping("/appointment")
-     public String showAppointmentForm(@RequestParam(value = "serviceId", required = false) Long serviceId, Model model) {
-         Appointment appointment = new Appointment();
-         if (serviceId != null) {
-             // Lấy thông tin service đã chọn (bạn có thể thay bằng phương thức tìm theo id)
-             SpaService service = spaServiceService.getServiceById(serviceId);
-             appointment.setSpaService(service);
-         }
-         model.addAttribute("appointment", appointment);
-         // Nạp thêm danh sách dịch vụ và chuyên viên nếu cần cho form lựa chọn thay đổi (hoặc chỉ nạp nếu chưa có service chọn trước)
-         model.addAttribute("services", spaServiceService.getAllServices());
-         model.addAttribute("therapists", therapistService.getAllTherapists());
-         return "user/customer/appointment_form";  
-     }
- 
-    // Khách hàng đặt dịch vụ
-    @PostMapping("/appointment/create")
-    @ResponseBody
-    public ResponseEntity<?> createAppointment(@ModelAttribute Appointment appointment) {
-        try {
-            UUID customerId = getLoggedInCustomerId();
-           
-            // Truy vấn lại SpaService từ cơ sở dữ liệu
-            Long serviceId = appointment.getSpaService().getId();
-            SpaService spaService = spaServiceRepository.findById(serviceId)
-                .orElseThrow(() -> new IllegalArgumentException("Dịch vụ không tồn tại với ID: " + serviceId));
+//     @GetMapping("/appointment")
+//     public String showAppointmentForm(@RequestParam(value = "serviceId", required = false) Long serviceId, Model model) {
+//         Appointment appointment = new Appointment();
+//         if (serviceId != null) {
+//             // Lấy thông tin service đã chọn (bạn có thể thay bằng phương thức tìm theo id)
+//             SpaService service = spaServiceService.getServiceById(serviceId);
+//             appointment.setSpaService(service);
+//         }
+//         model.addAttribute("appointment", appointment);
+//         // Nạp thêm danh sách dịch vụ và chuyên viên nếu cần cho form lựa chọn thay đổi (hoặc chỉ nạp nếu chưa có service chọn trước)
+//         model.addAttribute("services", spaServiceService.getAllServices());
+//         model.addAttribute("therapists", therapistService.getAllTherapists());
+//         return "user/customer/appointment_form";
+//     }
+//
+//    // Khách hàng đặt dịch vụ
+//    @PostMapping("/appointment/create")
+//    @ResponseBody
+//    public ResponseEntity<?> createAppointment(@ModelAttribute Appointment appointment) {
+//        try {
+//            UUID customerId = getLoggedInCustomerId();
+//
+//            // Truy vấn lại SpaService từ cơ sở dữ liệu
+//            Long serviceId = appointment.getSpaService().getId();
+//            SpaService spaService = spaServiceRepository.findById(serviceId)
+//                .orElseThrow(() -> new IllegalArgumentException("Dịch vụ không tồn tại với ID: " + serviceId));
+//
+//            // Gán SpaService đầy đủ vào appointment
+//            appointment.setSpaService(spaService);
+//
+//            // Gán customer
+//            Customer customer = new Customer();
+//            customer.setId(customerId);
+//            appointment.setCustomer(customer);
+//
+//            // Kiểm tra nếu SkinTherapist được chỉ định
+//            if (appointment.getSkinTherapist() != null && appointment.getSkinTherapist().getId() != null) {
+//                // Truy vấn lại SkinTherapist từ cơ sở dữ liệu
+//                SkinTherapist therapist = therapistService.getTherapistById(appointment.getSkinTherapist().getId());
+//                if (therapist == null) {
+//                    throw new IllegalArgumentException("Chuyên viên không tồn tại với ID: " + appointment.getSkinTherapist().getId());
+//                }
+//                appointment.setSkinTherapist(therapist);
+//            } else {
+//                // Nếu không chọn SkinTherapist, đặt giá trị là null
+//                appointment.setSkinTherapist(null);
+//            }
+//
+//            appointmentService.createAppointment(appointment);
+//            return ResponseEntity.ok(Map.of("status", "success", "message", "Đặt dịch vụ thành công!"));
+//        } catch (RuntimeException ex) {
+//            return ResponseEntity.badRequest().body(Map.of("status", "error", "message", ex.getMessage()));
+//        }
+//    }
+//     Xem danh sách đặt dịch vụ của khách hàng
+//    @GetMapping("/appointments")
+//    public String getAppointmentsFragment(Model model, Authentication authentication) {
+//        String username = authentication.getName();
+//        List<Appointment> appointments = appointmentService.findAppointmentsByUsername(username);
+//        model.addAttribute("appointments", appointments);
+//        return "user/customer/booking-history";
+//    }
 
-            // Gán SpaService đầy đủ vào appointment
-            appointment.setSpaService(spaService);
-           
-            // Gán customer
-            Customer customer = new Customer();
-            customer.setId(customerId);
-            appointment.setCustomer(customer);
-
-            // Kiểm tra nếu SkinTherapist được chỉ định
-            if (appointment.getSkinTherapist() != null && appointment.getSkinTherapist().getId() != null) {
-                // Truy vấn lại SkinTherapist từ cơ sở dữ liệu
-                SkinTherapist therapist = therapistService.getTherapistById(appointment.getSkinTherapist().getId());
-                if (therapist == null) {
-                    throw new IllegalArgumentException("Chuyên viên không tồn tại với ID: " + appointment.getSkinTherapist().getId());
-                }
-                appointment.setSkinTherapist(therapist);
-            } else {
-                // Nếu không chọn SkinTherapist, đặt giá trị là null
-                appointment.setSkinTherapist(null);
-            }
-
-            appointmentService.createAppointment(appointment);
-            return ResponseEntity.ok(Map.of("status", "success", "message", "Đặt dịch vụ thành công!"));
-        } catch (RuntimeException ex) {
-            return ResponseEntity.badRequest().body(Map.of("status", "error", "message", ex.getMessage()));
-        }
-    }
-    // Xem danh sách đặt dịch vụ của khách hàng
-    @GetMapping("/appointments")
-    public String getAppointmentsFragment(Model model, Authentication authentication) {
-        String username = authentication.getName();
-        List<Appointment> appointments = appointmentService.findAppointmentsByUsername(username);
-        model.addAttribute("appointments", appointments);
-        return "user/customer/appointments_list :: appointmentsList";
-    }
 //    // Xem danh sách đặt dịch vụ của khách hàng
 //    @GetMapping("/appointments")
 //    public String listAppointments(Model model) {
@@ -147,13 +150,13 @@ public class CustomerPageController {
 //        return "user/customer/appointments_list";
 //    }
 
-     // Hủy lịch hẹn
-     @PostMapping("/appointments/cancel/{id}")
-     public String cancelAppointment(@PathVariable Long id) {
-         UUID customerId = getLoggedInCustomerId();
-         appointmentService.cancelAppointmentByCustomer(id, customerId);
-         return "redirect:/protected/customer/appointments";
-     }
+//     // Hủy lịch hẹn
+//     @PostMapping("/appointments/cancel/{id}")
+//     public String cancelAppointment(@PathVariable Long id) {
+//         UUID customerId = getLoggedInCustomerId();
+//         appointmentService.cancelAppointmentByCustomer(id, customerId);
+//         return "redirect:/protected/customer/appointments";
+//     }
 
    // Xem lịch sử thanh toán của customer
     @GetMapping("/payment-history")
@@ -328,12 +331,25 @@ public class CustomerPageController {
         return "redirect:/protected/customer/profile";
     }
 
-    @GetMapping("/booking-history")
-    public String bookingHistory(Model model) {
+    @GetMapping("/appointments")
+    public String bookingHistory(Model model,Authentication authentication) {
         // Lấy lịch sử đặt lịch từ cơ sở dữ liệu
-        List<Appointment> bookings = appointmentService.getAppointmentsByCustomer(getLoggedInCustomerId());
-        model.addAttribute("bookings", bookings);
+        String username = authentication.getName();
+        List<Appointment> appointments = appointmentService.findAppointmentsByUsername(username);
+        model.addAttribute("appointments", appointments);
         return "user/customer/booking-history";
+    }
+
+    @PostMapping("/appointments/cancel/{id}")
+    @ResponseBody
+    public ResponseEntity<Map<String, String>> cancelAppointment(@PathVariable Long id) {
+        try {
+            UUID customerId = getLoggedInCustomerId();
+            appointmentService.cancelAppointmentByCustomer(id, customerId);
+            return ResponseEntity.ok(Map.of("status", "success", "message", "\n" + "Appointment canceled successfully!"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("status", "error", "message", e.getMessage()));
+        }
     }
 
     @GetMapping("/quiz")

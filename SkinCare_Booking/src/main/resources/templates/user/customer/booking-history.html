@@ -1,106 +1,176 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-  <head>
-    <div th:replace="user/master/fragments/head :: head"></div>
-  </head>
-  <body>
-    <!-- Preloader -->
-    <div class="preloader d-flex align-items-center justify-content-center">
-      <div class="cssload-container">
-        <div class="cssload-loading"><i></i><i></i><i></i><i></i></div>
+<div th:replace="user/master/fragments/head :: head"></div>
+
+<body>
+<!-- Preloader -->
+<div class="preloader d-flex align-items-center justify-content-center">
+  <div class="cssload-container">
+    <div class="cssload-loading"><i></i><i></i><i></i><i></i></div>
+  </div>
+</div>
+
+<!-- ##### Header Area Start ##### -->
+<div th:replace="user/master/fragments/header :: header"></div>
+<!-- ##### Header Area End ##### -->
+
+<!-- ##### Breadcumb Area Start ##### -->
+<section
+        class="breadcumb-area bg-img d-flex align-items-center justify-content-center"
+        style="background-image: url(/user/img/bg-img/bg-10.jpg)"
+>
+  <div class="bradcumbContent">
+    <h2>Booking History</h2>
+  </div>
+</section>
+<!-- ##### Breadcumb Area End ##### -->
+
+<!-- ##### Book Now Area Start ##### -->
+<div th:replace="user/master/fragments/book-now:: book-now"></div>
+<!-- ##### Book Now Area End ##### -->
+
+<section class="breadcrumb-area border-none">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item">
+          <a th:href="@{/protected/customer/home}" class="text-decoration-none">Home</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">
+          Booking History
+        </li>
+      </ol>
+    </nav>
+  </div>
+</section>
+
+<!-- Booking History Table -->
+<div class="container my-5">
+  <!-- Thông báo thành công/lỗi -->
+  <div id="alertMessage" class="alert d-none" role="alert"></div>
+
+  <table class="table table-bordered table-hover">
+    <thead class="table-warning">
+    <tr>
+      <th>#</th>
+      <th>Service</th>
+      <th>Skin Therapist</th>
+      <th>Date</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody id="appointmentTable">
+    <tr th:each="appointment, iterStat : ${appointments}" th:id="'appointment-' + ${appointment.id}">
+      <td th:text="${iterStat.index + 1}"></td>
+      <td th:text="${appointment.spaService.name}"></td>
+      <td th:text="${appointment.skinTherapist?.fullName} ?: 'Not assigned'"></td>
+      <td th:text="${appointment.appointmentTime}"></td>
+      <td th:id="'status-' + ${appointment.id}" th:text="${appointment.status}"></td>
+      <td th:id="'actions-' + ${appointment.id}">
+        <!-- Chỉ hiển thị cột Actions nếu trạng thái không phải CANCELLED -->
+        <div th:if="${appointment.status != T(coderuth.k23.skincare_booking.models.Appointment$AppointmentStatus).CANCELLED}">
+          <!-- Nút Edit -->
+          <a th:href="@{/protected/customer/booking/edit/{id}(id=${appointment.id})}" class="btn btn-primary btn-sm">Edit</a>
+          <!-- Nút Cancel: Chỉ hiển thị nếu trạng thái không phải CHECKED_OUT -->
+          <button
+                  th:if="${appointment.status != T(coderuth.k23.skincare_booking.models.Appointment$AppointmentStatus).CHECKED_OUT}"
+                  class="btn btn-danger btn-sm cancel-btn"
+                  th:data-id="${appointment.id}"
+                  data-toggle="modal"
+                  data-target="#cancelConfirmModal"
+          >Cancel</button>
+          <!-- Nút Pay -->
+          <a th:href="@{/protected/customer/booking/payment/{id}(id=${appointment.id})}" class="btn btn-success btn-sm">Pay</a>
+        </div>
+      </td>
+    </tr>
+    <tr th:if="${#lists.isEmpty(appointments)}">
+      <td colspan="6" class="text-center">No bookings found.</td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Modal xác nhận hủy (Bootstrap 4) -->
+<div class="modal fade" id="cancelConfirmModal" tabindex="-1" role="dialog" aria-labelledby="cancelConfirmModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="cancelConfirmModalLabel">Confirm Cancellation</h5>
+        </button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to cancel this appointment?
+      </div>
+      <div class="modal-footer">
+        <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+        >
+          Close
+        </button>
+        <button type="button" class="btn btn-danger" id="confirmCancelButton">Confirm</button>
       </div>
     </div>
+  </div>
+</div>
 
-    <!-- ##### Header Area Start ##### -->
-    <div th:replace="user/master/fragments/header :: header"></div>
-    <!-- ##### Header Area End ##### -->
+<!-- Footer -->
+<div th:replace="user/master/fragments/footer :: footer"></div>
 
-    <!-- ##### Breadcumb Area Start ##### -->
-    <section
-            class="breadcumb-area bg-img d-flex align-items-center justify-content-center"
-            style="background-image: url(/user/img/bg-img/bg-10.jpg)"
-    >
-      <div class="bradcumbContent">
-        <h2>Booking History</h2>
-      </div>
-    </section>
-    <!-- ##### Breadcumb Area End ##### -->
+<!-- Scripts -->
+<div th:replace="user/master/fragments/script"></div>
 
-    <!-- ##### Book Now Area Start ##### -->
-    <div th:replace="user/master/fragments/book-now:: book-now"></div>
-    <!-- ##### Book Now Area End ##### -->
+<!-- JavaScript để xử lý hủy bằng AJAX -->
+<script>
+  $(document).ready(function () {
+    // Khi nhấn nút Cancel, lưu ID lịch hẹn vào nút Confirm trong modal
+    $('.cancel-btn').click(function () {
+      const appointmentId = $(this).data('id');
+      $('#confirmCancelButton').data('id', appointmentId);
+      $('#cancelConfirmModal').modal('show');
+    });
 
+    // Khi nhấn Confirm trong modal, gửi yêu cầu hủy bằng AJAX
+    $('#confirmCancelButton').click(function () {
+      const appointmentId = $(this).data('id');
+      $.ajax({
+        url: '/protected/customer/appointments/cancel/' + appointmentId,
+        type: 'POST',
+        success: function (response) {
+          // Đóng modal
+          $('#cancelConfirmModal').modal('hide');
 
-    <section class="breadcrumb-area border-none">
-      <div class="container">
-        <nav aria-label="breadcrumb">
-          <ol class="breadcrumb mb-0">
-            <li class="breadcrumb-item">
-              <a
-                      th:href="@{/protected/customer/home}"
-                      class="text-decoration-none"
-              >Home</a
-              >
-            </li>
-            <li class="breadcrumb-item active" aria-current="page">
-              Booking History
-            </li>
-          </ol>
-        </nav>
-      </div>
-    </section>
+          // Hiển thị thông báo thành công
+          $('#alertMessage')
+                  .removeClass('d-none alert-danger')
+                  .addClass('alert-success')
+                  .text('Appointment canceled successfully!');
 
-    <!-- Booking History Table -->
-    <div class="container my-5">
-      <table class="table table-bordered table-hover">
-        <thead class="table-warning">
-          <tr>
-            <th>#</th>
-            <th>Service</th>
-            <th>Specialist</th>
-            <th>Date</th>
-            <th>Time</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr th:each="booking, iterStat : ${bookings}">
-            <td th:text="${iterStat.index + 1}"></td>
-            <td th:text="${booking.serviceName}"></td>
-            <td th:text="${booking.specialistName}"></td>
-            <td th:text="${booking.date}"></td>
-            <td th:text="${booking.time}"></td>
-            <td th:text="${booking.status}"></td>
-            <td>
-              <a
-                th:href="@{/protected/customer/booking/edit/{id}(id=${booking.id})}"
-                class="btn btn-primary btn-sm"
-                >Edit</a
-              >
-              <a
-                th:href="@{/protected/customer/booking/cancel/{id}(id=${booking.id})}"
-                class="btn btn-danger btn-sm"
-                >Cancel</a
-              >
-              <a
-                th:href="@{/protected/customer/booking/payment/{id}(id=${booking.id})}"
-                class="btn btn-success btn-sm"
-                >Pay</a
-              >
-            </td>
-          </tr>
-          <tr th:if="${#lists.isEmpty(bookings)}">
-            <td colspan="7" class="text-center">No bookings found.</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+          // Cập nhật trạng thái trên giao diện
+          $('#status-' + appointmentId).text('CANCELLED');
 
-    <!-- Footer -->
-    <div th:replace="user/master/fragments/footer :: footer"></div>
+          // Xóa toàn bộ cột Actions (Edit, Cancel, Pay)
+          $('#actions-' + appointmentId).empty();
+        },
+        error: function (xhr) {
+          // Đóng modal
+          $('#cancelConfirmModal').modal('hide');
 
-    <!-- Scripts -->
-    <div th:replace="user/master/fragments/script"></div>
-  </body>
+          // Hiển thị thông báo lỗi
+          const errorMessage = xhr.responseJSON && xhr.responseJSON.message
+                  ? xhr.responseJSON.message
+                  : 'Đã có lỗi xảy ra khi hủy lịch hẹn.';
+          $('#alertMessage')
+                  .removeClass('d-none alert-success')
+                  .addClass('alert-danger')
+                  .text(errorMessage);
+        }
+      });
+    });
+  });
+</script>
+</body>
 </html>
