@@ -43,7 +43,7 @@
               </div>
             </div>
             <div class="table-responsive">
-              <form th:action="@{/protected/manager/payments/history}" method="get" class="mb-3 mx-3">
+              <form th:action="${#strings.contains(currentURI, 'manager') ? '/protected/manager/payments/history' : '/protected/staff/payments/history'}" method="get" class="mb-3 mx-3">
                 <div class="row">
                   <div class="col">
                     <input type="text" name="status" class="form-control" placeholder="Status (UNPAID, PAID, REFUNDED)">
@@ -74,13 +74,13 @@
                 </thead>
                 <tbody id="paymentTable">
                 <tr th:each="payment : ${payments}" th:if="${payment != null}">
-                  <td th:text="${payment.appointment.id}"></td>
-                  <td th:text="${payment.appointment.customer.username}"></td>
-                  <td th:text="${payment.appointment.customer.email}"></td>
-                  <td th:text="${payment.appointment.spaService.name}"></td>
-                  <td th:text="${payment.amount}"></td>
-                  <td th:text="${payment.paymentStatus}"></td>
-                  <td th:text="${payment.paymentMethod}"></td>
+                  <td th:text="${payment.appointment?.id} ?: 'N/A'"></td>
+                  <td th:text="${payment.appointment?.customer?.username} ?: 'N/A'"></td>
+                  <td th:text="${payment.appointment?.customer?.email} ?: 'N/A'"></td>
+                  <td th:text="${payment.appointment?.spaService?.name} ?: 'N/A'"></td>
+                  <td th:text="${payment.amount} ?: 'N/A'"></td>
+                  <td th:text="${payment.paymentStatus} ?: 'N/A'"></td>
+                  <td th:text="${payment.paymentMethod} ?: 'N/A'"></td>
                   <td th:text="${#temporals.format(payment.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
                 </tr>
                 <tr th:if="${#lists.isEmpty(payments)}">
@@ -93,14 +93,15 @@
                 <nav aria-label="Page navigation">
                   <ul class="pagination">
                     <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                      <a class="page-link" th:href="@{/protected/manager/payments/history(page=${currentPage - 1}, size=10)}">Previous</a>
+                      <a class="page-link" th:href="${#strings.contains(currentURI, 'manager') ? '/protected/manager/payments/history(page=${currentPage - 1}, size=10)' : '/protected/staff/payments/history(page=${currentPage - 1}, size=10)'}">Previous</a>
                     </li>
                     <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
                         th:classappend="${i == currentPage} ? 'active'">
-                      <a class="page-link" th:href="@{/protected/manager/payments/history(page=${i}, size=10)}" th:text="${i + 1}"></a>
+                      <a class="page-link" th:href="${#strings.contains(currentURI, 'manager') ? '/protected/manager/payments/history(page=${i}, size=10)' : '/protected/staff/payments/history(page=${i}, size=10)'}"
+                         th:text="${i + 1}"></a>
                     </li>
                     <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
-                      <a class="page-link" th:href="@{/protected/manager/payments/history(page=${currentPage + 1}, size=10)}">Next</a>
+                      <a class="page-link" th:href="${#strings.contains(currentURI, 'manager') ? '/protected/manager/payments/history(page=${currentPage + 1}, size=10)' : '/protected/staff/payments/history(page=${currentPage + 1}, size=10)'}">Next</a>
                     </li>
                   </ul>
                 </nav>

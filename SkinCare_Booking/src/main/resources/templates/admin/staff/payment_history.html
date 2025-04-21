@@ -24,13 +24,13 @@
         </thead>
         <tbody>
         <tr th:each="payment : ${payments}">
-            <td th:text="${payment.id}"></td>
-            <td th:text="${payment.appointment.id}"></td>
-            <td th:text="${payment.appointment.customer.fullName}"></td>
-            <td th:text="${payment.appointment.spaService.name}"></td>
-            <td th:text="${payment.amount}"></td>
-            <td th:text="${payment.paymentMethod}"></td>
-            <td th:text="${payment.paymentStatus}"></td>
+            <td th:text="${payment.id} ?: 'N/A'"></td>
+            <td th:text="${payment.appointment?.id} ?: 'N/A'"></td>
+            <td th:text="${payment.appointment?.customer?.fullName} ?: 'N/A'"></td>
+            <td th:text="${payment.appointment?.spaService?.name} ?: 'N/A'"></td>
+            <td th:text="${payment.amount} ?: 'N/A'"></td>
+            <td th:text="${payment.paymentMethod} ?: 'N/A'"></td>
+            <td th:text="${payment.paymentStatus} ?: 'N/A'"></td>
             <td th:text="${#temporals.format(payment.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
             <td th:text="${payment.transactionId} ?: 'N/A'"></td>
         </tr>
@@ -40,7 +40,7 @@
         </tbody>
     </table>
 
-    <a th:href="@{/protected/staff/home}" class="btn btn-secondary">Go Back</a>
+    <a th:href="${#strings.contains(currentURI, 'manager') ? '/protected/manager/home' : '/protected/staff/home'}" class="btn btn-secondary">Go Back</a>
 </div>
 </body>
 </html>

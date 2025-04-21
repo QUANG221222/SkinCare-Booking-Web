@@ -61,17 +61,11 @@ public class CustomerPageController {
      private UUID getLoggedInCustomerId() {
         // Thay thế bằng logic thực tế để lấy ID khách hàng đã đăng nhập
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new IllegalStateException("User is not logged in!");
         }
-
-
         // Giả sử bạn có một lớp UserDetailsImpl chứa thông tin người dùng
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-
-
         // Trả về ID khách hàng dưới dạng UUID
         return userDetails.getId();
     }
@@ -81,7 +75,6 @@ public class CustomerPageController {
      public String showAppointmentForm(@RequestParam(value = "serviceId", required = false) Long serviceId, Model model) {
          Appointment appointment = new Appointment();
          if (serviceId != null) {
-             // Lấy thông tin service đã chọn (bạn có thể thay bằng phương thức tìm theo id)
              SpaService service = spaServiceService.getServiceById(serviceId);
              appointment.setSpaService(service);
          }
@@ -92,60 +85,60 @@ public class CustomerPageController {
          return "user/customer/appointment_form";  
      }
  
-    // Khách hàng đặt dịch vụ
+    // Customer books a service
     @PostMapping("/appointment/create")
     @ResponseBody
     public ResponseEntity<?> createAppointment(@ModelAttribute Appointment appointment) {
         try {
             UUID customerId = getLoggedInCustomerId();
            
-            // Truy vấn lại SpaService từ cơ sở dữ liệu
+            // Retrieve SpaService from the database
             Long serviceId = appointment.getSpaService().getId();
             SpaService spaService = spaServiceRepository.findById(serviceId)
-                .orElseThrow(() -> new IllegalArgumentException("Dịch vụ không tồn tại với ID: " + serviceId));
+                .orElseThrow(() -> new IllegalArgumentException("Service does not exist with ID: " + serviceId));
 
-            // Gán SpaService đầy đủ vào appointment
+            // Assign the full SpaService to the appointment
             appointment.setSpaService(spaService);
            
-            // Gán customer
+            // Assign customer
             Customer customer = new Customer();
             customer.setId(customerId);
             appointment.setCustomer(customer);
 
-            // Kiểm tra nếu SkinTherapist được chỉ định
+            // Check if a SkinTherapist is assigned
             if (appointment.getSkinTherapist() != null && appointment.getSkinTherapist().getId() != null) {
-                // Truy vấn lại SkinTherapist từ cơ sở dữ liệu
+                // Retrieve SkinTherapist from the database
                 SkinTherapist therapist = therapistService.getTherapistById(appointment.getSkinTherapist().getId());
                 if (therapist == null) {
-                    throw new IllegalArgumentException("Chuyên viên không tồn tại với ID: " + appointment.getSkinTherapist().getId());
+                    throw new IllegalArgumentException("Therapist does not exist with ID: " + appointment.getSkinTherapist().getId());
                 }
                 appointment.setSkinTherapist(therapist);
             } else {
-                // Nếu không chọn SkinTherapist, đặt giá trị là null
+                // If no SkinTherapist is selected, set the value to null
                 appointment.setSkinTherapist(null);
             }
 
             appointmentService.createAppointment(appointment);
-            return ResponseEntity.ok(Map.of("status", "success", "message", "Đặt dịch vụ thành công!"));
+            return ResponseEntity.ok(Map.of("status", "success", "message", "Service booked successfully!"));
         } catch (RuntimeException ex) {
             return ResponseEntity.badRequest().body(Map.of("status", "error", "message", ex.getMessage()));
         }
     }
     // Xem danh sách đặt dịch vụ của khách hàng
-    @GetMapping("/appointments")
-    public String getAppointmentsFragment(Model model, Authentication authentication) {
-        String username = authentication.getName();
-        List<Appointment> appointments = appointmentService.findAppointmentsByUsername(username);
-        model.addAttribute("appointments", appointments);
-        return "user/customer/appointments_list :: appointmentsList";
-    }
-//    // Xem danh sách đặt dịch vụ của khách hàng
-//    @GetMapping("/appointments")
-//    public String listAppointments(Model model) {
-//        UUID customerId = getLoggedInCustomerId();
-//        model.addAttribute("appointments", appointmentService.getAppointmentsByCustomer(customerId));
-//        return "user/customer/appointments_list";
-//    }
+    // @GetMapping("/appointments")
+    // public String getAppointmentsFragment(Model model, Authentication authentication) {
+    //     String username = authentication.getName();
+    //     List<Appointment> appointments = appointmentService.findAppointmentsByUsername(username);
+    //     model.addAttribute("appointments", appointments);
+    //     return "user/customer/appointments_list :: appointmentsList";
+    // }
+   // Xem danh sách đặt dịch vụ của khách hàng
+   @GetMapping("/appointments")
+   public String listAppointments(Model model) {
+       UUID customerId = getLoggedInCustomerId();
+       model.addAttribute("appointments", appointmentService.getAppointmentsByCustomer(customerId));
+       return "user/customer/appointments_list";
+   }
 
      // Hủy lịch hẹn
      @PostMapping("/appointments/cancel/{id}")
@@ -169,7 +162,7 @@ public class CustomerPageController {
         try {
             customerId = UUID.fromString(authentication.getName());
         } catch (IllegalArgumentException e) {
-            model.addAttribute("error", "ID khách hàng không hợp lệ!");
+            model.addAttribute("error", "Invalid customer ID!");
             return "error";
         }
 

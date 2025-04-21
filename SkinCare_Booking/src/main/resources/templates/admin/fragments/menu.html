@@ -31,9 +31,9 @@
     <li
       th:classappend="${#strings.contains(currentURI, '/manager/home')} ? 'active open' : ''"
       class="menu-item"
+      th:if="${#strings.contains(currentURI, 'manager')}"
     >
       <a
-        th:if="${#strings.contains(currentURI, 'manager')}"
         th:href="@{/protected/manager/home}"
         class="menu-link menu-toggle"
       >
@@ -169,6 +169,18 @@
         <div class="text-truncate" data-i18n="Appointment">Appointment</div>
       </a>
       <ul class="menu-sub">
+        <li
+          th:classappend="${#strings.contains(currentURI, '/staff/appointments') || 
+                            #strings.contains(currentURI, '/manager/appointments')} ? 'active' : ''"
+          class="menu-item"
+        >
+          <a
+            th:href="${#strings.contains(currentURI, 'manager') ? '/protected/manager/appointments' : '/protected/staff/appointments'}"
+            class="menu-link"
+          >
+            <div class="text-truncate" data-i18n="Pending">Appointments</div>
+          </a>
+        </li>
         <li
           th:classappend="${#strings.contains(currentURI, '/staff/appointments/pending') || 
                             #strings.contains(currentURI, '/manager/appointments/pending')} ? 'active' : ''"

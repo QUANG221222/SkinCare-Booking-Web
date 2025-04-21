@@ -55,10 +55,10 @@
                 </tr>
                 </thead>
                 <tbody id="appointmentTable">
-                <tr th:each="appointment : ${appointments}">
+                <tr th:each="appointment : ${appointments}" th:if="${appointment.status.toString() == 'CANCELLED'}">
                   <td th:text="${appointment.id}"></td>
-                  <td th:text="${appointment.customer.username}"></td>
-                  <td th:text="${appointment.spaService.name}"></td>
+                  <td th:text="${appointment.customer?.username} ?: 'N/A'"></td>
+                  <td th:text="${appointment.spaService?.name} ?: 'N/A'"></td>
                   <td th:text="${#temporals.format(appointment.appointmentTime, 'dd/MM/yyyy HH:mm')}"></td>
                   <td th:text="${appointment.skinTherapist?.fullName} ?: 'Not Assigned'"></td>
                   <td th:text="${@appointmentService.getPaymentStatusDescription(appointment)}"></td>
