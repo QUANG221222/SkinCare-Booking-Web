@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalTime;
 import java.util.UUID;
-
 @Entity
 @Table(name = "therapist_schedule")
 @Data

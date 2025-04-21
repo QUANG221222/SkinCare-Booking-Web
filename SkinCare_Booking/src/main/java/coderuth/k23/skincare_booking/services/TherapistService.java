@@ -8,6 +8,8 @@ import coderuth.k23.skincare_booking.models.SkinTherapist;
 import coderuth.k23.skincare_booking.models.TherapistSchedule;
 import coderuth.k23.skincare_booking.repositories.SkinTherapistRepository;
 import coderuth.k23.skincare_booking.repositories.TherapistScheduleRepository;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
@@ -62,11 +64,10 @@ public class TherapistService {
         return therapistScheduleRepository.findBySkinTherapistId(therapistId);
     }
 
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public TherapistSchedule createSchedule(UUID therapistId, String dayOfWeek, String startTime, String endTime) {
         SkinTherapist therapist = skinTherapistRepository.findById(therapistId)
                 .orElseThrow(() -> new RuntimeException("Therapist not found!"));
-
-       
         LocalTime startTimeParsed;
         LocalTime endTimeParsed;
         try {
@@ -79,9 +80,17 @@ public class TherapistService {
         // Kiểm tra xung đột lịch
         List<TherapistSchedule> existingSchedules = therapistScheduleRepository.findBySkinTherapistId(therapistId);
         for (TherapistSchedule existing : existingSchedules) {
-            if (existing.getDayOfWeek().equals(dayOfWeek)) {
-                if (!(endTimeParsed.compareTo(existing.getStartTime()) <= 0 || startTimeParsed.compareTo(existing.getEndTime()) >= 0)) {
-                    throw new RuntimeException("Schedule conflict on " + dayOfWeek);
+            if (existing.getDayOfWeek().equalsIgnoreCase(dayOfWeek)) { // Không phân biệt hoa thường
+                LocalTime existingStart = existing.getStartTime();
+                LocalTime existingEnd = existing.getEndTime();
+
+                // Log để kiểm tra giá trị
+                System.out.println("Checking conflict: New schedule [" + startTimeParsed + " - " + endTimeParsed + "] vs Existing schedule [" + existingStart + " - " + existingEnd + "]");
+
+                if (existingStart != null && existingEnd != null) {
+                    if (!(endTimeParsed.compareTo(existingStart) <= 0 || startTimeParsed.compareTo(existingEnd) >= 0)) {
+                        throw new RuntimeException("Schedule conflict on " + dayOfWeek);
+                    }
                 }
             }
         }

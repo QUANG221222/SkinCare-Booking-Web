@@ -57,16 +57,16 @@
                                 </tr>
                                 </thead>
                                 <tbody id="appointmentTable">
-                                <tr th:each="appointment : ${appointments}">
+                                <tr th:each="appointment : ${appointments}" th:if="${appointment.status.toString() == 'CHECKED_OUT'}">
                                     <td th:text="${appointment.id}"></td>
-                                    <td th:text="${appointment.customer.username}"></td>
-                                    <td th:text="${appointment.spaService.name}"></td>
+                                    <td th:text="${appointment.customer?.username} ?: 'N/A'"></td>
+                                    <td th:text="${appointment.spaService?.name} ?: 'N/A'"></td>
                                     <td th:text="${#temporals.format(appointment.appointmentTime, 'dd/MM/yyyy HH:mm')}"></td>
                                     <td th:text="${appointment.skinTherapist?.fullName} ?: 'N/A'"></td>
                                     <td th:text="${appointment.result} ?: 'N/A'"></td>
                                     <td th:text="${appointment.payment?.paymentStatus} ?: 'N/A'"></td>
                                     <td>
-                                        <a th:href="@{/protected/manager/appointments/invoice/{id}(id=${appointment.id})}"
+                                        <a th:href="@{${#strings.contains(currentURI, 'manager') ? '/protected/manager/appointments/invoice/{id}' : '/protected/staff/appointments/invoice/{id}'}(id=${appointment.id})}"
                                            class="btn btn-sm btn-primary">View Invoice</a>
                                     </td>
                                 </tr>

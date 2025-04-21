@@ -54,17 +54,17 @@
                                 </tr>
                                 </thead>
                                 <tbody id="appointmentTable">
-                                <tr th:each="appointment : ${appointments}">
+                                <tr th:each="appointment : ${appointments}" th:if="${appointment.status.toString() == 'PENDING'}">
                                     <td th:text="${appointment.id}"></td>
-                                    <td th:text="${appointment.customer.username}"></td>
-                                    <td th:text="${appointment.spaService.name}"></td>
+                                    <td th:text="${appointment.customer?.username} ?: 'N/A'"></td>
+                                    <td th:text="${appointment.spaService?.name} ?: 'N/A'"></td>
                                     <td th:text="${#temporals.format(appointment.appointmentTime, 'dd/MM/yyyy HH:mm')}"></td>
                                     <td>
                                         <div class="d-flex align-items-center gap-2">
-                                            <form th:action="@{/protected/manager/appointments/check-in/{id}(id=${appointment.id})}" method="post" style="display:inline;">
+                                            <form th:action="@{${#strings.contains(currentURI, 'manager') ? '/protected/manager/appointments/check-in/{id}' : '/protected/staff/appointments/check-in/{id}'}(id=${appointment.id})}" method="post" style="display:inline;">
                                                 <button type="submit" class="btn btn-sm btn-primary">Check-in</button>
                                             </form>
-                                            <form th:action="@{/protected/manager/appointments/cancel/{id}(id=${appointment.id})}" method="post" style="display:inline;">
+                                            <form th:action="@{${#strings.contains(currentURI, 'manager') ? '/protected/manager/appointments/cancel/{id}' : '/protected/staff/appointments/cancel/{id}'}(id=${appointment.id})}" method="post" style="display:inline;">
                                                 <button type="submit" class="btn btn-sm btn-danger">Cancel</button>
                                             </form>
                                         </div>

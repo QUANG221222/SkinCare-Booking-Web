@@ -55,7 +55,7 @@
                 </tr>
                 <tr>
                   <th class="py-3">Customer</th>
-                  <td class="py-3" th:text="${appointment.customer.fullName}"></td>
+                  <td class="py-3" th:text="${appointment.customer.username}"></td>
                 </tr>
                 <tr>
                   <th class="py-3">Email</th>
@@ -100,7 +100,7 @@
                     <img th:src="${appointment.payment.qrCodeDataUrl}" alt="QR Code" style="max-width: 200px;"/>
                   </div>
                 </div>
-                <p class="mt-3">Please scan the QR code to pay the amount of <strong th:text="${appointment.payment.amount}"></strong> VND.</p>
+                <p class="mt-3">Please scan the QR code to pay the amount of <strong th:text="${appointment.payment.amount}"></strong> $.</p>
                 <p th:if="${appointment.payment.paymentStatus != null and appointment.payment.paymentStatus.name() == 'PAID'}" class="text-success">Payment has been confirmed!</p>
                 <p th:if="${appointment.payment.paymentStatus != null and appointment.payment.paymentStatus.name() == 'UNPAID'}" class="text-warning">Please complete the payment by scanning the QR code.</p>
               </div>
@@ -108,7 +108,7 @@
               <!-- Confirm Payment Button if unpaid -->
               <div class="mt-5 d-flex justify-content-center">
                 <div class="mt-4 text-center" th:if="${isUnpaid}" style="width: 400px;">
-                  <form id="paymentForm" th:action="@{/protected/manager/appointments/confirm-payment/{id}(id=${appointment.id})}" method="post">
+                  <form id="paymentForm" th:action="@{${#strings.contains(currentURI, 'manager') ? '/protected/manager/appointments/confirm-payment/{id}' : '/protected/staff/appointments/confirm-payment/{id}'}(id=${appointment.id})}" method="post">
                     <div class="mb-3">
                       <label for="paymentMethod" class="form-label text-muted">Select Payment Method:</label>
                       <select name="paymentMethod" id="paymentMethod" class="form-control form-select-lg shadow-sm" required onchange="updatePaymentMethod(this.value)">

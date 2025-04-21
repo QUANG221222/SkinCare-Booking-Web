@@ -47,14 +47,20 @@
                             <div th:if="${appointment.status.toString() != 'CHECKED_IN'}" class="alert alert-danger">
                                 The appointment is not in the CHECKED_IN status!
                             </div>
+                            <!-- Alert for errors (e.g., spaService null or therapist conflict) -->
+                            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <span th:text="${error}"></span>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
                             <!-- Appointment Details -->
                             <div class="mb-3">
-                                <p><strong>Customer:</strong> <span th:text="${appointment.customer.username}"></span></p>
-                                <p><strong>Service:</strong> <span th:text="${appointment.spaService.name}"></span></p>
+                                <p><strong>Customer:</strong> <span th:text="${appointment.customer?.username} ?: 'Không có thông tin'"></span></p>
+                                <p><strong>Service:</strong> <span th:text="${appointment.spaService?.name} ?: 'Không có thông tin'"></span></p>
                                 <p><strong>Time:</strong> <span th:text="${#temporals.format(appointment.appointmentTime, 'dd/MM/yyyy HH:mm')}"></span></p>
                             </div>
                             <!-- Form to Assign Therapist -->
-                            <form th:action="@{/protected/manager/appointments/assign/{id}(id=${appointment.id})}" method="post">
+
+                            <form th:action="@{${#strings.contains(currentURI, 'manager') ? '/protected/manager/appointments/assign/{id}' : '/protected/staff/appointments/assign/{id}'}(id=${appointment.id})}" method="post">
                                 <div class="mb-3">
                                     <label for="therapistId" class="form-label">Therapist:</label>
                                     <select name="therapistId" id="therapistId" class="form-control" required>
@@ -65,12 +71,8 @@
                                     </select>
                                 </div>
                                 <button type="submit" class="btn btn-primary">Assign</button>
-                                <a th:href="@{/protected/manager/appointments/checked-in}" class="btn btn-secondary">Cancel</a>
+                                <a th:href="@{${#strings.contains(currentURI, 'manager') ? '/protected/manager/appointments/checked-in' : '/protected/staff/appointments/checked-in'}}" class="btn btn-secondary">Cancel</a>
                             </form>
-                        </div>
-                        <!-- Back Button -->
-                        <div class="d-flex justify-content-end mt-3 mx-3">
-                            <a th:href="@{/protected/manager/appointments/checked-in}" class="btn btn-secondary">Go Back</a>
                         </div>
                     </div>
                 </div>
@@ -86,6 +88,8 @@
 
     <!-- Core JS -->
     <div th:replace="admin/fragments/script :: script"></div>
-    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93318561ff5f06ec',t:'MTc0NTExOTM4NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+    <script>
+        (function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'933c419aafbfbcd8',t:'MTc0NTIzMTk1My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();
+    </script>
 </body>
 </html>
