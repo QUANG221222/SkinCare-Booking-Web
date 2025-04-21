@@ -526,9 +526,10 @@ public class StaffPageController {
                 appointment.setResult(result);
             }
             appointmentService.updateAppointment(appointment);
-            redirectAttributes.addFlashAttribute("successMessage", "Cập nhật lịch hẹn thành công!");
+            redirectAttributes.addFlashAttribute("successMessage", "Appointment updated successfully!");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Không thể cập nhật lịch hẹn: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "\n" +
+                    "Unable to update appointment:" + e.getMessage());
         }
         return "redirect:/protected/staff/appointments";
     }

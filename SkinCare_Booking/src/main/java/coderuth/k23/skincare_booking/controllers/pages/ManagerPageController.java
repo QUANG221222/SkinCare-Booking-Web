@@ -466,7 +466,7 @@ public class ManagerPageController {
             return "redirect:/protected/manager/appointments/assigned";
         }
         if (appointment.getStatus() != Appointment.AppointmentStatus.CHECKED_IN) {
-            model.addAttribute("error", "Lịch hẹn phải ở trạng thái CHECKED_IN để phân công!");
+            model.addAttribute("error", "Appointment must be in CHECKED_IN status to be assigned!");
             model.addAttribute("manager", manager);
             model.addAttribute("appointments", appointmentService.getAppointmentsByStatus(Appointment.AppointmentStatus.CHECKED_IN));
             return "admin/staff/checked_in_appointments";
@@ -588,7 +588,7 @@ public class ManagerPageController {
      @PostMapping("/appointments/confirm-payment/{id}")
      public String confirmPayment(@PathVariable Long id) { // Bỏ tham số paymentMethod
          appointmentService.confirmPayment(id);
-         return "redirect:/protected/staff/appointments/invoice/{id}";
+         return "redirect:/protected/manager/appointments/invoice/{id}";
      }
      
      @GetMapping("/appointments/record-result/{id}")
@@ -599,7 +599,7 @@ public class ManagerPageController {
          try {
              Appointment appointment = appointmentService.getAppointmentById(id);
              if (appointment.getStatus() != Appointment.AppointmentStatus.ASSIGNED) {
-                 model.addAttribute("error", "Lịch hẹn phải ở trạng thái ASSIGNED để ghi kết quả! Trạng thái hiện tại: " + appointment.getStatus());
+                 model.addAttribute("error", "Appointment must be in ASSIGNED status to record results! Current status: " + appointment.getStatus());
                  model.addAttribute("manager", manager);
                  model.addAttribute("appointments", appointmentService.getAppointmentsByStatus(Appointment.AppointmentStatus.ASSIGNED));
                  return "admin/staff/assigned_appointments";

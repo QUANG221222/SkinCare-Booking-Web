@@ -169,11 +169,11 @@
                     <!-- Modal Add New Therapist -->
                     <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasAddUser" aria-labelledby="offcanvasAddUserLabel">
                         <div class="offcanvas-header">
-                          <h5 id="offcanvasAddUserLabel" class="offcanvas-title">Add New Staff</h5>
+                          <h5 id="offcanvasAddUserLabel" class="offcanvas-title">Add New Therapist</h5>
                           <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
                         </div>
                         <div class="offcanvas-body">
-                          <form th:action="@{/protected/manager/register-staff}" method="post">
+                          <form th:action="@{/protected/manager/register-therapist}" method="post">
                             <div class="mb-3">
                               <label for="add-user-username" class="form-label">Username</label>
                               <input
@@ -212,6 +212,19 @@
                                       required
                               />
                             </div>
+                          <div class="mb-3">
+                              <label for="add-user-specialty" class="form-label">Specialty</label>
+                              <input
+                                      type="text"
+                                      class="form-control"
+                                      id="add-user-specialty"
+                                      name="specialty"
+                                      placeholder="Enter specialty"
+                                      required
+                                      maxlength="100"
+                                      title="Specialty must not exceed 100 characters"
+                              />
+                          </div>
                             <div class="mb-3">
                               <label for="add-user-email" class="form-label">Email</label>
                               <input
@@ -279,19 +292,22 @@
                                     </div>
 
                                     <!-- Schedule List -->
-                                    <table class="table table-bordered table-hover" style="background-color: #f8f9fa;" id="scheduleTable">
-                                        <thead>
-                                        <tr style="background-color: #e9ecef;">
-                                            <th>ID</th>
-                                            <th>Day</th>
-                                            <th>Start Time</th>
-                                            <th>End Time</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody id="scheduleTableBody">
-                                        </tbody>
-                                    </table>
+                                    <div class="table-responsive">
+                                        <table class="table-responsive table table-bordered table-hover" style="background-color: #f8f9fa;" id="scheduleTable">
+                                            <thead>
+                                            <tr style="background-color: #e9ecef;">
+                                                <th>ID</th>
+                                                <th>Day</th>
+                                                <th>Start Time</th>
+                                                <th>End Time</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody id="scheduleTableBody">
+                                            </tbody>
+                                        </table>
+                                    </div>
+
 
                                     <!-- Create Schedule Form -->
                                     <div class="mt-4">
@@ -523,7 +539,7 @@
                             tableBody.innerHTML = ''; // Xóa nội dung cũ
 
                             if (!data || data.length === 0) {
-                                tableBody.innerHTML = '<tr><td colspan="5" class="text-center">Chưa có lịch làm việc.</td></tr>';
+                                tableBody.innerHTML = '<tr><td colspan="5" class="text-center">No schedule yet.</td></tr>';
                             } else {
                                 data.forEach(schedule => {
                                     const row = `
@@ -604,7 +620,7 @@
                                             if (response.ok) {
                                                 const successMessage = document.querySelector("#scheduleSuccessMessage");
                                                 const successText = document.querySelector("#scheduleSuccessText");
-                                                successText.textContent = "Lịch làm việc đã được xóa thành công!";
+                                                successText.textContent = "The schedule has been successfully deleted!";
                                                 successMessage.classList.remove("d-none");
 
                                                 // Cập nhật lại bảng lịch
@@ -621,7 +637,7 @@
                                             console.error("Lỗi khi xóa lịch:", error); // Log lỗi
                                             const errorMessage = document.querySelector("#scheduleErrorMessage");
                                             const errorText = document.querySelector("#scheduleErrorText");
-                                            errorText.textContent = error.message || "Không thể xóa lịch làm việc.";
+                                            errorText.textContent = error.message || "Cannot delete work schedule.";
                                             errorMessage.classList.remove("d-none");
                                         });
                                 });

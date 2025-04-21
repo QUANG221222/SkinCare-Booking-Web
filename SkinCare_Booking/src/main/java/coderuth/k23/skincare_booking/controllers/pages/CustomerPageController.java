@@ -135,12 +135,12 @@ public class CustomerPageController {
     //     return "user/customer/appointments_list :: appointmentsList";
     // }
    // Xem danh sách đặt dịch vụ của khách hàng
-   @GetMapping("/appointments")
-   public String listAppointments(Model model) {
-       UUID customerId = getLoggedInCustomerId();
-       model.addAttribute("appointments", appointmentService.getAppointmentsByCustomer(customerId));
-       return "user/customer/appointments_list";
-   }
+//   @GetMapping("/appointments")
+//   public String listAppointments(Model model) {
+//       UUID customerId = getLoggedInCustomerId();
+//       model.addAttribute("appointments", appointmentService.getAppointmentsByCustomer(customerId));
+//       return "user/customer/appointments_list";
+//   }
 
 //     // Hủy lịch hẹn
 //     @PostMapping("/appointments/cancel/{id}")
