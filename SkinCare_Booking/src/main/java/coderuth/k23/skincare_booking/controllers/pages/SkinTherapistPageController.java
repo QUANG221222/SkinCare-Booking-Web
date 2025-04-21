@@ -2,7 +2,6 @@ package coderuth.k23.skincare_booking.controllers.pages;
 
 import coderuth.k23.skincare_booking.dtos.request.EditProfileRequest;
 import coderuth.k23.skincare_booking.models.SkinTherapist;
-import coderuth.k23.skincare_booking.models.Staff;
 import coderuth.k23.skincare_booking.repositories.SkinTherapistRepository;
 import coderuth.k23.skincare_booking.services.CenterScheduleService;
 import coderuth.k23.skincare_booking.services.SpaServiceService;

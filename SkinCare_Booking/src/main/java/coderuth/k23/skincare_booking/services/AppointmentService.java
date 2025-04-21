@@ -31,7 +31,9 @@ import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.web.client.RestTemplate;
 import coderuth.k23.skincare_booking.dtos.response.VietQRResponse;
@@ -537,5 +539,60 @@ public class AppointmentService {
         Customer customer = customerRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Customer not found with username: " + username));
         return appointmentRepository.findByCustomerId(customer.getId());
+    }
+
+    public double calculateCurrentYearRevenue() {
+        LocalDate today = LocalDate.now(); // Ví dụ: April 18, 2025
+        LocalDate startOfYear = today.with(TemporalAdjusters.firstDayOfYear()); // January 1, 2025
+        LocalDateTime start = startOfYear.atStartOfDay(); // Bắt đầu từ 00:00 ngày 1/1/2025
+        LocalDateTime end = LocalDateTime.now(); // Thời điểm hiện tại (April 18, 2025, 11:13 PM)
+
+        List<Payment> paidPayments = paymentRepository.findByCreatedAtBetweenAndPaymentStatus(
+                start,
+                end,
+                Payment.PaymentStatus.PAID
+        );
+
+        double revenue = paidPayments.stream()
+                .mapToDouble(Payment::getAmount)
+                .sum();
+
+        logger.info("Calculated current year revenue (only PAID payments): ${}", revenue);
+        return revenue;
+    }
+
+    // Tổng số lịch hẹn
+    public long getTotalAppointments() {
+        return appointmentRepository.count();
+    }
+
+    // Tỉ lệ hủy lịch hẹn
+    public double getCancellationRate() {
+        long totalAppointments = getTotalAppointments();
+        long canceledAppointments = appointmentRepository.findByStatus(Appointment.AppointmentStatus.CANCELLED).size();
+        return totalAppointments > 0 ? (canceledAppointments * 100.0) / totalAppointments : 0.0;
+    }
+
+    // Tỉ lệ lịch hẹn thành công
+    public double getSuccessRate() {
+        long totalAppointments = getTotalAppointments();
+        long completedAppointments = appointmentRepository.findByStatus(Appointment.AppointmentStatus.COMPLETED).size();
+        return totalAppointments > 0 ? (completedAppointments * 100.0) / totalAppointments : 0.0;
+    }
+
+    // SpaService được đặt nhiều nhất
+    public SpaService getMostBookedSpaService() {
+        List<Appointment> allAppointments = appointmentRepository.findAll();
+        if (allAppointments.isEmpty()) {
+            return null;
+        }
+
+        Map<SpaService, Long> serviceCount = allAppointments.stream()
+                .collect(Collectors.groupingBy(Appointment::getSpaService, Collectors.counting()));
+
+        return serviceCount.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(null);
     }
 }

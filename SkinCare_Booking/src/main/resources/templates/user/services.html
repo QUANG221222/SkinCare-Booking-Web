@@ -185,14 +185,12 @@
             </div>
 
             <!-- Kiểm tra nếu serviceList không null hoặc rỗng -->
-            <div class="row" th:if="${services != null}">
+            <div class="row">
                 <!-- Lặp và hiển thị mỗi service -->
                 <div class="col-12 col-md-6 col-lg-4"
                      th:each="service : ${services}"
                      th:with="
-                         bgimg=${(service != null and service.imageUrl != null and service.imageUrl != '') 
-                                     ? service.imageUrl 
-                                     : '/user/img/about-us-img/3.jpg'},
+                         bgimg=${service.imageUrl},
                          price=${service.price},
                          title=${service.name},
                          desc=${service.description},
@@ -219,36 +217,34 @@
                         </div>
                         <!-- Book Room -->
                         <!-- Thêm điều kiện để ẩn nút Book Now nếu giá <= 0 -->
-                        <a th:if="${service.price != null and service.price > 0}"
+                        <a class="book-room-btn btn palatin-btn" th:href="@{/login}">
+                            Book Now
+                        </a>
+                        <a th:if="${#strings.contains(currentURI, 'customer')}"
                            class="book-room-btn btn palatin-btn"
                            th:onclick="|loadAppointmentForm(${service.id})|"
                            href="javascript:void(0);">
                             Book Now
                         </a>
-                        <span th:unless="${service.price != null and service.price > 0}"
-                              class="text-danger">
-                            Dịch vụ không khả dụng
-                        </span>
                     </div>
                 </div>
                 <!-- Hiển thị thông báo nếu không có service -->
-                <!--<div th:if="${serviceList == null or #lists.isEmpty(serviceList)}">
-                    <p>Không có dịch vụ nào được hiển thị.</p>
-                </div> -->
+                <div th:if="${#lists.isEmpty(services)}">
+                    <p>No services are displayed.</p>
+                </div>
             </div>
             </div>
     </section>
         <!-- Appointment Form Modal -->
-    <div class="modal fade" id="appointmentModal" tabindex="-1" aria-labelledby="appointmentModalLabel" aria-hidden="true">
+    <div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" id="appointmentModal" tabindex="-1" aria-labelledby="appointmentModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-            <h5 class="modal-title" id="appointmentModalLabel">Đặt dịch vụ chăm sóc da</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="appointmentModalLabel">Book a skin care service</h5>
+                </div>
+                <!-- Phần này sẽ được nạp nội dung từ appointment_form -->
+                <div class="modal-body" id="appointmentModalBody"></div>
             </div>
-            <!-- Phần này sẽ được nạp nội dung từ appointment_form -->
-            <div class="modal-body" id="appointmentModalBody"></div>
-        </div>
         </div>
     </div>
     <!-- ##### Rooms Area End ##### -->

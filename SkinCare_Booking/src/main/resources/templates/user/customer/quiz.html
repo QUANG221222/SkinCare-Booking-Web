@@ -42,89 +42,74 @@
     </div>
 </section>
 
-<div class="container my-4">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow-lg">
-                <div class="card-header text-white text-center">
-                    <h3>Khám phá dịch vụ spa phù hợp với bạn</h3>
-                </div>
-                <div class="card-body">
-                    <form id="spaQuizForm">
-                        <!-- Mental Issues -->
-                        <div class="mb-4">
-                            <h5>1. Bạn đang gặp vấn đề gì về tinh thần?</h5>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="mentalIssues" value="stress" id="stress">
-                                <label class="form-check-label" for="stress">Căng thẳng, stress</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="mentalIssues" value="tired" id="tired">
-                                <label class="form-check-label" for="tired">Mệt mỏi</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="mentalIssues" value="insomnia" id="insomnia">
-                                <label class="form-check-label" for="insomnia">Khó ngủ</label>
+<div class="container py-5">
+    <h1 class="text-center mb-4">Discover Your Perfect Spa Treatment</h1>
+
+    <div id="quizContainer">
+        <form id="spaQuizForm" onsubmit="handleSubmit(event)">
+            <div class="container my-4">
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <div class="card shadow-lg">
+                            <div class="card-body">
+                                <!-- Mental Issues -->
+                                <div class="mb-4">
+                                    <h4>What problem are you having?</h4>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="mentalIssues" value="stress">
+                                        <label class="form-check-label">Stress</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="mentalIssues" value="tired">
+                                        <label class="form-check-label">Fatigue</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="mentalIssues" value="insomnia">
+                                        <label class="form-check-label">Insomnia</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="skinIssues" value="acne">
+                                        <label class="form-check-label">Acne & Breakouts</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="skinIssues" value="blackheads">
+                                        <label class="form-check-label">Blackheads & Large Pores</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="skinIssues" value="aging">
+                                        <label class="form-check-label">Aging & Wrinkles</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="skinIssues" value="dullness">
+                                        <label class="form-check-label">Dull & Uneven Skin Tone</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="skinIssues" value="scars">
+                                        <label class="form-check-label">Acne Scars & Dark Spots</label>
+                                    </div>
+                                </div>
+
+
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-primary">Get Results</button>
+                                    <a href="/protected/customer/home" class="btn btn-secondary">Back to Home</a>
+                                </div>
                             </div>
                         </div>
-
-                        <!-- Skin Issues -->
-                        <div class="mb-4">
-                            <h5>2. Bạn đang gặp vấn đề gì về da?</h5>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="skinIssues" value="acne" id="acne">
-                                <label class="form-check-label" for="acne">Mụn</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="skinIssues" value="darkSpots" id="darkSpots">
-                                <label class="form-check-label" for="darkSpots">Thâm nám</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="skinIssues" value="aging" id="aging">
-                                <label class="form-check-label" for="aging">Lão hóa</label>
-                            </div>
-                        </div>
-
-                        <!-- Goals -->
-                        <div class="mb-4">
-                            <h5>3. Bạn muốn điều gì từ liệu trình spa?</h5>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="goals" value="relax" id="relax">
-                                <label class="form-check-label" for="relax">Thư giãn</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="goals" value="beauty" id="beauty">
-                                <label class="form-check-label" for="beauty">Làm đẹp</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="goals" value="health" id="health">
-                                <label class="form-check-label" for="health">Cải thiện sức khỏe</label>
-                            </div>
-                        </div>
-
-                        <div class="text-center">
-                            <button type="submit" class="btn palatin-btn">Nhận kết quả</button>
-                            <a href="/protected/customer/home" class="btn palatin-btn">Back to Home</a>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Results Section -->
-            <div id="resultContainer" class="mt-4" style="display:none;">
-                <div class="card shadow-lg">
-                    <div class="card-header text-white text-center">
-                        <h3>Dịch vụ được đề xuất cho bạn</h3>
                     </div>
-                    <div class="card-body">
-                        <div id="recommendedServices"></div>
-                        <div class="text-center mt-4">
-                            <a href="/protected/customer/services" class="btn palatin-btn">Xem chi tiết dịch vụ</a>
+                </div>
+                <!-- Results Section -->
+                <div id="resultContainer" class="mt-4" style="display:none;">
+                    <div class="card shadow-lg">
+                        <div class="card-body">
+                            <div id="recommendedServices"></div>
+                            <div class="text-center mt-4">
+                                <a href="/protected/customer/services" class="btn palatin-btn">Recommended Services for You</a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
     </div>
 </div>
 
@@ -152,31 +137,59 @@
     function getRecommendations(formData) {
         const recommendations = [];
 
+        // Mental health services
         if (formData.mentalIssues.includes('stress') || formData.mentalIssues.includes('tired')) {
             recommendations.push({
-                name: "Massage Thư Giãn",
-                description: "Giúp giảm căng thẳng, mệt mỏi và cải thiện giấc ngủ"
+                name: "Relaxation Massage",
+                description: "Helps reduce stress, fatigue and improve sleep quality"
             });
         }
 
+        // Skin care services
         if (formData.skinIssues.includes('acne')) {
             recommendations.push({
-                name: "Điều Trị Mụn Chuyên Sâu",
-                description: "Làm sạch sâu và điều trị mụn hiệu quả"
+                name: "PDT Light Therapy",
+                description: "Biolight therapy that helps eliminate acne-causing bacteria"
+            });
+            recommendations.push({
+                name: "Deep Cleansing Treatment",
+                description: "Deep pore cleansing and acne treatment"
             });
         }
 
-        if (formData.skinIssues.includes('darkSpots') || formData.skinIssues.includes('aging')) {
+        if (formData.skinIssues.includes('blackheads')) {
             recommendations.push({
-                name: "Trẻ Hóa Da",
-                description: "Giảm thâm nám, chống lão hóa và làm sáng da"
+                name: "Aqua Peel Treatment",
+                description: "Deep cleansing and exfoliation, reduces pore size"
             });
         }
 
-        if (formData.goals.includes('health')) {
+        if (formData.skinIssues.includes('aging')) {
             recommendations.push({
-                name: "Liệu Trình Detox",
-                description: "Thanh lọc cơ thể, cải thiện sức khỏe tổng thể"
+                name: "LDM Ultrasound Therapy",
+                description: "Dual ultrasound technology for skin rejuvenation and lifting"
+            });
+            recommendations.push({
+                name: "Stem Cell Cryo Treatment",
+                description: "Stem cell therapy combined with cryo technology for skin regeneration"
+            });
+        }
+
+        if (formData.skinIssues.includes('dullness')) {
+            recommendations.push({
+                name: "Aladin Peel",
+                description: "Advanced peeling for brighter and even skin tone"
+            });
+            recommendations.push({
+                name: "Ionto Treatment",
+                description: "Ionization therapy for enhanced nutrient absorption"
+            });
+        }
+
+        if (formData.skinIssues.includes('scars')) {
+            recommendations.push({
+                name: "LHALALA Fill Treatment",
+                description: "Effective treatment for acne scars and deep marks"
             });
         }
 
@@ -187,22 +200,24 @@
         const resultContainer = document.getElementById('resultContainer');
         const recommendedServicesDiv = document.getElementById('recommendedServices');
 
-        let html = '';
-        recommendations.forEach(service => {
-            html += `
-            <div class="card mb-3">
-              <div class="card-body">
-                <h5 class="card-title">${service.name}</h5>
-                <p class="card-text">${service.description}</p>
-              </div>
-            </div>
-          `;
-        });
+        if (recommendations.length === 0) {
+            recommendedServicesDiv.innerHTML = '<div class="alert alert-info">Please select at least one concern to get service recommendations.</div>';
+        } else {
+            let html = '';
+            recommendations.forEach(service => {
+                html += `
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">${service.name}</h5>
+                            <p class="card-text">${service.description}</p>
+                        </div>
+                    </div>
+                `;
+            });
+            recommendedServicesDiv.innerHTML = html;
+        }
 
-        recommendedServicesDiv.innerHTML = html;
         resultContainer.style.display = 'block';
-
-        // Scroll to results
         resultContainer.scrollIntoView({ behavior: 'smooth' });
     }
 </script>

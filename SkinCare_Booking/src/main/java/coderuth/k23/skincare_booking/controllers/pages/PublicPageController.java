@@ -1,5 +1,7 @@
 package coderuth.k23.skincare_booking.controllers.pages;
 
+import coderuth.k23.skincare_booking.dtos.response.BlogResponseDTO;
+import coderuth.k23.skincare_booking.services.BlogService;
 import coderuth.k23.skincare_booking.models.SpaService;
 import coderuth.k23.skincare_booking.repositories.SpaServiceRepository;
 import coderuth.k23.skincare_booking.services.CenterScheduleService;
@@ -21,6 +23,9 @@ public class PublicPageController {
     TherapistService therapistService;
 
     @Autowired
+    BlogService blogService;
+  
+   @Autowired
     SpaServiceRepository spaServiceRepository;
 
     @ModelAttribute("currentURI")
@@ -55,7 +60,9 @@ public class PublicPageController {
     }
 
     @GetMapping("/blog")
-    public String userBlogPage() {
+    public String userBlogPage(Model model) {
+        List<BlogResponseDTO> blogs = blogService.getAllBlogs();
+        model.addAttribute("blogs", blogs);
         return "user/blog";
     }
 

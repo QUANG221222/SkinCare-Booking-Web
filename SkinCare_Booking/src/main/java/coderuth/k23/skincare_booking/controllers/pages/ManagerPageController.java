@@ -1,8 +1,10 @@
 package coderuth.k23.skincare_booking.controllers.pages;
 
+import coderuth.k23.skincare_booking.dtos.request.BlogRequestDTO;
 import coderuth.k23.skincare_booking.dtos.request.EditProfileRequest;
 import coderuth.k23.skincare_booking.dtos.request.RegisterStaffRequest;
 import coderuth.k23.skincare_booking.dtos.request.RegisterTherapistRequest;
+import coderuth.k23.skincare_booking.dtos.response.BlogResponseDTO;
 import coderuth.k23.skincare_booking.models.*;
 import coderuth.k23.skincare_booking.dtos.request.SpaServiceRequestDTO;
 import coderuth.k23.skincare_booking.services.*;
@@ -13,12 +15,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Repository;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
+import java.util.List;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -37,6 +39,9 @@ public class ManagerPageController {
 
     @Autowired
     private ManagerService managerService;
+
+    @Autowired
+    private BlogService blogService;
 
     @Autowired
     private StaffService staffService;
@@ -76,12 +81,22 @@ public class ManagerPageController {
         Manager manager = managerRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Manager not found"));
 
+        long totalAppointments = appointmentService.getTotalAppointments();
+        double cancellationRate = appointmentService.getCancellationRate();
+        double successRate = appointmentService.getSuccessRate();
+        SpaService mostBookedSpaService = appointmentService.getMostBookedSpaService();
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM", Locale.ENGLISH);
         String monthName = LocalDateTime.now().format(formatter);
 
         model.addAttribute("manager", manager);
         model.addAttribute("month", monthName);
+        model.addAttribute("totalAppointments", totalAppointments);
+        model.addAttribute("cancellationRate", String.format("%.2f", cancellationRate));
+        model.addAttribute("successRate", String.format("%.2f", successRate));
+        model.addAttribute("mostBookedSpaService", mostBookedSpaService != null ? mostBookedSpaService.getName() : "N/A");
         model.addAttribute("sales", appointmentService.calculateCurrentMonthRevenue());
+        model.addAttribute("annualRevenue", appointmentService.calculateCurrentYearRevenue());
         return "admin/index"; // "user/index.html"
     }
 
@@ -382,13 +397,7 @@ public class ManagerPageController {
 
     @GetMapping("/spa-services/schedules")
     public String centerSchedulesPage() {
-        return "redirect:/spa-services/schedules"; 
-    }
-
-
-    @GetMapping("/therapists")
-    public String TherapistPage() {
-        return "redirect:/therapists"; 
+        return "redirect:/spa-services/schedules";
     }
 
     //endpoint quản lí feedback
@@ -608,6 +617,59 @@ public class ManagerPageController {
         return "admin/staff/listAppointments";
     }
 
+
+    // Display the Blog management page with list of blogs
+    @GetMapping("/blogs")
+    public String getBlogList(Model model, Principal principal) {
+        String username = principal.getName();
+        Manager manager = managerRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Manager not found"));
+        model.addAttribute("manager", manager);
+        List<BlogResponseDTO> blogList = blogService.getAllBlogs();
+        model.addAttribute("blogs", blogList);
+        return "admin/Blog/blog_management";
+    }
+
+    // Create a new blog
+    @PostMapping("/create-blog")
+    public String createBlog(@ModelAttribute BlogRequestDTO blogRequest,
+                             RedirectAttributes redirectAttributes) {
+        try {
+            blogService.createBlog(blogRequest);
+            redirectAttributes.addFlashAttribute("successMessage", "Blog created successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to create blog: " + e.getMessage());
+        }
+        return "redirect:/protected/manager/blogs";
+    }
+
+    // Update an existing blog
+    @PostMapping("/update-blog/{id}")
+    public String updateBlog(@PathVariable Long id,
+                             @ModelAttribute BlogRequestDTO blogRequest,
+                             RedirectAttributes redirectAttributes) {
+        try {
+            blogService.updateBlog(id, blogRequest);
+            redirectAttributes.addFlashAttribute("successMessage", "Blog updated successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to update blog: " + e.getMessage());
+        }
+        return "redirect:/protected/manager/blogs";
+    }
+
+    // Delete a blog
+    @GetMapping("/blogs/delete/{id}")
+    public String deleteBlog(@PathVariable Long id,
+                             RedirectAttributes redirectAttributes) {
+        try {
+            blogService.deleteBlog(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Blog deleted successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to delete blog: " + e.getMessage());
+        }
+        return "redirect:/protected/manager/blogs";
+    }
+                             
     // Cập nhật lịch hẹn
     @PostMapping("/appointments/update/{id}")
     public String updateAppointment(
@@ -688,3 +750,4 @@ public class ManagerPageController {
         }
     }
 }
+

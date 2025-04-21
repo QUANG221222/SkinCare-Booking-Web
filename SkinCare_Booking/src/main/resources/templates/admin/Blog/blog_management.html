@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html
+  lang="en"
+  class="layout-menu-fixed layout-compact"
+  data-assets-path="/admin/assets/"
+  data-template="vertical-menu-template-free"
+  xmlns:th="http://www.thymeleaf.org"
+>
+  <head th:replace="admin/fragments/head :: head"></head>
+  <body th:with="role=${role}">
+    <!-- Layout wrapper -->
+    <div class="layout-wrapper layout-content-navbar">
+      <div class="layout-container">
+        <!-- Menu -->
+        <div th:replace="admin/fragments/menu :: menu"></div>
+        <!-- / Menu -->
+
+        <!-- Layout page -->
+        <div class="layout-page">
+          <!-- Navbar -->
+          <nav
+            class="layout-navbar container-xxl navbar-detached navbar navbar-expand-xl align-items-center bg-navbar-theme"
+            id="layout-navbar"
+          >
+            <div
+              class="layout-menu-toggle navbar-nav align-items-xl-center me-4 me-xl-0 d-xl-none"
+            >
+              <a
+                class="nav-item nav-link px-0 me-xl-6"
+                href="javascript:void(0)"
+              >
+                <i class="icon-base bx bx-menu icon-md"></i>
+              </a>
+            </div>
+            <div
+              class="navbar-nav-right d-flex align-items-center justify-content-end"
+              id="navbar-collapse"
+            >
+              <ul class="navbar-nav flex-row align-items-center ms-md-auto">
+                <div th:replace="admin/fragments/user :: user"></div>
+              </ul>
+            </div>
+          </nav>
+          <!-- / Navbar -->
+
+          <!-- Content wrapper -->
+          <div class="content-wrapper">
+            <!-- Content -->
+            <div class="container-xxl flex-grow-1 container-p-y">
+              <div class="card">
+                <!-- Button to trigger modal for Add New Blog -->
+                <div class="row mx-3 my-0 justify-content-between">
+                  <div
+                    class="py-3 d-flex align-items-center justify-content-between flex-wrap gap-3"
+                  >
+                    <button
+                      type="button"
+                      class="btn btn-primary mb-3"
+                      data-bs-toggle="modal"
+                      data-bs-target="#addBlogModal"
+                    >
+                      <i class="icon-base bx bx-plus icon-sm me-2"></i>
+                      <span>Add New Blog</span>
+                    </button>
+                  </div>
+                </div>
+                <!-- Blog Table -->
+                <div class="table-responsive">
+                  <div class="container mt-3">
+                    <!-- Alert for Success -->
+                    <div
+                      th:if="${successMessage}"
+                      class="alert alert-success alert-dismissible fade show position-relative"
+                      role="alert"
+                    >
+                      <span th:text="${successMessage}"></span>
+                    </div>
+
+                    <!-- Alert for Error -->
+                    <div
+                      th:if="${errorMessage}"
+                      class="alert alert-danger alert-dismissible fade show position-relative"
+                      role="alert"
+                    >
+                      <span th:text="${errorMessage}"></span>
+                    </div>
+                  </div>
+                  <table class="table table-bordered">
+                    <thead class="table-light">
+                      <tr>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Category</th>
+                        <th>Date</th>
+                        <th>Created At</th>
+                        <th style="width: 160px">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody id="blogTable">
+                      <tr th:if="${blogs.size()} == 0">
+                        <td colspan="6" class="text-center">No blog found.</td>
+                      </tr>
+                      <tr
+                        th:each="blog : ${blogs}"
+                        th:data-created-at="${#temporals.format(blog.createdAt, 'yyyy-MM-dd HH:mm:ss')}"
+                      >
+                        <td th:text="${blog.title}">Sample Title</td>
+                        <td th:text="${blog.author}">Author</td>
+                        <td th:text="${blog.category}">Category</td>
+                        <td th:text="${blog.date}">2025-04-20</td>
+                        <td
+                          th:text="${#temporals.format(blog.createdAt, 'dd/MM/yyyy HH:mm')}"
+                        >
+                          20/04/2025 14:00
+                        </td>
+                        <td>
+                          <!-- Edit button -->
+                          <button
+                            type="button"
+                            class="btn btn-warning btn-sm"
+                            data-bs-toggle="modal"
+                            th:data-bs-target="|#editBlogModal__${blog.id}|"
+                          >
+                            <i class="bx bx-edit"></i>
+                          </button>
+
+                          <!-- Delete button (modal) -->
+                          <button
+                            type="button"
+                            class="btn btn-sm btn-danger delete-btn"
+                            th:data-id="${blog.id}"
+                            data-bs-toggle="modal"
+                            data-bs-target="#deleteConfirmModal"
+                          >
+                            <i class="bx bx-trash"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <!-- End Blog Table -->
+
+                <!-- Pagination -->
+                <div class="d-flex justify-content-center mt-3">
+                  <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                      <li class="page-item" id="prevPage">
+                        <a class="page-link" href="#" aria-label="Previous">
+                          <span aria-hidden="true">&laquo;</span>
+                        </a>
+                      </li>
+                      <li class="page-item active" id="page1">
+                        <a class="page-link" href="#">1</a>
+                      </li>
+                      <!-- Các trang khác thêm bằng JS -->
+                      <li class="page-item" id="nextPage">
+                        <a class="page-link" href="#" aria-label="Next">
+                          <span aria-hidden="true">&raquo;</span>
+                        </a>
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
+                <!-- End Pagination -->
+              </div>
+
+              <!-- Modal: Add New Blog -->
+              <div
+                class="modal fade"
+                id="addBlogModal"
+                tabindex="-1"
+                aria-hidden="true"
+              >
+                <div class="modal-dialog modal-lg">
+                  <div class="modal-content">
+                    <form
+                      th:action="${#strings.contains(currentURI,'manager') ? '/protected/manager/create-blog': '/protected/staff/create-blog'}"
+                      method="post"
+                    >
+                      <!-- ← CHANGED -->
+                      <div class="modal-header">
+                        <h5 class="modal-title">Add New Blog</h5>
+                        <button
+                          type="button"
+                          class="btn-close"
+                          data-bs-dismiss="modal"
+                        ></button>
+                      </div>
+                      <div class="modal-body">
+                        <div class="mb-3">
+                          <label class="form-label">Title</label>
+                          <input
+                            type="text"
+                            name="title"
+                            class="form-control"
+                            required
+                          />
+                        </div>
+                        <div class="mb-3">
+                          <label class="form-label">Author</label>
+                          <input
+                            type="text"
+                            name="author"
+                            class="form-control"
+                            required
+                          />
+                        </div>
+                        <div class="mb-3">
+                          <label class="form-label">Category</label>
+                          <input
+                            type="text"
+                            name="category"
+                            class="form-control"
+                          />
+                        </div>
+                        <div class="mb-3">
+                          <label class="form-label">Date</label>
+                          <input type="date" name="date" class="form-control" />
+                        </div>
+                        <div class="mb-3">
+                          <label class="form-label">Excerpt</label>
+                          <textarea
+                            name="excerpt"
+                            class="form-control"
+                            rows="3"
+                          ></textarea>
+                        </div>
+                        <div class="mb-3">
+                          <label class="form-label">Image URL</label>
+                          <input
+                            type="text"
+                            name="imageUrl"
+                            class="form-control"
+                            required
+                          />
+                        </div>
+                        <div class="mb-3">
+                          <label class="form-label">Content</label>
+                          <textarea
+                            name="content"
+                            class="form-control"
+                            rows="5"
+                            required
+                          ></textarea>
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button
+                          type="button"
+                          class="btn btn-secondary"
+                          data-bs-dismiss="modal"
+                        >
+                          Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                          Save Blog
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              <!-- End Add Modal -->
+
+              <!-- Modal: Edit Blog (for each blog) -->
+              <div th:each="blog : ${blogs}">
+                <div
+                  class="modal fade"
+                  th:id="'editBlogModal__' + ${blog.id}"
+                  tabindex="-1"
+                  aria-hidden="true"
+                >
+                  <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                      <form
+                        th:action="${#strings.contains(currentURI,'manager') ? '/protected/manager/update-blog/' + blog.id : '/protected/staff/update-blog/' + blog.id}"
+                        method="post"
+                      >
+                        <!-- ← CHANGED -->
+                        <div class="modal-header">
+                          <h5 class="modal-title">Edit Blog</h5>
+                          <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                          ></button>
+                        </div>
+                        <div class="modal-body">
+                          <div class="mb-3">
+                            <label class="form-label">Title</label>
+                            <input
+                              type="text"
+                              name="title"
+                              class="form-control"
+                              th:value="${blog.title}"
+                              required
+                            />
+                          </div>
+                          <div class="mb-3">
+                            <label class="form-label">Author</label>
+                            <input
+                              type="text"
+                              name="author"
+                              class="form-control"
+                              th:value="${blog.author}"
+                              required
+                            />
+                          </div>
+                          <div class="mb-3">
+                            <label class="form-label">Category</label>
+                            <input
+                              type="text"
+                              name="category"
+                              class="form-control"
+                              th:value="${blog.category}"
+                            />
+                          </div>
+                          <div class="mb-3">
+                            <label class="form-label">Date</label>
+                            <input
+                              type="date"
+                              name="date"
+                              class="form-control"
+                              th:value="${blog.date}"
+                            />
+                          </div>
+                          <div class="mb-3">
+                            <label class="form-label">Excerpt</label>
+                            <textarea
+                              name="excerpt"
+                              class="form-control"
+                              rows="3"
+                              th:text="${blog.excerpt}"
+                            ></textarea>
+                          </div>
+                          <div class="mb-3">
+                            <label class="form-label">Image URL</label>
+                            <input
+                              type="text"
+                              name="imageUrl"
+                              class="form-control"
+                              th:value="${blog.imageUrl}"
+                              required
+                            />
+                          </div>
+                          <div class="mb-3">
+                            <label class="form-label">Content</label>
+                            <textarea
+                              name="content"
+                              class="form-control"
+                              rows="5"
+                              th:text="${blog.content}"
+                              required
+                            ></textarea>
+                          </div>
+                        </div>
+                        <div class="modal-footer">
+                          <button
+                            type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal"
+                          >
+                            Cancel
+                          </button>
+                          <button type="submit" class="btn btn-primary">
+                            Update Blog
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- End Edit Modal -->
+
+              <!-- Modal Confirm Delete Blog -->
+              <div
+                class="modal fade"
+                id="deleteConfirmModal"
+                tabindex="-1"
+                aria-labelledby="deleteConfirmModalLabel"
+                aria-hidden="true"
+              >
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="deleteConfirmModalLabel">
+                        Confirm Deletion
+                      </h5>
+                      <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                      ></button>
+                    </div>
+                    <div class="modal-body">
+                      Are you sure you want to delete this blog post?
+                    </div>
+                    <div class="modal-footer">
+                      <button
+                        type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal"
+                      >
+                        Cancel
+                      </button>
+                      <a
+                        href="#"
+                        class="btn btn-danger"
+                        id="confirmDeleteButton"
+                        >Delete</a
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- End Delete Modal -->
+            </div>
+            <!-- / Content -->
+          </div>
+          <!-- / Content wrapper -->
+        </div>
+        <!-- / Layout page -->
+      </div>
+      <!-- / Layout container -->
+
+      <!-- Overlay -->
+      <div class="layout-overlay layout-menu-toggle"></div>
+    </div>
+    <!-- / Layout wrapper -->
+
+    <script th:inline="javascript">
+      var role = "manager";
+      document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".delete-btn").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            var id = btn.getAttribute("data-id");
+            var href = "/protected/" + role + "/blogs/delete/" + id;
+            document
+              .getElementById("confirmDeleteButton")
+              .setAttribute("href", href);
+          });
+        });
+      });
+      /*]]>*/
+    </script>
+
+    <!-- Core JS -->
+    <div th:replace="admin/fragments/script :: script"></div>
+
+    <!-- Pagination Script (giữ nguyên nếu cần) -->
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        var blogRows = $("#blogTable").find("tr").not(":first");
+        var rowsPerPage = 10;
+        var totalRows = blogRows.length;
+        var totalPages = Math.ceil(totalRows / rowsPerPage);
+        var currentPage = 1;
+        // Tạo pagination
+        for (var i = 2; i <= totalPages; i++) {
+          $("#nextPage").before(
+            '<li class="page-item" id="page' +
+              i +
+              '">' +
+              '<a class="page-link" href="#">' +
+              i +
+              "</a></li>"
+          );
+        }
+        function showPage(page) {
+          currentPage = page;
+          blogRows.hide();
+          var start = (page - 1) * rowsPerPage;
+          var end = start + rowsPerPage;
+          blogRows.slice(start, end).show();
+          $(".pagination li").removeClass("active");
+          $("#page" + page).addClass("active");
+          $("#prevPage").toggleClass("disabled", page === 1);
+          $("#nextPage").toggleClass("disabled", page === totalPages);
+        }
+        $(".pagination").on("click", "a", function (e) {
+          e.preventDefault();
+          var pid = $(this).parent().attr("id");
+          if (pid === "prevPage" && currentPage > 1) {
+            showPage(currentPage - 1);
+          } else if (pid === "nextPage" && currentPage < totalPages) {
+            showPage(currentPage + 1);
+          } else if (pid && pid.startsWith("page")) {
+            showPage(parseInt($(this).text()));
+          }
+        });
+        showPage(1);
+      });
+    </script>
+  </body>
+</html>
