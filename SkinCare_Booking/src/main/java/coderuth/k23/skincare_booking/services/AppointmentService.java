@@ -380,7 +380,7 @@ public class AppointmentService {
     @Transactional
     public Appointment cancelAppointmentByCustomer(Long appointmentId, UUID customerId) {
         Appointment appointment = appointmentRepository.findById(appointmentId)
-                .orElseThrow(() -> new RuntimeException("Lịch hẹn không tồn tại!"));
+                .orElseThrow(() -> new RuntimeException("THIS APPOINTMENT DOES NOT EXIST!"));
         if (!appointment.getCustomer().getId().equals(customerId)) {
             throw new RuntimeException("YOU DO NOT HAVE THE RIGHT TO CANCEL THIS APPOINTMENT!");
         }

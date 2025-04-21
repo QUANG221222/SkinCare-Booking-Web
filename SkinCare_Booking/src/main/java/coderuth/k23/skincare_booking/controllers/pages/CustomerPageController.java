@@ -78,61 +78,61 @@ public class CustomerPageController {
         return userDetails.getId();
     }
 
-     // Hiển thị danh sách dịch vụ và form đặt dịch vụ
-//     @GetMapping("/appointment")
-//     public String showAppointmentForm(@RequestParam(value = "serviceId", required = false) Long serviceId, Model model) {
-//         Appointment appointment = new Appointment();
-//         if (serviceId != null) {
-//             // Lấy thông tin service đã chọn (bạn có thể thay bằng phương thức tìm theo id)
-//             SpaService service = spaServiceService.getServiceById(serviceId);
-//             appointment.setSpaService(service);
-//         }
-//         model.addAttribute("appointment", appointment);
-//         // Nạp thêm danh sách dịch vụ và chuyên viên nếu cần cho form lựa chọn thay đổi (hoặc chỉ nạp nếu chưa có service chọn trước)
-//         model.addAttribute("services", spaServiceService.getAllServices());
-//         model.addAttribute("therapists", therapistService.getAllTherapists());
-//         return "user/customer/appointment_form";
-//     }
-//
-//    // Khách hàng đặt dịch vụ
-//    @PostMapping("/appointment/create")
-//    @ResponseBody
-//    public ResponseEntity<?> createAppointment(@ModelAttribute Appointment appointment) {
-//        try {
-//            UUID customerId = getLoggedInCustomerId();
-//
-//            // Truy vấn lại SpaService từ cơ sở dữ liệu
-//            Long serviceId = appointment.getSpaService().getId();
-//            SpaService spaService = spaServiceRepository.findById(serviceId)
-//                .orElseThrow(() -> new IllegalArgumentException("Dịch vụ không tồn tại với ID: " + serviceId));
-//
-//            // Gán SpaService đầy đủ vào appointment
-//            appointment.setSpaService(spaService);
-//
-//            // Gán customer
-//            Customer customer = new Customer();
-//            customer.setId(customerId);
-//            appointment.setCustomer(customer);
-//
-//            // Kiểm tra nếu SkinTherapist được chỉ định
-//            if (appointment.getSkinTherapist() != null && appointment.getSkinTherapist().getId() != null) {
-//                // Truy vấn lại SkinTherapist từ cơ sở dữ liệu
-//                SkinTherapist therapist = therapistService.getTherapistById(appointment.getSkinTherapist().getId());
-//                if (therapist == null) {
-//                    throw new IllegalArgumentException("Chuyên viên không tồn tại với ID: " + appointment.getSkinTherapist().getId());
-//                }
-//                appointment.setSkinTherapist(therapist);
-//            } else {
-//                // Nếu không chọn SkinTherapist, đặt giá trị là null
-//                appointment.setSkinTherapist(null);
-//            }
-//
-//            appointmentService.createAppointment(appointment);
-//            return ResponseEntity.ok(Map.of("status", "success", "message", "Đặt dịch vụ thành công!"));
-//        } catch (RuntimeException ex) {
-//            return ResponseEntity.badRequest().body(Map.of("status", "error", "message", ex.getMessage()));
-//        }
-//    }
+//      Hiển thị danh sách dịch vụ và form đặt dịch vụ
+     @GetMapping("/appointment")
+     public String showAppointmentForm(@RequestParam(value = "serviceId", required = false) Long serviceId, Model model) {
+         Appointment appointment = new Appointment();
+         if (serviceId != null) {
+             // Lấy thông tin service đã chọn (bạn có thể thay bằng phương thức tìm theo id)
+             SpaService service = spaServiceService.getServiceById(serviceId);
+             appointment.setSpaService(service);
+         }
+         model.addAttribute("appointment", appointment);
+         // Nạp thêm danh sách dịch vụ và chuyên viên nếu cần cho form lựa chọn thay đổi (hoặc chỉ nạp nếu chưa có service chọn trước)
+         model.addAttribute("services", spaServiceService.getAllServices());
+         model.addAttribute("therapists", therapistService.getAllTherapists());
+         return "user/customer/appointment_form";
+     }
+
+    // Khách hàng đặt dịch vụ
+    @PostMapping("/appointment/create")
+    @ResponseBody
+    public ResponseEntity<?> createAppointment(@ModelAttribute Appointment appointment) {
+        try {
+            UUID customerId = getLoggedInCustomerId();
+
+            // Truy vấn lại SpaService từ cơ sở dữ liệu
+            Long serviceId = appointment.getSpaService().getId();
+            SpaService spaService = spaServiceRepository.findById(serviceId)
+                .orElseThrow(() -> new IllegalArgumentException("Dịch vụ không tồn tại với ID: " + serviceId));
+
+            // Gán SpaService đầy đủ vào appointment
+            appointment.setSpaService(spaService);
+
+            // Gán customer
+            Customer customer = new Customer();
+            customer.setId(customerId);
+            appointment.setCustomer(customer);
+
+            // Kiểm tra nếu SkinTherapist được chỉ định
+            if (appointment.getSkinTherapist() != null && appointment.getSkinTherapist().getId() != null) {
+                // Truy vấn lại SkinTherapist từ cơ sở dữ liệu
+                SkinTherapist therapist = therapistService.getTherapistById(appointment.getSkinTherapist().getId());
+                if (therapist == null) {
+                    throw new IllegalArgumentException("Chuyên viên không tồn tại với ID: " + appointment.getSkinTherapist().getId());
+                }
+                appointment.setSkinTherapist(therapist);
+            } else {
+                // Nếu không chọn SkinTherapist, đặt giá trị là null
+                appointment.setSkinTherapist(null);
+            }
+
+            appointmentService.createAppointment(appointment);
+            return ResponseEntity.ok(Map.of("status", "success", "message", "Đặt dịch vụ thành công!"));
+        } catch (RuntimeException ex) {
+            return ResponseEntity.badRequest().body(Map.of("status", "error", "message", ex.getMessage()));
+        }
+    }
 //     Xem danh sách đặt dịch vụ của khách hàng
 //    @GetMapping("/appointments")
 //    public String getAppointmentsFragment(Model model, Authentication authentication) {
