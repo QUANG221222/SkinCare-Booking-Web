@@ -65,7 +65,7 @@
                   <td th:text="${appointment.skinTherapist?.fullName} ?: 'N/A'"></td>
                   <td th:text="${appointment.result} ?: 'N/A'"></td>
                   <td>
-                    <form th:action="@{/protected/manager/appointments/check-out/{id}(id=${appointment.id})}" method="post">
+                    <form th:action="@{${#strings.contains(currentURI, 'manager') ? '/protected/manager/appointments/check-out/{id}' : '/protected/staff/appointments/check-out/{id}'}(id=${appointment.id})}" method="post">
                       <button type="submit" class="btn btn-sm btn-primary">Check-out</button>
                     </form>
                   </td>

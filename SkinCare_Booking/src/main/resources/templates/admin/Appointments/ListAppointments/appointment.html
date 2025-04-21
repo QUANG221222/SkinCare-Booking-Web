@@ -1,14 +1,16 @@
 <th:block th:fragment="appointment">
     <td th:text="${appointment.id}"></td>
-    <td th:text="${appointment.customer?.name}"></td>
-    <td th:text="${appointment.spaService?.name}"></td>
-    <td th:text="${appointment.appointmentTime}"></td>
+    <td th:text="${appointment.customer?.username} ?: 'Not available'"></td>
+    <td th:text="${appointment.spaService?.name} ?: 'Not available'"></td>
+    <td th:text="${#temporals.format(appointment.appointmentTime, 'dd/MM/yyyy HH:mm')}"></td>
     <td th:text="${appointment.status}"></td>
-    <td th:text="${appointment.skinTherapist?.name} ?: 'Chưa phân công'"></td>
-    <td th:text="${appointment.result} ?: 'Chưa có'"></td>
+    <td th:text="${appointment.skinTherapist?.username} ?: 'Not assigned yet'"></td>
+    <td th:text="${appointment.result} ?: 'Not available yet'"></td>
     <td>
         <div class="d-flex align-items-center gap-2">
-            <a class="btn btn-sm btn-danger cancel-btn" data-bs-toggle="modal" data-bs-target="#cancelConfirmModal" th:data-id="${appointment.id}">
+            <!-- Chỉ hiển thị nút Cancel nếu trạng thái là PENDING hoặc CHECKED_IN -->
+            <a th:if="${appointment.status.toString() == 'PENDING' || appointment.status.toString() == 'CHECKED_IN'}"
+               class="btn btn-sm btn-danger cancel-btn" data-bs-toggle="modal" data-bs-target="#cancelConfirmModal" th:data-id="${appointment.id}">
                 <i class="bx bx-trash"></i>
             </a>
             <a class="btn btn-sm btn-info edit-btn" data-bs-toggle="modal" data-bs-target="#editAppointmentModal" th:data-id="${appointment.id}" th:data-status="${appointment.status}" th:data-result="${appointment.result}">
@@ -22,15 +24,15 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="cancelConfirmModalLabel">Xác nhận hủy</h5>
+                    <h5 class="modal-title" id="cancelConfirmModalLabel">Confirm Cancellation</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    Bạn có chắc chắn muốn hủy lịch hẹn này?
+                    Are you sure you want to cancel this appointment?
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy bỏ</button>
-                    <a class="btn btn-danger" id="confirmCancelButton">Hủy lịch hẹn</a>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <a class="btn btn-danger cancel-confirm-btn" id="confirmCancelButton">Cancel Appointment</a>
                 </div>
             </div>
         </div>
@@ -41,14 +43,14 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editAppointmentModalLabel">Chỉnh sửa lịch hẹn</h5>
+                    <h5 class="modal-title" id="editAppointmentModalLabel">Edit Appointment</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form>
                         <!-- Status -->
                         <div class="mb-3">
-                            <label for="edit-appointment-status" class="form-label">Trạng thái</label>
+                            <label for="edit-appointment-status" class="form-label">Status</label>
                             <select class="form-control" id="edit-appointment-status" name="status" required>
                                 <option th:each="status : ${T(coderuth.k23.skincare_booking.models.Appointment.AppointmentStatus).values()}" th:value="${status}" th:text="${status}"></option>
                             </select>
@@ -56,13 +58,13 @@
 
                         <!-- Result -->
                         <div class="mb-3">
-                            <label for="edit-appointment-result" class="form-label">Kết quả</label>
-                            <textarea class="form-control" id="edit-appointment-result" name="result" placeholder="Nhập kết quả" maxlength="500"></textarea>
+                            <label for="edit-appointment-result" class="form-label">Result</label>
+                            <textarea class="form-control" id="edit-appointment-result" name="result" placeholder="Enter result" maxlength="500"></textarea>
                         </div>
 
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy bỏ</button>
-                            <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
                         </div>
                     </form>
                 </div>
@@ -70,17 +72,48 @@
         </div>
     </div>
 
-    <script>
+    <script th:inline="javascript">
         document.addEventListener("DOMContentLoaded", function () {
             const editButtons = document.querySelectorAll(".edit-btn");
             const cancelButtons = document.querySelectorAll(".cancel-btn");
+            const confirmCancelButton = document.getElementById("confirmCancelButton");
 
+            let appointmentIdToCancel = null;
+            const basePath = [[${#strings.contains(currentURI, 'manager') ? '/protected/manager' : '/protected/staff'}]];
+
+            // When clicking the cancel button to open the modal
             cancelButtons.forEach((button) => {
                 button.addEventListener("click", (event) => {
-                    const id = event.currentTarget.getAttribute("data-id");
-                    const confirmCancelButton = document.getElementById("confirmCancelButton");
-                    confirmCancelButton.setAttribute("href", `/protected/manager/appointments/cancel/${id}`);
+                    appointmentIdToCancel = event.currentTarget.getAttribute("data-id");
                 });
+            });
+
+            // When clicking the confirm cancel button in the modal
+            confirmCancelButton.addEventListener("click", (event) => {
+                event.preventDefault(); // Prevent default navigation of <a> tag
+                if (appointmentIdToCancel) {
+                    fetch(`${basePath}/appointments/cancel/${appointmentIdToCancel}`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        }
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                // Close modal and redirect
+                                const modal = document.querySelector("#cancelConfirmModal");
+                                const modalInstance = bootstrap.Modal.getInstance(modal);
+                                modalInstance.hide();
+                                window.location.href = `${basePath}/appointments/pending`;
+                            } else {
+                                alert("Unable to cancel the appointment!");
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Error while canceling the appointment:", error);
+                            alert("An error occurred while canceling the appointment!");
+                        });
+                }
             });
 
             editButtons.forEach((button) => {
@@ -94,7 +127,7 @@
                     editModal.querySelector("#edit-appointment-result").value = result || '';
 
                     const form = editModal.querySelector("form");
-                    form.setAttribute("action", `/protected/manager/appointments/update/${id}`);
+                    form.setAttribute("action", `${basePath}/appointments/update/${id}`);
                     form.setAttribute("method", "post");
                 });
             });

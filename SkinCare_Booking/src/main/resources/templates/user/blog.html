@@ -26,7 +26,7 @@
                     <div class="single-blog-post mb-100 wow fadeInUp" data-wow-delay="100ms" th:each="blog : ${blogs}">
                         <!-- Thumbnail with proper error handling and centered -->
                         <div class="blog-post-thumb text-center mb-4">
-                            <a th:href="@{/protected/customer/blog/{id}(id=${blog.id})}">
+                            <div>
                                 <img
                                         th:src="${blog.imageUrl != null && !#strings.isEmpty(blog.imageUrl)
                                                 ? blog.imageUrl : '/user/img/blog-img/default-blog.jpg'}"
@@ -34,17 +34,17 @@
                                         th:alt="${blog.title}"
                                         class="img-fluid mx-auto d-block"
                                         style="max-width: 1140px;"/>
-                            </a>
+                            </div>
                         </div>
                         <!-- Content -->
                         <div class="post-content text-center">
-                            <a th:href="@{/protected/customer/blog/{id}(id=${blog.id})}"
+                            <div
                                class="post-date btn palatin-btn"
-                               th:text="${#temporals.format(blog.date, 'MMMM dd, yyyy')}">Date</a>
+                               th:text="${#temporals.format(blog.date, 'MMMM dd, yyyy')}">Date</div>
                             <h4>
-                                <a th:href="@{/protected/customer/blog/{id}(id=${blog.id})}"
+                                <div
                                    class="post-title"
-                                   th:text="${blog.title}">Blog Title</a>
+                                   th:text="${blog.title}">Blog Title</div>
                             </h4>
                             <div class="post-meta d-flex justify-content-center">
                                 <a href="#" class="post-catagory" th:text="${blog.category}">Category</a>

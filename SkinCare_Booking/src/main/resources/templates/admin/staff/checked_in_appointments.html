@@ -63,11 +63,11 @@
                   <td th:text="${appointment.skinTherapist?.fullName} ?: 'Not assigned yet'"></td>
                   <td>
                     <div th:if="${appointment.skinTherapist == null}">
-                      <a th:href="@{/protected/manager/appointments/assign/{id}(id=${appointment.id})}"
+                      <a th:href="@{${#strings.contains(currentURI, 'manager') ? '/protected/manager/appointments/assign/{id}(id=${appointment.id})' : '/protected/staff/appointments/assign/{id}'}(id=${appointment.id})}"
                          class="btn btn-sm btn-primary">Assign Therapist</a>
                     </div>
                     <div th:if="${appointment.skinTherapist != null}">
-                      <form th:action="@{/protected/manager/appointments/assign-therapist/{id}(id=${appointment.id})}"
+                      <form th:href="@{${#strings.contains(currentURI, 'manager') ? '/protected/manager/appointments/assign/{id}(id=${appointment.id})' : '/protected/staff/appointments/assign/{id}'}(id=${appointment.id})}"
                             method="post">
                         <button type="submit" class="btn btn-sm btn-primary">Confirm Therapist</button>
                       </form>

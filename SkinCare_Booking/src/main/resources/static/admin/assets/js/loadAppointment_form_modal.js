@@ -19,14 +19,17 @@ $(document).on("submit", "#appointmentForm", function(e) {
       data: formData,
       dataType: "json",
       success: function(resp) {
-          if (resp.status === "success") {
-              showToast("Success", resp.message);
-              $("#appointmentModal").modal("hide");
-              window.location.reload();
-          } else {
-              showToast("Error", resp.message);
-          }
-      },
+        console.log("Response:", resp); // Log phản hồi từ server
+        if (resp.status === "success") {
+            showToast("Success", resp.message);
+            $("#appointmentModal").modal("hide");
+            setTimeout(function() {
+                window.location.reload();
+            }, 3000);
+        } else {
+            showToast("Error", resp.message);
+        }
+    },
       error: function(xhr) {
           let errorMsg = "An error occurred!";
           try {

@@ -62,7 +62,7 @@
                   <td th:text="${#temporals.format(appointment.appointmentTime, 'dd/MM/yyyy HH:mm')}"></td>
                   <td th:text="${appointment.skinTherapist?.fullName} ?: 'N/A'"></td>
                   <td>
-                    <a th:href="@{/protected/manager/appointments/record-result/{id}(id=${appointment.id})}"
+                    <a th:href="@{${#strings.contains(currentURI, 'manager') ? '/protected/manager/appointments/record-result/{id}' : '/protected/staff/appointments/record-result/{id}'}(id=${appointment.id})}"
                        class="btn btn-sm btn-primary">Record Result</a>
                   </td>
                 </tr>

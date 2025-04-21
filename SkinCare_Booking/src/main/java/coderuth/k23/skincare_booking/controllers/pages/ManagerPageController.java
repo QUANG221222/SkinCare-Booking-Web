@@ -7,6 +7,7 @@ import coderuth.k23.skincare_booking.dtos.request.RegisterTherapistRequest;
 import coderuth.k23.skincare_booking.dtos.response.BlogResponseDTO;
 import coderuth.k23.skincare_booking.models.*;
 import coderuth.k23.skincare_booking.dtos.request.SpaServiceRequestDTO;
+import coderuth.k23.skincare_booking.repositories.AppointmentRepository;
 import coderuth.k23.skincare_booking.services.*;
 import coderuth.k23.skincare_booking.repositories.ManagerRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,6 +30,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/protected/manager")
@@ -36,6 +38,9 @@ import java.util.UUID;
 public class ManagerPageController {
     @Autowired
     private ManagerRepository managerRepository;
+
+    @Autowired
+    private AppointmentRepository appointmentRepository;
 
     @Autowired
     private ManagerService managerService;
@@ -412,7 +417,19 @@ public class ManagerPageController {
         return "admin/Feedbacks/managerFeedback";
     }
      // Appointment endpoints for Manager
-     @GetMapping("/appointments/pending")
+     @GetMapping("/appointments")
+     public String listAllAppointments(Model model, Principal principal) {
+         String username = principal.getName();
+         Manager manager = managerRepository.findByUsername(username)
+                 .orElseThrow(() -> new RuntimeException("Không tìm thấy quản lý"));
+         List<Appointment> appointments = appointmentService.getAllAppointments();
+         System.out.println("Số lượng lịch hẹn: " + appointments.size()); // Log để kiểm tra
+         model.addAttribute("manager", manager);
+         model.addAttribute("appointments", appointmentService.getAllAppointments());
+         return "admin/staff/listAppointments";
+     }
+
+    @GetMapping("/appointments/pending")
      public String listPendingAppointments(Model model, Principal principal) {
          String username = principal.getName();
          Manager manager = managerRepository.findByUsername(username)
@@ -437,33 +454,83 @@ public class ManagerPageController {
          model.addAttribute("appointments", appointmentService.getAppointmentsByStatus(Appointment.AppointmentStatus.CHECKED_IN));
          return "admin/staff/checked_in_appointments";
      }
- 
-     @GetMapping("/appointments/assign/{id}")
-     public String showAssignTherapistForm(@PathVariable Long id, Model model, Principal principal) {
-         String username = principal.getName();
-         Manager manager = managerRepository.findByUsername(username)
-                 .orElseThrow(() -> new RuntimeException("Manager not found"));
-         Appointment appointment = appointmentService.getAppointmentById(id);
-         if (appointment.getStatus() == Appointment.AppointmentStatus.ASSIGNED) {
-             return "redirect:/protected/manager/appointments/assigned";
-         }
-         if (appointment.getStatus() != Appointment.AppointmentStatus.CHECKED_IN) {
-             model.addAttribute("error", "Lịch hẹn phải ở trạng thái CHECKED_IN để phân công!");
-             model.addAttribute("manager", manager);
-             model.addAttribute("appointments", appointmentService.getAppointmentsByStatus(Appointment.AppointmentStatus.CHECKED_IN));
-             return "admin/staff/checked_in_appointments";
-         }
-         model.addAttribute("manager", manager);
-         model.addAttribute("appointment", appointment);
-         model.addAttribute("therapists", therapistService.getAllTherapists());
-         return "admin/staff/assign_therapist";
-     }
- 
-     @PostMapping("/appointments/assign/{id}")
-     public String assignTherapist(@PathVariable Long id, @RequestParam UUID therapistId) {
-         appointmentService.assignTherapist(id, therapistId);
-         return "redirect:/protected/manager/appointments/assigned";
-     }
+
+    @GetMapping("/appointments/assign/{id}")
+    public String showAssignTherapistForm(@PathVariable Long id, Model model, Principal principal) {
+        String username = principal.getName();
+        Manager manager = managerRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Manager not found"));
+        Appointment appointment = appointmentService.getAppointmentById(id);
+
+        if (appointment.getStatus() == Appointment.AppointmentStatus.ASSIGNED) {
+            return "redirect:/protected/manager/appointments/assigned";
+        }
+        if (appointment.getStatus() != Appointment.AppointmentStatus.CHECKED_IN) {
+            model.addAttribute("error", "Lịch hẹn phải ở trạng thái CHECKED_IN để phân công!");
+            model.addAttribute("manager", manager);
+            model.addAttribute("appointments", appointmentService.getAppointmentsByStatus(Appointment.AppointmentStatus.CHECKED_IN));
+            return "admin/staff/checked_in_appointments";
+        }
+
+        // Lấy danh sách tất cả chuyên viên
+        List<SkinTherapist> allTherapists = therapistService.getAllTherapists();
+        LocalDateTime appointmentTime = appointment.getAppointmentTime();
+        SpaService spaService = appointment.getSpaService();
+        LocalDateTime serviceEndTime = appointmentTime.plusMinutes(spaService.getDuration());
+
+        // Lọc chuyên viên không có lịch hẹn trùng thời gian
+        List<SkinTherapist> availableTherapists = allTherapists.stream()
+                .filter(therapist -> {
+                    List<Appointment> existingAppointments = appointmentRepository.findBySkinTherapistId(therapist.getId());
+                    return !existingAppointments.stream().anyMatch(a -> {
+                        LocalDateTime existingStart = a.getAppointmentTime();
+                        SpaService existingService = a.getSpaService();
+                        // Kiểm tra null cho existingService
+                        if (existingService == null) {
+                            return false; // Bỏ qua nếu không có dịch vụ
+                        }
+                        LocalDateTime existingEnd = existingStart.plusMinutes(existingService.getDuration());
+                        return a.getStatus() != Appointment.AppointmentStatus.CANCELLED &&
+                                appointmentTime.isBefore(existingEnd) && serviceEndTime.isAfter(existingStart);
+                    });
+                })
+                .collect(Collectors.toList());
+
+        model.addAttribute("manager", manager);
+        model.addAttribute("appointment", appointment);
+        model.addAttribute("therapists", availableTherapists); // Chỉ hiển thị chuyên viên có sẵn
+        return "admin/staff/assign_therapist";
+    }
+
+    @PostMapping("/appointments/assign/{id}")
+    public String assignTherapist(@PathVariable Long id, @RequestParam UUID therapistId, RedirectAttributes redirectAttributes, Model model, Principal principal) {
+        try {
+            appointmentService.assignTherapist(id, therapistId);
+            return "redirect:/protected/manager/appointments/assigned";
+        } catch (RuntimeException e) {
+            // Lấy lại thông tin để hiển thị trang assign_therapist.html
+            String username = principal.getName();
+            Manager manager = managerRepository.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("Manager not found"));
+            Appointment appointment = appointmentService.getAppointmentById(id);
+
+            // Kiểm tra trạng thái lịch hẹn
+            if (appointment.getStatus() == Appointment.AppointmentStatus.ASSIGNED) {
+                return "redirect:/protected/manager/appointments/assigned";
+            }
+            if (appointment.getStatus() != Appointment.AppointmentStatus.CHECKED_IN) {
+                redirectAttributes.addFlashAttribute("error", "Lịch hẹn phải ở trạng thái CHECKED_IN để phân công!");
+                return "redirect:/protected/manager/appointments/checked-in";
+            }
+
+            // Thêm thông báo lỗi và dữ liệu cần thiết để render lại trang
+            model.addAttribute("manager", manager);
+            model.addAttribute("appointment", appointment);
+            model.addAttribute("therapists", therapistService.getAllTherapists());
+            model.addAttribute("error", e.getMessage()); // Truyền thông báo lỗi
+            return "admin/staff/assign_therapist"; // Trả về trang assign_therapist.html
+        }
+    }
  
      @GetMapping("/appointments/assigned")
      public String listAssignedAppointments(Model model, Principal principal) {
@@ -606,17 +673,6 @@ public class ManagerPageController {
         }
     }
 
-     // Hiển thị tất cả lịch hẹn trên một trang
-    @GetMapping("/appointments")
-    public String listAllAppointments(Model model, Principal principal) {
-        String username = principal.getName();
-        Manager manager = managerRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy quản lý"));
-        model.addAttribute("manager", manager);
-        model.addAttribute("appointments", appointmentService.getAllAppointments());
-        return "admin/staff/listAppointments";
-    }
-
 
     // Display the Blog management page with list of blogs
     @GetMapping("/blogs")
@@ -747,6 +803,17 @@ public class ManagerPageController {
             response.put("therapistId", request.get("therapistId"));
             response.put("message", "Error: " + e.getMessage());
             return ResponseEntity.status(400).body(response);
+        }
+    }
+    @DeleteMapping("/therapists/schedules/delete/{scheduleId}")
+    public ResponseEntity<String> deleteSchedule(@PathVariable("scheduleId") UUID scheduleId) {
+        System.out.println("Received DELETE request for schedule ID: " + scheduleId);
+        try {
+            therapistService.deleteSchedule(scheduleId);
+            return ResponseEntity.ok("Schedule deleted successfully");
+        } catch (Exception e) {
+            System.out.println("Error deleting schedule: " + e.getMessage());
+            return ResponseEntity.status(500).body("Error deleting schedule: " + e.getMessage());
         }
     }
 }

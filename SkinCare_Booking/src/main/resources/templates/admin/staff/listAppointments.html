@@ -5,6 +5,9 @@
 
 <body>
 <!-- Layout wrapper -->
+<div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show position-relative" role="alert">
+    <span th:text="${errorMessage}"></span>
+</div>
 <div class="layout-wrapper layout-content-navbar">
     <div class="layout-container">
         <!-- Menu -->
