@@ -9,6 +9,8 @@ import coderuth.k23.skincare_booking.models.TherapistSchedule;
 import coderuth.k23.skincare_booking.repositories.SkinTherapistRepository;
 import coderuth.k23.skincare_booking.repositories.TherapistScheduleRepository;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.UUID;
 
@@ -55,23 +57,75 @@ public class TherapistService {
         skinTherapistRepository.deleteById(id);
     }
 
-    // Quản lý lịch làm việc của nhà trị liệu
+   // Quản lý lịch làm việc của nhà trị liệu
     public List<TherapistSchedule> getSchedulesByTherapist(UUID therapistId) {
         return therapistScheduleRepository.findBySkinTherapistId(therapistId);
     }
 
-    public TherapistSchedule createSchedule(TherapistSchedule schedule) {
+    public TherapistSchedule createSchedule(UUID therapistId, String dayOfWeek, String startTime, String endTime) {
+        SkinTherapist therapist = skinTherapistRepository.findById(therapistId)
+                .orElseThrow(() -> new RuntimeException("Therapist not found!"));
+
+       
+        LocalTime startTimeParsed;
+        LocalTime endTimeParsed;
+        try {
+            startTimeParsed = LocalTime.parse(startTime);
+            endTimeParsed = LocalTime.parse(endTime);
+        } catch (DateTimeParseException e) {
+            throw new RuntimeException("Invalid time format for startTime or endTime. Expected format: HH:mm");
+        }
+
+        // Kiểm tra xung đột lịch
+        List<TherapistSchedule> existingSchedules = therapistScheduleRepository.findBySkinTherapistId(therapistId);
+        for (TherapistSchedule existing : existingSchedules) {
+            if (existing.getDayOfWeek().equals(dayOfWeek)) {
+                if (!(endTimeParsed.compareTo(existing.getStartTime()) <= 0 || startTimeParsed.compareTo(existing.getEndTime()) >= 0)) {
+                    throw new RuntimeException("Schedule conflict on " + dayOfWeek);
+                }
+            }
+        }
+
+        TherapistSchedule schedule = new TherapistSchedule();
+        schedule.setSkinTherapist(therapist);
+        schedule.setDayOfWeek(dayOfWeek);
+        schedule.setStartTime(startTimeParsed);
+        schedule.setEndTime(endTimeParsed);
         return therapistScheduleRepository.save(schedule);
     }
 
-    public TherapistSchedule updateSchedule(UUID id, TherapistSchedule updatedSchedule) {
+    public TherapistSchedule updateSchedule(UUID id, String dayOfWeek, String startTime, String endTime) {
         TherapistSchedule schedule = therapistScheduleRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Schedule not found!"));
-        schedule.setDayOfWeek(updatedSchedule.getDayOfWeek());
-        schedule.setStartTime(updatedSchedule.getStartTime());
-        schedule.setEndTime(updatedSchedule.getEndTime());
+
+        UUID therapistId = schedule.getSkinTherapist().getId();
+
+      
+        LocalTime startTimeParsed;
+        LocalTime endTimeParsed;
+        try {
+            startTimeParsed = LocalTime.parse(startTime);
+            endTimeParsed = LocalTime.parse(endTime);
+        } catch (DateTimeParseException e) {
+            throw new RuntimeException("Invalid time format for startTime or endTime. Expected format: HH:mm");
+        }
+
+        // Kiểm tra xung đột lịch
+        List<TherapistSchedule> existingSchedules = therapistScheduleRepository.findBySkinTherapistId(therapistId);
+        for (TherapistSchedule existing : existingSchedules) {
+            if (!existing.getId().equals(id) && existing.getDayOfWeek().equals(dayOfWeek)) {
+                if (!(endTimeParsed.compareTo(existing.getStartTime()) <= 0 || startTimeParsed.compareTo(existing.getEndTime()) >= 0)) {
+                    throw new RuntimeException("Schedule conflict on " + dayOfWeek);
+                }
+            }
+        }
+
+        schedule.setDayOfWeek(dayOfWeek);
+        schedule.setStartTime(startTimeParsed);
+        schedule.setEndTime(endTimeParsed);
         return therapistScheduleRepository.save(schedule);
     }
+
 
     public void deleteSchedule(UUID id) {
         therapistScheduleRepository.deleteById(id);
@@ -95,4 +149,5 @@ public class TherapistService {
         skinTherapist.setPassword(passwordEncoder.encode(newPassword));
         skinTherapistRepository.save(skinTherapist);
     }
+
 }

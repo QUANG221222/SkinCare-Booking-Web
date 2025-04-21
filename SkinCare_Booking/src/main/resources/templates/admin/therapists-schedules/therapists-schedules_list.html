@@ -1,46 +1,79 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-  <title>Lịch làm việc của nhà trị liệu</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-<div class="container">
-  <h1>Lịch làm việc của <span th:text="${therapist.fullName}"></span></h1>
-  <!-- Thông báo lỗi hoặc thành công -->
-  <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
-    <span th:text="${success}"></span>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>
-  <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
-    <span th:text="${error}"></span>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>
-  <a th:href="@{/therapists/{id}/schedules/new(id=${therapist.id})}" class="btn btn-primary mb-3">Tạo lịch mới</a>
-  <table class="table table-bordered">
-    <thead>
-    <tr>
-      <th>ID</th>
-      <th>Thứ</th >
-      <th>Giờ bắt đầu</th>
-      <th>Giờ kết thúc</th>
-      <th>Hành động</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="schedule : ${schedules}">
-      <td th:text="${schedule.id}"></td>
-      <td th:text="${schedule.dayOfWeek}"></td>
-      <td th:text="${schedule.startTime}"></td>
-      <td th:text="${schedule.endTime}"></td>
-      <td>
-        <a th:href="@{/therapists/schedules/edit/{id}(id=${schedule.id})}" class="btn btn-warning">Sửa</a>
-        <a th:href="@{/therapists/schedules/delete/{id}(id=${schedule.id})}" class="btn btn-danger">Xóa</a>
-      </td>
-    </tr>
-    </tbody>
-  </table>
-  <a th:href="@{/therapists}" class="btn btn-secondary">Quay lại</a>
-</div>
-</body>
+  <head>
+    <title>Therapist's Work Schedule</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Work Schedule of <span th:text="${therapist.fullName}"></span></h1>
+      <!-- Success or Error Notification -->
+      <div
+        th:if="${success}"
+        class="alert alert-success alert-dismissible fade show"
+        role="alert"
+      >
+        <span th:text="${success}"></span>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div
+        th:if="${error}"
+        class="alert alert-danger alert-dismissible fade show"
+        role="alert"
+      >
+        <span th:text="${error}"></span>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+          aria-label="Close"
+        ></button>
+      </div>
+      <a
+        th:href="@{/therapists/{id}/schedules/new(id=${therapist.id})}"
+        class="btn btn-primary mb-3"
+        >Create New Schedule</a
+      >
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Day</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="schedule : ${schedules}">
+            <td th:text="${schedule.id}"></td>
+            <td th:text="${schedule.dayOfWeek}"></td>
+            <td th:text="${schedule.startTime}"></td>
+            <td th:text="${schedule.endTime}"></td>
+            <td>
+              <a
+                th:href="@{/therapists/schedules/edit/{id}(id=${schedule.id})}"
+                class="btn btn-warning"
+                >Edit</a
+              >
+              <a
+                th:href="@{/therapists/schedules/delete/{id}(id=${schedule.id})}"
+                class="btn btn-danger"
+                >Delete</a
+              >
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <a th:href="@{/therapists}" class="btn btn-secondary">Go Back</a>
+    </div>
+  </body>
 </html>

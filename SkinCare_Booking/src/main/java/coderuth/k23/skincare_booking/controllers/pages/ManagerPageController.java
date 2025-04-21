@@ -12,6 +12,7 @@ import coderuth.k23.skincare_booking.repositories.ManagerRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,7 +23,10 @@ import java.security.Principal;
 import java.util.List;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -515,11 +519,11 @@ public class ManagerPageController {
      }
  
      @PostMapping("/appointments/confirm-payment/{id}")
-     public String confirmPayment(@PathVariable Long id) {
+     public String confirmPayment(@PathVariable Long id) { // Bỏ tham số paymentMethod
          appointmentService.confirmPayment(id);
-         return "redirect:/protected/manager/appointments/invoice/{id}";
+         return "redirect:/protected/staff/appointments/invoice/{id}";
      }
- 
+     
      @GetMapping("/appointments/record-result/{id}")
      public String showRecordResultForm(@PathVariable Long id, Model model, Principal principal) {
          String username = principal.getName();
@@ -580,22 +584,27 @@ public class ManagerPageController {
         return "admin/staff/cancelled_appointments";
     }
  
-     @GetMapping("/payments/history")
-     public String viewPaymentHistory(
-             @RequestParam(defaultValue = "0") int page,
-             @RequestParam(defaultValue = "10") int size,
-             Model model, Principal principal) {
-         String username = principal.getName();
-         Manager manager = managerRepository.findByUsername(username)
-                 .orElseThrow(() -> new RuntimeException("Manager not found"));
-         Page<Payment> paymentPage = paymentService.findAllPayments(page, size);
-         model.addAttribute("manager", manager);
-         model.addAttribute("payments", paymentPage.getContent());
-         model.addAttribute("currentPage", page);
-         model.addAttribute("totalPages", paymentPage.getTotalPages());
-         model.addAttribute("totalItems", paymentPage.getTotalElements());
-         return "admin/staff/staff_payment_history";
-     }
+    @GetMapping("/payments/history")
+    public String viewPaymentHistory(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model, Principal principal) {
+        try {
+            String username = principal.getName();
+            Manager manager = managerRepository.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("Manager not found"));
+            Page<Payment> paymentPage = paymentService.findAllPayments(page, size);
+            model.addAttribute("manager", manager);
+            model.addAttribute("payments", paymentPage.getContent());
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPages", paymentPage.getTotalPages());
+            model.addAttribute("totalItems", paymentPage.getTotalElements());
+            return "admin/staff/staff_payment_history";
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "Failed to load payment history: " + e.getMessage());
+            return "error"; // Hoặc trả về một template lỗi
+        }
+    }
 
      // Hiển thị tất cả lịch hẹn trên một trang
     @GetMapping("/appointments")
@@ -680,6 +689,65 @@ public class ManagerPageController {
             redirectAttributes.addFlashAttribute("errorMessage", "Không thể cập nhật lịch hẹn: " + e.getMessage());
         }
         return "redirect:/protected/manager/appointments";
+    }
+
+   // Xem lịch làm việc của chuyên viên
+    @GetMapping("/therapists/{id}/schedules/current")
+    @ResponseBody
+    public ResponseEntity<List<TherapistSchedule>> getTherapistSchedules(@PathVariable UUID id) {
+        try {
+            List<TherapistSchedule> schedules = therapistService.getSchedulesByTherapist(id);
+            return ResponseEntity.ok(schedules);
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body(null);
+        }
+    }
+
+    // Tạo lịch làm việc cho chuyên viên
+    @PostMapping("/therapists/{id}/schedules")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> createTherapistSchedule(
+            @PathVariable UUID id,
+            @RequestBody Map<String, String> request) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            String dayOfWeek = request.get("dayOfWeek");
+            String startTime = request.get("startTime");
+            String endTime = request.get("endTime");
+
+            therapistService.createSchedule(id, dayOfWeek, startTime, endTime);
+            response.put("therapistId", id.toString());
+            response.put("message", "Success");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("therapistId", id.toString());
+            response.put("message", "Error: " + e.getMessage());
+            return ResponseEntity.status(400).body(response);
+        }
+    }
+
+    // Cập nhật lịch làm việc cho chuyên viên
+    @PostMapping("/therapists/schedules/update/{id}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> updateTherapistSchedule(
+            @PathVariable UUID id,
+            @RequestBody Map<String, String> request) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            String dayOfWeek = request.get("dayOfWeek");
+            String startTime = request.get("startTime");
+            String endTime = request.get("endTime");
+            String therapistId = request.get("therapistId");
+
+            therapistService.updateSchedule(id, dayOfWeek, startTime, endTime);
+            response.put("therapistId", therapistId);
+            response.put("message", "Success");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("therapistId", request.get("therapistId"));
+            response.put("message", "Error: " + e.getMessage());
+            return ResponseEntity.status(400).body(response);
+        }
     }
 }
 
