@@ -23,6 +23,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.security.Principal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -70,7 +72,7 @@ public class CustomerPageController {
         return userDetails.getId();
     }
 
-     // Hiển thị danh sách dịch vụ và form đặt dịch vụ
+//      Hiển thị danh sách dịch vụ và form đặt dịch vụ
      @GetMapping("/appointment")
      public String showAppointmentForm(@RequestParam(value = "serviceId", required = false) Long serviceId, Model model) {
          Appointment appointment = new Appointment();
@@ -82,9 +84,8 @@ public class CustomerPageController {
          // Nạp thêm danh sách dịch vụ và chuyên viên nếu cần cho form lựa chọn thay đổi (hoặc chỉ nạp nếu chưa có service chọn trước)
          model.addAttribute("services", spaServiceService.getAllServices());
          model.addAttribute("therapists", therapistService.getAllTherapists());
-         return "user/customer/appointment_form";  
+         return "user/customer/appointment_form";
      }
- 
     // Customer books a service
     @PostMapping("/appointment/create")
     @ResponseBody
@@ -124,6 +125,7 @@ public class CustomerPageController {
             return ResponseEntity.badRequest().body(Map.of("status", "error", "message", ex.getMessage()));
         }
     }
+  
     // Xem danh sách đặt dịch vụ của khách hàng
     // @GetMapping("/appointments")
     // public String getAppointmentsFragment(Model model, Authentication authentication) {
@@ -140,13 +142,13 @@ public class CustomerPageController {
        return "user/customer/appointments_list";
    }
 
-     // Hủy lịch hẹn
-     @PostMapping("/appointments/cancel/{id}")
-     public String cancelAppointment(@PathVariable Long id) {
-         UUID customerId = getLoggedInCustomerId();
-         appointmentService.cancelAppointmentByCustomer(id, customerId);
-         return "redirect:/protected/customer/appointments";
-     }
+//     // Hủy lịch hẹn
+//     @PostMapping("/appointments/cancel/{id}")
+//     public String cancelAppointment(@PathVariable Long id) {
+//         UUID customerId = getLoggedInCustomerId();
+//         appointmentService.cancelAppointmentByCustomer(id, customerId);
+//         return "redirect:/protected/customer/appointments";
+//     }
 
    // Xem lịch sử thanh toán của customer
     @GetMapping("/payment-history")
@@ -321,12 +323,25 @@ public class CustomerPageController {
         return "redirect:/protected/customer/profile";
     }
 
-    @GetMapping("/booking-history")
-    public String bookingHistory(Model model) {
+    @GetMapping("/appointments")
+    public String bookingHistory(Model model,Authentication authentication) {
         // Lấy lịch sử đặt lịch từ cơ sở dữ liệu
-        List<Appointment> bookings = appointmentService.getAppointmentsByCustomer(getLoggedInCustomerId());
-        model.addAttribute("bookings", bookings);
+        String username = authentication.getName();
+        List<Appointment> appointments = appointmentService.findAppointmentsByUsername(username);
+        model.addAttribute("appointments", appointments);
         return "user/customer/booking-history";
+    }
+
+    @PostMapping("/appointments/cancel/{id}")
+    @ResponseBody
+    public ResponseEntity<Map<String, String>> cancelAppointment(@PathVariable Long id) {
+        try {
+            UUID customerId = getLoggedInCustomerId();
+            appointmentService.cancelAppointmentByCustomer(id, customerId);
+            return ResponseEntity.ok(Map.of("status", "success", "message", "\n" + "Appointment canceled successfully!"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("status", "error", "message", e.getMessage()));
+        }
     }
 
     @GetMapping("/quiz")

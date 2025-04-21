@@ -1,9 +1,8 @@
 package coderuth.k23.skincare_booking.services;
 
-import coderuth.k23.skincare_booking.repositories.AppointmentRepository;
-import coderuth.k23.skincare_booking.repositories.CustomerRepository;
-import coderuth.k23.skincare_booking.repositories.PaymentRepository;
+import coderuth.k23.skincare_booking.repositories.*;
 import coderuth.k23.skincare_booking.models.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import coderuth.k23.skincare_booking.repositories.SkinTherapistRepository;
 import coderuth.k23.skincare_booking.repositories.TherapistScheduleRepository;
 import jakarta.transaction.Transactional;
@@ -55,6 +54,8 @@ public class AppointmentService {
     @Autowired
     private JavaMailSender mailSender;
 
+    @Autowired
+    private SpaServiceRepository spaServiceRepository;
 
     @Autowired
     private CenterScheduleService centerScheduleService;
@@ -307,17 +308,20 @@ private static final String VIETQR_API_URL = "https://img.vietqr.io/image/";
     @Transactional
     public Appointment cancelAppointmentByCustomer(Long appointmentId, UUID customerId) {
         Appointment appointment = appointmentRepository.findById(appointmentId)
-                .orElseThrow(() -> new RuntimeException("Appointment not found!"));
+                .orElseThrow(() -> new RuntimeException("THIS APPOINTMENT DOES NOT EXIST!"));
         if (!appointment.getCustomer().getId().equals(customerId)) {
-            throw new RuntimeException("You do not have permission to cancel this appointment!");
+            throw new RuntimeException("YOU DO NOT HAVE THE RIGHT TO CANCEL THIS APPOINTMENT!");
         }
-        if (appointment.getStatus() != Appointment.AppointmentStatus.PENDING) {
-            throw new RuntimeException("Only appointments in PENDING status can be canceled!");
+        if (appointment.getStatus() == Appointment.AppointmentStatus.CHECKED_OUT) {
+            throw new RuntimeException("CAN NOT CANCEL THIS CHECKED_OUT!");
+        }
+        if (appointment.getStatus() == Appointment.AppointmentStatus.CANCELLED) {
+            throw new RuntimeException("THIS APPOINTMENT CANCELLED BEFORE!");
         }
         LocalDateTime now = LocalDateTime.now();
-        if (appointment.getAppointmentTime().isBefore(now.plusHours(24))) {
-            throw new RuntimeException("Cannot cancel appointments within 24 hours of the scheduled time!");
-        }
+//        if (appointment.getAppointmentTime().isBefore(now.plusHours(24))) {
+//            throw new RuntimeException("Không thể hủy lịch hẹn trong vòng 24 giờ trước thời gian đã đặt!");
+//        }
         appointment.setStatus(Appointment.AppointmentStatus.CANCELLED);
 
         Payment payment = appointment.getPayment();
@@ -521,4 +525,5 @@ private static final String VIETQR_API_URL = "https://img.vietqr.io/image/";
                 .map(Map.Entry::getKey)
                 .orElse(null);
     }
+
 }
