@@ -736,7 +736,7 @@ document.addEventListener("DOMContentLoaded", async function (e) {
           show: false,
         },
         min: 0,
-        max: 5000,
+        max: 2000,
         tickAmount: 4,
       },
     };

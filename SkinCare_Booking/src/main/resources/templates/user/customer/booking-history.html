@@ -71,7 +71,7 @@
         <!-- Chỉ hiển thị cột Actions nếu trạng thái không phải CANCELLED -->
         <div th:if="${appointment.status != T(coderuth.k23.skincare_booking.models.Appointment$AppointmentStatus).CANCELLED}">
           <!-- Nút Edit -->
-          <a th:href="@{/protected/customer/booking/edit/{id}(id=${appointment.id})}" class="btn btn-primary btn-sm">Edit</a>
+<!--          <a th:href="@{/protected/customer/booking/edit/{id}(id=${appointment.id})}" class="btn btn-primary btn-sm">Edit</a>-->
           <!-- Nút Cancel: Chỉ hiển thị nếu trạng thái không phải CHECKED_OUT -->
           <button
                   th:if="${appointment.status != T(coderuth.k23.skincare_booking.models.Appointment$AppointmentStatus).CHECKED_OUT}"

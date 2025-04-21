@@ -43,22 +43,6 @@
               </div>
             </div>
             <div class="table-responsive">
-              <form th:action="${#strings.contains(currentURI, 'manager') ? '/protected/manager/payments/history' : '/protected/staff/payments/history'}" method="get" class="mb-3 mx-3">
-                <div class="row">
-                  <div class="col">
-                    <input type="text" name="status" class="form-control" placeholder="Status (UNPAID, PAID, REFUNDED)">
-                  </div>
-                  <div class="col">
-                    <input type="date" name="startDate" class="form-control">
-                  </div>
-                  <div class="col">
-                    <input type="date" name="endDate" class="form-control">
-                  </div>
-                  <div class="col">
-                    <button type="submit" class="btn btn-primary">Filter</button>
-                  </div>
-                </div>
-              </form>
               <table class="table table-bordered table-hover">
                 <thead class="table-light">
                 <tr>
