@@ -12,6 +12,9 @@ public class AuthController {
         return "auth/register";
     }
 
+    @GetMapping("/register/manager")
+    public String RegisterManager() { return "auth/register-manager"; }
+
     @GetMapping("/registration")
     public String RegisterCustomer(Model model) {
 

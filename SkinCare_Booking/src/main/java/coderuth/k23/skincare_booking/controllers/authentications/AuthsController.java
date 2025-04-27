@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,8 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthsController {
+    @Value("${REGISTER_SECRET}")
+    private String registerSecret;
 
     @Autowired
     private AuthService authService;
@@ -50,10 +53,19 @@ public class AuthsController {
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created("Register successfully"));
     }
 
-    @PostMapping("/manager/register")
-    public ResponseEntity<ApiResponse<Void>> registerAdmin(@Valid @RequestBody RegisterManagerRequest registerManagerRequest) {
-        authService.registerManager(registerManagerRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created("Registered successfully"));
+    @PostMapping("/register-manager")
+    public ResponseEntity<ApiResponse<Void>> registerManager(
+            @RequestBody RegisterManagerRequest registerManagerRequest) {
+        if (!registerManagerRequest.getRegisterSecret().equals(registerSecret)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiResponse.error("Invalid registration secret"));
+        }
+
+        try {
+            authService.registerManager(registerManagerRequest);
+            return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created("Register Manager successfully"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error("Registration failed: " + e.getMessage()));
+        }
     }
 
     @PostMapping("/manager/register-staff")

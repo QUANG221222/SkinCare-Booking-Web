@@ -28,8 +28,15 @@ public class RegisterManagerRequest {
 
     @NotBlank(message = "Password is required")
     @Pattern(
-            regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=!]).{6,40}$",
+            regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=!]).{8,40}$",
             message = "Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character. Ex: Abc@123"
     )
     private String password;
+
+    @NotBlank(message = "Register Secret is required")
+    @Pattern(
+            regexp="^[A-Za-z0-9+/]{42,}[A-Za-z0-9+/=]{2}$",
+            message="Register Secret Key must be a valid Base64 string with at least 44 characters"
+    )
+    private String registerSecret;
 }
